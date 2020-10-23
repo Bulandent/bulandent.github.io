@@ -1,0 +1,179 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> 步步走</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="良好的css编码习惯能够提高开发、维护效率，所以前端很有必要养成一个好的编码习惯。"><meta name="keywords" content="css编码规范、css书写习惯、css coding standards、css格式化"><meta name="author" content="typeR"><link rel="short icon" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/favicon.ico"><link rel="stylesheet" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://bubuzou.com/atom.xml" title="步步走"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script><meta name="generator" content="Hexo 5.0.0"><link rel="alternate" href="/atom.xml" title="步步走" type="application/atom+xml">
+</head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/logo.png"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="/categories/live/" target="_self" data-hover="生活" class="nav-list-link">生活</a></li><li class="nav-list-item"><a href="/categories/read/" target="_self" data-hover="读书" class="nav-list-link">读书</a></li><li class="nav-list-item"><a href="/about/" target="_self" data-hover="关于" class="nav-list-link">关于</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><ul class="home post-list"><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2020/10/22/promise/" class="post-title-link">深入理解Promise</a></h2><div class="post-info">2020-10-22<p class="visit"><i data-identity="2020/10/22/promise/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><h2 id="从异步编程说起"><a href="#从异步编程说起" class="headerlink" title="从异步编程说起"></a>从异步编程说起</h2><p>我们都知道 <code>JavaScript</code> 的代码执行的时候是跑在单线程上的，可以理解为只能按照代码的出现顺序，从上到下一行一行的执行，但是遇到了异步的行为，比如定时器（一定时间之后才去执行），那就需要等同步代码执行完成后的一段时间里再去执行异步代码。</p>
+<p>对于同步行为，如下面的代码，我们能够很清楚的知道每一行会发生什么，这是因为后面的指令总是等到前面的指令执行完成后才去执行，所以这里的第二行里的变量 <code>x</code> 在内存里已经是定义过的。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> x = <span class="number">10</span>;</span><br><span class="line"><span class="keyword">let</span> y = x + <span class="number">5</span>;</span><br></pre></td></tr></table></figure></div><a href="/2020/10/22/promise/" class="read-more">...阅读全文</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2020/10/14/article-catalog/" class="post-title-link">详细设计一个文章页目录插件</a></h2><div class="post-info">2020-10-14<p class="visit"><i data-identity="2020/10/14/article-catalog/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><p>在说这个插件之前，可以先去 <a href="https://bubuzou.com/2020/09/21/vue-operate/">https://bubuzou.com/</a> 这个网站体验下这个插件的效果，好有个大概的印象。</p>
+<p>通过阅读这篇文章，你可以收获什么？</p>
+<ol>
+<li>用 <code>JS</code> 直接操作 <code>DOM</code></li>
+<li>浏览器 <code>BOM</code> 相关知识</li>
+<li>性能优化思考</li>
+<li>插件设计思考</li>
+</ol>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>平时我们在用 <code>Markdown</code> 写的文章，如果放到自己的博客或者投稿到掘金等平台，其内容会被浏览器解析成 <code>HTML</code>。而 <code>Markdown</code> 里面的一级（#）、二级（##）、三级标题（###）分别对应于页面的文章标题、一级目录、二级目录。基于此，就可以很好的利用该生成的页面实现一个目录，便于更直观方便的的浏览文章内容，而这就是最初我想为博客里的文章页实现一个目录功能的理由。</p>
+<blockquote>
+<p>这个插件是基于 <code>Hexo</code> 生成的网页来实现的，且目前只支持一级和二级目录，因为作为一篇文章来说有两个层级已经可以很好的将一块内容划分细说得很清楚了。</p>
+</blockquote></div><a href="/2020/10/14/article-catalog/" class="read-more">...阅读全文</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2020/09/21/vue-operate/" class="post-title-link">34条我能告诉你的Vue之实操篇</a></h2><div class="post-info">2020-09-21<p class="visit"><i data-identity="2020/09/21/vue-operate/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><p>这是我学习整理的关于 <code>Vue.js</code> 系列文章的第一篇，另外还有两篇分别是关于优化和原理的。希望读完这3篇文章，你能对 <code>Vue</code> 有个更深入的认识。</p>
+<h2 id="7种组件通信方式随你选"><a href="#7种组件通信方式随你选" class="headerlink" title="7种组件通信方式随你选"></a>7种组件通信方式随你选</h2><p>组件通信是 <code>Vue</code> 的核心知识，掌握这几个知识点，面试开发一点问题都没有。</p>
+<h3 id="props-on-emit"><a href="#props-on-emit" class="headerlink" title="props/@on+$emit"></a>props/@on+$emit</h3><p>用于实现父子组件间通信。通过 <code>props</code> 可以把父组件的消息传递给子组件：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- parent.vue --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">child</span> <span class="attr">:title</span>=<span class="string">&quot;title&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">child</span>&gt;</span></span><br></pre></td></tr></table></figure></div><a href="/2020/09/21/vue-operate/" class="read-more">...阅读全文</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2020/08/06/wepy2/" class="post-title-link">小程序升级WePY2踩坑记</a></h2><div class="post-info">2020-08-06<p class="visit"><i data-identity="2020/08/06/wepy2/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><p>最近有个小程序项目需要迭代，但是迭代任务不多，时间比较充裕。而这个小程序最早是在18年的时候开发的，用的开发框架是 <code>WePY</code> 的 <code>1.7.2</code> 版本，去年也就是 <code>19</code> 年的时候 <code>WePY</code> 框架进行了升级，到了 <code>2.0</code> 版本。升级之后的 <code>WePY</code>，用 <a target="_blank" rel="noopener" href="https://wepyjs.github.io/wepy-docs/2.x/#/"><code>WePY</code></a> 官方文档的话来说：通过优化细节，引入 <code>Promise</code>、<code>Async Functions</code> 等让开发小程序项目变得更加简单，高效。基于这些背景，我和小伙伴一拍即合，决定对我们的项目进行框架升级，体验下到底 <code>WePY2</code> 能给我们带来什么。</p>
+<p>本文将以项目改动为出发点，基于当前这个项目的结构和编码方式来考虑到底升级 <code>WePY2</code> 后，哪里需要改，怎么改以及有哪些需要注意的地方，通过对比 <code>2</code> 个版本的写法差异这个思路来写，不会去太较真 <code>WePY2</code> 相对于 <code>WePY1</code> 实现或原理上的区别。下面我将一条一条的列出来需要改动的点。</p>
+<blockquote>
+<p>本篇文章记录的是我和小伙伴这次升级框架遇到的需要改动的地方和坑，所使用的是 <code>wepy</code> 的 <code>2.1.0</code> 版本，后续如果版本升级后，本篇记录到的坑如果已经被修复了，请自行忽略本文所述的问题。另外下文中所说到的 <code>2.x</code> 版本都是指 <code>wepy_v2.1.0</code>。</p>
+</blockquote></div><a href="/2020/08/06/wepy2/" class="read-more">...阅读全文</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2020/07/29/js-datatype/" class="post-title-link">JavaScript中的数据类型</a></h2><div class="post-info">2020-07-29<p class="visit"><i data-identity="2020/07/29/js-datatype/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><h2 id="JavaScript中有哪些数据类型？"><a href="#JavaScript中有哪些数据类型？" class="headerlink" title="JavaScript中有哪些数据类型？"></a>JavaScript中有哪些数据类型？</h2><p>计算机世界中定义的数据类型其实就是为了描述现实世界中存在的事实而定义的。比如我们用人来举例：</p>
+<ol>
+<li><p>有没有人在房间里？这里的有和没有就是是或者非的概念，在 <code>JS</code> 中对应 <code>Boolean</code> 类型，<code>true</code> 表示是，<code>false</code> 表示非；</p>
+</li>
+<li><p>有几个人在房间里？这里的几个表示的是一个量级概念，在 <code>JS</code> 中对应 <code>Number</code> 类型，包含整数和浮点数，还有一些特殊的值，比如：<code>-Infinity</code> 表示负无穷大、<code>+Infinity</code> 表示正无穷大、<code>NaN</code>     表示不是一个数字；</p>
+</li>
+<li><p>房间里的这些人都是我的朋友。这是一句陈述语句，这种文本类的信息将会以字符串形式进行存储，在 <code>JS</code> 中对应 <code>String</code> 类型；</p>
+</li>
+<li><p>房间里没有人。这里的没有代表无和空的概念，在 <code>JS</code> 中 <code>null</code> 和 <code>undefined</code> 都可以表示这个意思；</p>
+</li>
+<li><p>现实世界中所有人都是独一无二的，这在 <code>JS</code> 中对应 <code>Symbol</code> 类型，表示唯一且不可改变；</p>
+</li>
+<li><p><code>Number</code> 所表示的整数是有范围的，超出范围的数据就没法用 <code>Number</code> 表示了，于是 <code>ES10</code> 中提出了一种新的数据类型 <code>BigInt</code>，能表示任何位数的整数；</p>
+</li>
+<li><p>以上提到的 <code>Boolean</code>、<code>Number</code>、<code>String</code>、<code>null</code>、<code>undefined</code>、<code>Symbol</code> 和 <code>BigInt</code> 等7种类型都是 <code>JavaScript</code> 中的原始类型，还有一种是非原始类型叫做对象类型；比如：一个人是对象，这个人有名字、性别、年龄等；</p>
+ <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> person = &#123;</span><br><span class="line">    name: <span class="string">&#x27;bubuzou&#x27;</span>,</span><br><span class="line">    sex: <span class="string">&#x27;male&#x27;</span>,</span><br><span class="line">    age: <span class="number">26</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol></div><a href="/2020/07/29/js-datatype/" class="read-more">...阅读全文</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2020/03/26/nvm/" class="post-title-link">使用nvm来管理Node版本</a></h2><div class="post-info">2020-03-26<p class="visit"><i data-identity="2020/03/26/nvm/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><h2 id="使用nvm来管理Node版本"><a href="#使用nvm来管理Node版本" class="headerlink" title="使用nvm来管理Node版本"></a>使用nvm来管理Node版本</h2><p><code>nvm</code> 是 <code>Node.js</code> 的版本管理工具，可以创建不同版本 <code>Node</code> 的隔离环境，从而避免不同版本包之间的干扰。<a target="_blank" rel="noopener" href="https://github.com/nvm-sh/nvm">官方 github</a></p>
+<h3 id="卸载全局安装的Node"><a href="#卸载全局安装的Node" class="headerlink" title="卸载全局安装的Node"></a>卸载全局安装的Node</h3><p>最近在做项目的时候，发现编译速度特别慢，而升级 <code>Node</code> 版本之后速度会明显提升。所以这才有使用 <code>nvm</code> 来管理 <code>Node</code> 的故事。</p>
+<p>目前本地全局安装的 <code>Node</code> 版本是 <code>9.11.1</code>， 这个版本还是18年4月左右更新的，是相当的跟不上节奏了。<a target="_blank" rel="noopener" href="https://nodejs.org/zh-cn/download/releases/">这里可以查看 Node 历史版本</a>。</p>
+<p>安装 <code>nvm</code> 之前最好是将现有的全局 <code>Node</code> 进行卸载，否则会发生冲突。</p></div><a href="/2020/03/26/nvm/" class="read-more">...阅读全文</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2019/10/24/Vue-Test-Utils+Jest/" class="post-title-link">Vue-Test-Utils + Jest 单元测试入门与实践</a></h2><div class="post-info">2019-10-24<p class="visit"><i data-identity="2019/10/24/Vue-Test-Utils+Jest/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p><a target="_blank" rel="noopener" href="https://vue-test-utils.vuejs.org/zh/"><code>Vue-Test-Utils</code></a> 是 <code>Vue.js</code> 官方的单元测试实用工具库，它提供了一系列的 <code>API</code> 来使得我们可以很便捷的去写 <code>Vue</code> 应用中的单元测试。</p>
+<p>主流的单元测试运行器有很多，比如 <a target="_blank" rel="noopener" href="https://jestjs.io/docs/zh-Hans/getting-started"><code>Jest</code></a>、<a target="_blank" rel="noopener" href="https://mochajs.org/"><code>Mocha</code></a> 和 <code>Karma</code> 等，这几个在 <code>Vue-Test-Utils</code> 文档里都有对应的教程，这里我们只介绍 <code>Vue-Test-Utils + Jest</code> 结合的示例。</p>
+<blockquote>
+<p>Jest 是一个由 Facebook 开发的测试框架。Vue 对其进行描述：是功能最全的测试运行器。它所需的配置是最少的，默认安装了 JSDOM，内置断言且命令行的用户体验非常好。不过你需要一个能够将单文件组件导入到测试中的预处理器。我们已经创建了 vue-jest 预处理器来处理最常见的单文件组件特性，但仍不是 vue-loader 100% 的功能。</p>
+</blockquote></div><a href="/2019/10/24/Vue-Test-Utils+Jest/" class="read-more">...阅读全文</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2019/09/24/git-all-actions/" class="post-title-link">Git常用操作，一文打尽</a></h2><div class="post-info">2019-09-24<p class="visit"><i data-identity="2019/09/24/git-all-actions/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/2019/git_all_01.png" alt="git_flow"></p>
+<h2 id="创建版本库"><a href="#创建版本库" class="headerlink" title="创建版本库"></a>创建版本库</h2><ul>
+<li><code>git clone url</code>  克隆远程版本库</li>
+<li><code>git init</code>  初始化本地版本库</li>
+</ul></div><a href="/2019/09/24/git-all-actions/" class="read-more">...阅读全文</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2019/07/26/vue-quill-editor/" class="post-title-link">vue-quill-editor插入图片路径太长问题解决</a></h2><div class="post-info">2019-07-26<p class="visit"><i data-identity="2019/07/26/vue-quill-editor/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><p>最近做项目的时候有一个发布新闻的需求，新闻编辑的时候要求能发布带格式的文本内容和能展示支持图片。<br>由于项目是用vue开发的，所以找编辑器的时候选了 <code>vue-quill-editor</code> 。编辑器长如下的样子：</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/2019/quill_01.png" alt="quill_01"></p></div><a href="/2019/07/26/vue-quill-editor/" class="read-more">...阅读全文</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2019/06/27/wepy-plugins-preprocess/" class="post-title-link">小程序根据打包命令区分不同环境的API</a></h2><div class="post-info">2019-06-27<p class="visit"><i data-identity="2019/06/27/wepy-plugins-preprocess/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><p>一般来讲项目都会有开发版、测试版和生产版这三个版本，不同版本对应不同的API域名，比如可能会是这样子：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> HOST_DEV = <span class="string">&#x27;https://dev-bubuzouapi.com/&#x27;</span>  <span class="comment">// 开发环境API</span></span><br><span class="line"><span class="keyword">const</span> HOST_TEST = <span class="string">&#x27;https://test-bubuzouapi.com/&#x27;</span>  <span class="comment">// 测试环境API</span></span><br><span class="line"><span class="keyword">const</span> HOST = <span class="string">&#x27;https://bubuzouapi.com/&#x27;</span>  <span class="comment">// 生产环境API</span></span><br></pre></td></tr></table></figure>
+
+<p>前端项目里要如何区分用什么时候用哪个API呢？比较笨的方法是，比如这次我要打一个测试环境给测试用，那我必须手动的把 <code>HOST_TEST</code> 这个变量的值设置到请求的 <code>url</code> 里。如果下次需要打其他环境的包，那我就需要再次手动更改 <code>url</code> 为别的值，这样显得很不方便。</p></div><a href="/2019/06/27/wepy-plugins-preprocess/" class="read-more">...阅读全文</a></article></li></ul><div class="right-container"><div class="widget"><div class="category"><h4>分类归档</h4><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/JavaScript/">JavaScript</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Vue/">Vue</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/css/">css</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vue/">vue</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/web%E7%BB%BC%E5%90%88/">web综合</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%B0%8F%E7%A8%8B%E5%BA%8F/">小程序</a><span class="category-list-count">2</span></li></ul></div></div><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/JavaScript/" style="font-size: 20px;">JavaScript</a> <a href="/tags/chrome/" style="font-size: 10px;">chrome</a> <a href="/tags/css/" style="font-size: 17.5px;">css</a> <a href="/tags/element-ui/" style="font-size: 10px;">element-ui</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/jest/" style="font-size: 10px;">jest</a> <a href="/tags/node/" style="font-size: 10px;">node</a> <a href="/tags/svg/" style="font-size: 10px;">svg</a> <a href="/tags/upload/" style="font-size: 12.5px;">upload</a> <a href="/tags/vue/" style="font-size: 15px;">vue</a> <a href="/tags/vue-test-utils/" style="font-size: 10px;">vue-test-utils</a> <a href="/tags/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/" style="font-size: 10px;">单元测试</a> <a href="/tags/%E5%9B%BE%E5%83%8F/" style="font-size: 12.5px;">图像</a> <a href="/tags/%E5%B0%8F%E7%A8%8B%E5%BA%8F/" style="font-size: 10px;">小程序</a> <a href="/tags/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E3%80%81wepy/" style="font-size: 10px;">小程序、wepy</a> <a href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" style="font-size: 10px;">性能优化</a> <a href="/tags/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/" style="font-size: 10px;">正则表达式</a></div></div><div class="widget"><div class="recent"><h4>最近文章</h4><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2020/10/22/promise/">深入理解Promise</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/10/14/article-catalog/">详细设计一个文章页目录插件</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/09/21/vue-operate/">34条我能告诉你的Vue之实操篇</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/08/06/wepy2/">小程序升级WePY2踩坑记</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/07/29/js-datatype/">JavaScript中的数据类型</a></li></ul></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/page/2/" class="next">下一页</a></div><div class="copyright"><p>© 2016 - 2020 <a href="https://weibo.com/316000381" target="_blank">typeR</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p><p> <span style="padding-right: 6px;">闽ICP备16007301号-2</span></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/jquery-1.8.2.min.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/articleCatalog.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = false;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

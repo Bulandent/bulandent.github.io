@@ -1,0 +1,481 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> 正则表达式理论篇 · 步步走</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="简要的介绍了正则表达式的语法和一些使用规则"><meta name="keywords" content="正则表达式理论"><meta name="author" content="typeR"><link rel="short icon" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/favicon.ico"><link rel="stylesheet" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://bubuzou.com/atom.xml" title="步步走"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script><meta name="generator" content="Hexo 5.0.0"><link rel="alternate" href="/atom.xml" title="步步走" type="application/atom+xml">
+</head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/logo.png"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="/categories/live/" target="_self" data-hover="生活" class="nav-list-link">生活</a></li><li class="nav-list-item"><a href="/categories/read/" target="_self" data-hover="读书" class="nav-list-link">读书</a></li><li class="nav-list-item"><a href="/about/" target="_self" data-hover="关于" class="nav-list-link">关于</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">正则表达式理论篇</h1><div class="post-info">2016-11-04<p class="visit"><i data-identity="2016/11/04/regexp-concept/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><h2 id="先来看一个例子"><a href="#先来看一个例子" class="headerlink" title="先来看一个例子"></a>先来看一个例子</h2><p>这里有一个例子，用来匹配URL的正则表达式。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> url = <span class="string">&quot;http://bubuzou.com:80/goodparts?q#fragment&quot;</span>;</span><br><span class="line"><span class="keyword">var</span> parse_url = <span class="regexp">/^(?:([A-Za-z]+):)?(\/&#123;0,3&#125;)([0-9.\-A-Z-a-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/</span>;</span><br><span class="line"><span class="built_in">console</span>.log( parse_url.exec( url ) );</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">上面这段代码产生的结果如下：</span></span><br><span class="line"><span class="comment">[&quot;http://bubuzou.com:80/goodparts?q#fragment&quot;, &quot;http&quot;, &quot;//&quot;, &quot;bubuzou.com&quot;, &quot;80&quot;, &quot;goodparts&quot;, &quot;q&quot;, &quot;fragment&quot;]</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<p>现在让我们来分解parse_url的各个部分，看看它是如何工作的：</p>
+<ul>
+<li><code>^</code> 字符表示字符串的开始</li>
+<li><code>(?:([A-Za-z]+):)?</code>这个因子匹配一个协议名，但是只有当它后面跟随:的时候才匹配。<code>(?:...)</code> 表示一个非捕获型的分组。后缀 <code>?</code> 表示这个分组是可选的，表示匹配 <code>0</code> 次或者 <code>1</code> 次。<br><code>(...)</code> 表示一个捕获型分组。一个捕获型分组会复制它所匹配的文本，并且将其放到 <code>result</code> 数组里。每个捕获型分组会被指定一个编号。第一个捕获型分组的编号是 <code>1</code>，所以该分组所匹配的结果会出现在 <code>result[1]</code> 中。<code>[...]</code> 表示一个字符类。<code>A-Za-z</code> 这个字符类包含 <code>26</code> 个大写字母和 <code>26</code> 个小写字母。<code>+</code> 表示这个字符类会被匹配 <code>1</code> 次或多次。<code>:</code> 会按照字面进行匹配。</li>
+<li><code>(\/&#123;0,3&#125;)</code> 这个因子是捕获分组 <code>2</code> 。<code>\/</code> 表示匹配 <code>/</code> （斜杠），它用 <code>\</code> 来进行转义。<code>&#123;0,3&#125;</code> 表示会被匹配<code>0-3</code> 次</li>
+<li><code>([0-9.\-A-Z-a-z]+)</code> 这个因子是捕获分组 <code>3</code> 。它会匹配一个主机名，由一个或多个数字、字母，以及 <code>.</code> 或-组成。</li>
+<li><code>(?::(\d+))?</code> 这个因子匹配的是端口号。<code>(\d+)</code> 是捕获分组 <code>4</code>，表示匹配一个或多个数字。</li>
+<li><code>(?:\/([^?#]*))?</code> 是一个可选的分组，以一个 <code>/</code> 开始。<code>[^?#]</code> 是捕获分组 <code>5</code> ，以一个 <code>^</code> 开始表示这个类包含除 <code>?</code> 和 <code>#</code> 之外的所有字符。 <code>*</code> 表示匹配 <code>0</code> 次或多次。</li>
+<li><code>(?:\?([^#]*))?</code> 是一个以 <code>?</code> 开始的分组。包含捕获分组 <code>6</code>，这个分组包含 <code>0</code> 个或多个非 <code>#</code> 的字符</li>
+<li><code>(?:#(.*))?</code> 这个可选分组是以 <code>#</code> 开始的，<code>.</code> 会匹配除了行结束符以外的所有字符。</li>
+<li><code>$</code> 表示字符串的结束</li>
+</ul>
+<blockquote>
+<p>所谓正则表达式，就是一种描述字符串结构模式的形式化表达方法。</p>
+</blockquote>
+<p>这是《精通正则表达式》对它的定义。<br>正则表达式又叫做规则表达式(Regular Expression，简写regexp).<br>正则表达式是对字符串操作的一种逻辑公式，就是用事先定义好的一些特定字符、及这些特定字符的组合，组成一个“规则字符串”，这个“规则字符串”用来表达对字符串的一种过滤逻辑。</p>
+<h2 id="正则表达式能干嘛"><a href="#正则表达式能干嘛" class="headerlink" title="正则表达式能干嘛"></a>正则表达式能干嘛</h2><ul>
+<li>测试字符串是否满足某种模式。比如字符串内是否出现电话号码模式，又称为数据验证。</li>
+<li>替换文本。可以用正则表达式来识别字符串中的特定文本，完全删除或者用其他文本替换它。</li>
+<li>提取字符串。基本匹配模式从字符串中提取需要的子字符串。</li>
+</ul>
+<div class="tip">
+正则表达式已经在很多软件中得到广泛的应用，包括 `*nix(Linux, Unix等)`，`HP` 等操作系统，`PHP`、`C#`、`Java`等开发环境，以及很多的应用软件中，都可以看到正则表达式的影子。
+</div>
+
+<h2 id="正则表达式结构"><a href="#正则表达式结构" class="headerlink" title="正则表达式结构"></a>正则表达式结构</h2><p>优先考虑的方法是使用正则表达式字面量：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> patt = <span class="regexp">/pattern/m</span>odifiers;</span><br></pre></td></tr></table></figure>
+
+<p>另一种方法是使用RegExp构造器：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> patt = <span class="keyword">new</span> <span class="built_in">RegExp</span>(pattern, modifiers);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>pattern（模式） 描述了表达式的模式</li>
+<li>modifiers（修饰符） 用于指定全局匹配、区分大小写的匹配和多行匹配</li>
+</ul>
+<p>修饰符modifiers：</p>
+<table>
+<thead>
+<tr>
+<th>修饰符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>i</code></td>
+<td>执行对大小写不敏感的匹配</td>
+</tr>
+<tr>
+<td><code>g</code></td>
+<td>执行全局匹配</td>
+</tr>
+<tr>
+<td><code>m</code></td>
+<td>执行多行匹配</td>
+</tr>
+</tbody></table>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> patt = <span class="regexp">/hello/ig</span>;</span><br><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;Hello world!&#x27;</span>;</span><br><span class="line">patt.exec( str );  <span class="comment">// 将会匹配&#x27;Hello&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="正则表达因子"><a href="#正则表达因子" class="headerlink" title="正则表达因子"></a>正则表达因子</h2><p>一个正则表达式因子可以是一个字符、一个圆括号包围的组、一个字符类或者是一个转义序列。下面这些字符都会按照字面进行处理<code>\ / [ ] ( ) &#123; &#125; ? + * | . ^</code> $如果你希望这些字符按照字面意思去匹配，那需要在其前面加上\进行转义。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> patt = <span class="regexp">/\.\d+/</span>;</span><br><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;-12.568&#x27;</span>;</span><br><span class="line">patt.exec( str );  <span class="comment">// 匹配&#x27;.568&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>正则表达式特殊字符:</p>
+<table>
+<thead>
+<tr>
+<th>特殊字符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>^</code></td>
+<td>匹配输入字符串开始处的位置；但在中括号表达式中是表示对字符集求反。若要匹配 <code>^</code> 字符本身，请使用 <code>\^</code>。</td>
+</tr>
+<tr>
+<td><code>$</code></td>
+<td>匹配输入字符串结尾的位置。如果设置了 <code>RegExp</code> 对象的 <code>Multiline</code> 属性，那么 <code>$</code> 还匹配 <code>\n</code> 或 <code>\r</code> 前面的位置。若要匹配 <code>$</code> 字符本身，请使用 <code>\$</code>。</td>
+</tr>
+<tr>
+<td><code>()</code></td>
+<td>标记子表达式的开始和结束。可以捕获子表达式以供以后使用。若要匹配这两个字符，请使用 <code>\(</code> 和 <code>\)</code>。</td>
+</tr>
+<tr>
+<td><code>*</code></td>
+<td>零次或多次匹配前面的字符或子表达式。若要匹配 <code>*</code> 字符，请使用 <code>\*</code>。</td>
+</tr>
+<tr>
+<td><code>+</code></td>
+<td>一次或多次匹配前面的字符或子表达式。若要匹配 <code>+</code> 字符，请使用 <code>\+</code>。</td>
+</tr>
+<tr>
+<td><code>?</code></td>
+<td>零次或一次匹配前面的字符或子表达式，或指示“非贪心”限定符。若要匹配 <code>?</code> 字符，请使用<code>\?</code>。</td>
+</tr>
+<tr>
+<td><code>.</code></td>
+<td>匹配除换行符 <code>\n</code> 之外的任何单个字符。若要匹配 <code>.</code> 请使用 <code>\</code>。</td>
+</tr>
+<tr>
+<td><code>[]</code></td>
+<td>标记中括号表达式的开始。若要匹配这些字符，请使用 <code>\[</code> 和<code>\]</code>。</td>
+</tr>
+<tr>
+<td><code>\</code></td>
+<td>将下一字符标记为特殊字符、文本、反向引用或八进制转义符。例如，字符 <code>n</code> 匹配字符 <code>n</code>。<code>\n</code> 匹配换行符。序列 <code>\\</code> 匹配 <code>\</code>，序列 <code>\(</code> 匹配 <code>(</code>。</td>
+</tr>
+<tr>
+<td><code>/</code></td>
+<td>表示文本正则表达式的开始或结束。若要匹配 <code>/</code> 字符，请使用 <code>\/</code>。</td>
+</tr>
+<tr>
+<td><code>&#123;&#125;</code></td>
+<td>标记限定符表达式的开始。若要匹配这些字符，请使用 <code>\&#123;</code> 和 <code>\&#125;</code>。</td>
+</tr>
+<tr>
+<td>竖线</td>
+<td>指出在两个项之间进行选择。要匹配竖线，请使用 <code>\</code> 竖线。</td>
+</tr>
+</tbody></table>
+<h2 id="正则表达式序列"><a href="#正则表达式序列" class="headerlink" title="正则表达式序列"></a>正则表达式序列</h2><p>一个正则表达式序列包含一个或多个正则表达式因子。每个因子能选择是否跟随一个量词，这个量词决定了这个因子被允许出现的次数。如果没有量词，则只匹配一次。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> patt = <span class="regexp">/\d&#123;3&#125;\.\d/</span>;</span><br><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;abc1893.65d&#x27;</span>;</span><br><span class="line">patt.exec( str );  <span class="comment">// 匹配&#x27;893.6&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="正则表达式分支"><a href="#正则表达式分支" class="headerlink" title="正则表达式分支"></a>正则表达式分支</h2><p>一个正则表达式分支包含一个或多个正则表达式序列。这些序列被|字符分隔。如果这些序列中的任何一项符合匹配条件，那么这个选择就被匹配。它会按照书写顺序从左到右依次匹配这些序列。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;information&#x27;</span>;</span><br><span class="line">str.match( <span class="regexp">/or|for/</span> );  <span class="comment">// 匹配&#x27;for&#x27;</span></span><br><span class="line">str.match( <span class="regexp">/or|orm/</span> ); <span class="comment">// 匹配&#x27;or&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="正则表达式分组"><a href="#正则表达式分组" class="headerlink" title="正则表达式分组"></a>正则表达式分组</h2><p>正则表达式的分组共有6种。</p>
+<ul>
+<li><code>(...)</code>捕获型，捕获型分组是一个被包围在圆括号中的正则表达式分支。任何匹配这个分组的字符都会被捕获。每个捕获分组都将有一个编号。第一个捕获分组的编号是 <code>1</code>，以此类推。</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/(:\d+)/.exec( <span class="string">&#x27;bubuzou.com:80/&#x27;</span> ); </span><br><span class="line"><span class="comment">// 结果是[&#x27;:80&#x27;, &#x27;:80&#x27;]，第一个&#x27;:80&#x27;表示整个正则的匹配，第二个&#x27;:80&#x27;表示捕获分组1的匹配</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>(?:...)</code> 非捕获型，仅做简单的匹配，并不会捕获所匹配的文本。也不会进行编号。</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/(?::\d+)/.exec( <span class="string">&#x27;bubuzou.com:80/&#x27;</span> ); 结果是[<span class="string">&#x27;:80&#x27;</span>]，不包含分组捕获。</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>(?=pattern)</code> 正向肯定预查。匹配其跟随了 <code>pattern</code> 的字符串。这不是一个好的特性。</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/<span class="built_in">window</span>(?=<span class="number">95</span>|<span class="number">98</span>|<span class="number">2000</span>)/.exec( <span class="string">&#x27;window98&#x27;</span> ); <span class="comment">// 匹配&#x27;window&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>(?!pattern)</code> 正向否定预查。匹配其没有跟随了 <code>pattern</code> 的字符串。这不是一个好的特性。</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/<span class="built_in">window</span>(?!<span class="number">95</span>|<span class="number">98</span>|<span class="number">2000</span>)/.exec( <span class="string">&#x27;windowNT&#x27;</span> ); <span class="comment">// 匹配&#x27;window&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>(?&lt;=pattern)</code> 反向肯定预查。匹配前面带 <code>pattern</code> 的字符串。这不是一个好的特性。</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/(?&lt;=<span class="number">95</span>|<span class="number">98</span>|<span class="number">2000</span>)windows/.exec( <span class="string">&#x27;95windows&#x27;</span> ); <span class="comment">// 匹配&#x27;windows&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>(?&lt;!pattern)</code> 反向否定预查。匹配前面没有带 <code>pattern</code> 的字符串。这不是一个好的特性。</li>
+</ul>
+<h2 id="RegExp对象方法"><a href="#RegExp对象方法" class="headerlink" title="RegExp对象方法"></a>RegExp对象方法</h2><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>regexp.exec(string)</code></td>
+<td>检索字符串中指定的值。如果匹配成功，则返回一个数组。数组中下标为 <code>0</code> 的值表示匹配的子字符串，下标为1的值是分组1捕获的文本。如果匹配失败，则会返回 <code>null</code>.</td>
+</tr>
+<tr>
+<td><code>regexp.test(string)</code></td>
+<td>检索字符串中指定的值。返回 <code>true</code> 或 <code>false</code>。 <code>test</code> 方法中不需要对 <code>regexp</code> 进行全局匹配的配置，因为结果都一样。</td>
+</tr>
+<tr>
+<td><code>string.match(regexp)</code></td>
+<td>获取匹配结果。如果没有 <code>g</code> 标识，则结果和 <code>regexp.exec(string)</code> 一样。如果有 <code>g</code> 标识，则返回包含所有匹配结果（除了分组捕获之外）的数组。</td>
+</tr>
+<tr>
+<td><code>string.replace(searchValue, replaceValue)</code></td>
+<td><code>replace</code> 方法对字符串执行查找和替换工作，并返回一个新的字符串。参数 <code>searchValue</code> 可以是一个字符串或者正则表达式。如果是字符串，则在字符串中第一次出现的地方被替换。如果是正则表达式且带有 <code>g</code>，则会替换所有匹配，如果没有g则只会替换第一个匹配。<code>replaceValue</code> 可以是一个字符串或者一个函数。如果是一个函数则有特别含义。如果是一个函数，则每遇到一个匹配函数就会被调用一次，而函数返回的字符串将作为替换的文本。</td>
+</tr>
+<tr>
+<td><code>string.search(regexp)</code></td>
+<td>和 <code>indexOf</code> 方法类似，只是它接受的参数是一个正则表达式而非字符串。如果找到匹配，则返回第一个匹配的首字符的位置，没找到就返回 <code>-1</code></td>
+</tr>
+<tr>
+<td><code>string.split(separator, limit)</code></td>
+<td>把 <code>string</code> 分割成片段来创建一个字符串数组。<code>limit</code> 可以限制分割的数量。<code>separator</code>可以是字符串或正则表达式。</td>
+</tr>
+</tbody></table>
+<p><code>regexp.exec(string)：</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// RegExpObject.exec(string);</span></span><br><span class="line"><span class="keyword">var</span> str=<span class="string">&quot;user1abcuser2abc&quot;</span>,</span><br><span class="line">    patt=<span class="regexp">/user\d/g</span>,</span><br><span class="line">    result;</span><br><span class="line"><span class="keyword">while</span> ( ( result = patt.exec( str ) ) ) &#123;</span><br><span class="line">    <span class="built_in">console</span>.log( result );</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 第一次：[&quot;user1&quot;, index: 0, input: &quot;user1abcuser2abc&quot;]</span></span><br><span class="line"><span class="comment">// 第二次：[&quot;user2&quot;, index: 8, input: &quot;user1abcuser2abc&quot;]</span></span><br></pre></td></tr></table></figure>
+
+<div class="tip">
+如果regexp带有g标识，那么查找不是从这个字符串的起始位置开始，而是从regexp.lastIndex位置开始。如果匹配成功，那么regexp.lastIndex将被设置为该匹配后第一个字符的位置。不成功的匹配会将regexp重新设置为0。
+</div>
+
+<p><code>regexp.test(string)：</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/Hello/i.test( <span class="string">&#x27;hello world&#x27;</span> ); <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+
+<p><code>string.match(regexp)：</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;user1abcuser2abc&#x27;</span>.match( <span class="regexp">/user\d/g</span> );  <span class="comment">// [&#x27;user1&#x27;, &#x27;user2&#x27;]</span></span><br><span class="line"><span class="string">&#x27;user1abcuser2abc&#x27;</span>.match( <span class="regexp">/user\d/</span> );  <span class="comment">// [&#x27;user1&#x27;]</span></span><br></pre></td></tr></table></figure>
+
+<p><code>string.replace(searchValue, replaceValue)：</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> patt = <span class="regexp">/\((\d&#123;3&#125;)\)/g</span>,</span><br><span class="line">    str = <span class="string">&#x27;(555)666-1212&#x27;</span>.replace(patt, <span class="string">&#x27;$1-&#x27;</span>);</span><br><span class="line"><span class="built_in">console</span>.log(str);  <span class="comment">// 结果：&#x27;555-666-1212&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>美元符号序列</th>
+<th>替换对象</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>$$</code></td>
+<td><code>$</code></td>
+</tr>
+<tr>
+<td><code>$&amp;</code></td>
+<td>整个匹配的文本</td>
+</tr>
+<tr>
+<td><code>$number</code></td>
+<td>分组匹配的文本</td>
+</tr>
+<tr>
+<td><code>$</code></td>
+<td>匹配之前的文本</td>
+</tr>
+<tr>
+<td><code>$</code></td>
+<td>匹配之后的文本</td>
+</tr>
+</tbody></table>
+<p><code>string.search(regexp)：</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;hello world&#x27;</span>.search( <span class="regexp">/world/</span> );  <span class="comment">// 6</span></span><br></pre></td></tr></table></figure>
+
+<p><code>string.split(separator, limit)：</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;123456&#x27;</span>.split(<span class="string">&#x27;&#x27;</span>, <span class="number">3</span>); <span class="comment">// [&quot;1&quot;, &quot;2&quot;, &quot;3&quot;]</span></span><br><span class="line"><span class="string">&#x27;last, first, middle&#x27;</span>.split(<span class="regexp">/\s*,\s*/</span>);  <span class="comment">// [&#x27;last&#x27;, &#x27;first&#x27;, &#x27;middle&#x27;]</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="正则表达式字符表"><a href="#正则表达式字符表" class="headerlink" title="正则表达式字符表"></a>正则表达式字符表</h2><table>
+<thead>
+<tr>
+<th>量词</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>*</code></td>
+<td>零次或多次匹配前面的字符或子表达式。例如，<code>zo</code> 匹配 <code>z</code> 和 <code>zoo</code>。 等效于 <code>&#123;0,&#125;</code>。</td>
+</tr>
+<tr>
+<td><code>+</code></td>
+<td>一次或多次匹配前面的字符或子表达式。例如，<code>zo+</code> 匹配 <code>zo</code> 和 <code>zoo</code>，但不匹配 <code>z</code>。<code>+</code> 等效于 <code>&#123;1,&#125;</code>。</td>
+</tr>
+<tr>
+<td><code>?</code></td>
+<td>零次或一次匹配前面的字符或子表达式。例如，<code>do(es)?</code> 匹配 <code>do</code> 或 <code>does</code> 中的 <code>do</code>。<code>?</code> 等效于 <code>&#123;0,1&#125;</code>。</td>
+</tr>
+<tr>
+<td><code>&#123;n&#125;</code></td>
+<td><code>n</code> 是非负整数。正好匹配 <code>n</code> 次。例如，<code>o&#123;2&#125;</code> 不匹配 <code>Bob</code> 中的 <code>o</code>，但匹配 <code>food</code> 中的两个 <code>o</code>。</td>
+</tr>
+<tr>
+<td><code>&#123;n,&#125;</code></td>
+<td><code>n</code> 是非负整数。至少匹配 <code>n</code> 次。例如，<code>o&#123;2,&#125;</code> 不匹配 <code>Bob</code> 中的 <code>o</code>，而匹配 <code>foooood</code> 中的所有 <code>o</code>。<code>o&#123;1,&#125;</code> 等效于 <code>o+</code>。<code>o&#123;0,&#125;</code> 等效于 <code>o*</code>。</td>
+</tr>
+<tr>
+<td><code>&#123;n,m&#125;</code></td>
+<td><code>m</code> 和 <code>n</code> 是非负整数，其中 <code>n &lt;= m</code>。匹配至少 <code>n</code> 次，至多 <code>m</code> 次。例如，<code>o&#123;1,3&#125;</code> 匹配 <code>fooooood</code> 中的头三个 <code>o</code>。<code>o&#123;0,1&#125;</code> 等效于 <code>o?</code>。注意：您不能将空格插入逗号和数字之间。</td>
+</tr>
+</tbody></table>
+<p>方括号：方括号用于查找某个范围内的字符</p>
+<table>
+<thead>
+<tr>
+<th>表达式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>[abc]</code></td>
+<td>查找方括号之间的任何字符</td>
+</tr>
+<tr>
+<td><code>[^abc]</code></td>
+<td>查找任何不在方括号之间的字符</td>
+</tr>
+<tr>
+<td><code>[0-9]</code></td>
+<td>查找任何从 <code>0</code> 至 <code>9</code> 的数字</td>
+</tr>
+<tr>
+<td><code>[a-z]</code></td>
+<td>查找任何从小写 <code>a</code> 至小写 <code>a</code> 的字符</td>
+</tr>
+<tr>
+<td><code>()</code></td>
+<td>匹配一个子表达式的开始和结束位置</td>
+</tr>
+</tbody></table>
+<p>元字符：拥有特殊含义的字符</p>
+<table>
+<thead>
+<tr>
+<th>元字符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>.</code></td>
+<td>查找单个字符，除了换行和行结束符</td>
+</tr>
+<tr>
+<td><code>\w    </code></td>
+<td>查找单词字符</td>
+</tr>
+<tr>
+<td><code>\W</code></td>
+<td>查找非单次字符</td>
+</tr>
+<tr>
+<td><code>\b</code></td>
+<td>匹配一个字的边界，即字与空格间的位置</td>
+</tr>
+<tr>
+<td><code>\B    </code></td>
+<td>非字符边界匹配</td>
+</tr>
+<tr>
+<td><code>\d</code></td>
+<td>查找数字</td>
+</tr>
+<tr>
+<td><code>\D    </code></td>
+<td>查找非数字字符</td>
+</tr>
+<tr>
+<td><code>\s</code></td>
+<td>查找空白字符</td>
+</tr>
+<tr>
+<td><code>\S</code></td>
+<td>查找非空白字符</td>
+</tr>
+</tbody></table>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2016/11/17/js-array/" title="数组" class="prev">上一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="copyright"><p>© 2016 - 2020 <a href="https://weibo.com/316000381" target="_blank">typeR</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p><p> <span style="padding-right: 6px;">闽ICP备16007301号-2</span></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/jquery-1.8.2.min.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/articleCatalog.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

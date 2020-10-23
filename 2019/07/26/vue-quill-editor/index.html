@@ -1,0 +1,164 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> vue-quill-editor插入图片路径太长问题解决 · 步步走</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="解决vue-quill-editor插入图片路径过长问题"><meta name="keywords" content="vue-quill-editor、文件上传、upload"><meta name="author" content="typeR"><link rel="short icon" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/favicon.ico"><link rel="stylesheet" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://bubuzou.com/atom.xml" title="步步走"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script><meta name="generator" content="Hexo 5.0.0"><link rel="alternate" href="/atom.xml" title="步步走" type="application/atom+xml">
+</head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/logo.png"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="/categories/live/" target="_self" data-hover="生活" class="nav-list-link">生活</a></li><li class="nav-list-item"><a href="/categories/read/" target="_self" data-hover="读书" class="nav-list-link">读书</a></li><li class="nav-list-item"><a href="/about/" target="_self" data-hover="关于" class="nav-list-link">关于</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">vue-quill-editor插入图片路径太长问题解决</h1><div class="post-info">2019-07-26<p class="visit"><i data-identity="2019/07/26/vue-quill-editor/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><p>最近做项目的时候有一个发布新闻的需求，新闻编辑的时候要求能发布带格式的文本内容和能展示支持图片。<br>由于项目是用vue开发的，所以找编辑器的时候选了 <code>vue-quill-editor</code> 。编辑器长如下的样子：</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/2019/quill_01.png" alt="quill_01"></p>
+<a id="more"></a>
+
+<h2 id="现在的问题"><a href="#现在的问题" class="headerlink" title="现在的问题"></a>现在的问题</h2><p>但是这个编辑器会把插入的图片会转成 <code>base64</code> 位的编码，使得编辑器内容保存进数据库的时候会超出限制长度，从而报错。</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/2019/quill_02.png" alt="quill_01"></p>
+<h2 id="从问题来源着手"><a href="#从问题来源着手" class="headerlink" title="从问题来源着手"></a>从问题来源着手</h2><p>首先要明白导致这个问题的原因是 <code>vue-quill-editor</code> 编辑器默认把上传的图片给转成 <code>base64</code> 编码，那是不是有这么一个配置参数可以设置上传后图片的格式呢？经过一番文档的查找，貌似是没有。但是提供了一个 <code>handlers</code> 可以自定义图片上传的方式，那就从这里下文章。大概意思是点击这个图片按钮的时候，会出发一个回调，可以在回调里触发自己的文件上传开关。这里我用的文件上传是 <code>element-ui</code> 的 <code>el-upload</code>。</p>
+<h2 id="安装vue-quill-editor"><a href="#安装vue-quill-editor" class="headerlink" title="安装vue-quill-editor"></a>安装<code>vue-quill-editor</code></h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install vue-quill-editor --save</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置vue-quill-editor"><a href="#配置vue-quill-editor" class="headerlink" title="配置vue-quill-editor"></a>配置<code>vue-quill-editor</code></h2><p>配置 <code>html</code></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">quill-editor</span></span></span><br><span class="line"><span class="tag">    <span class="attr">v-model</span>=<span class="string">&quot;ruleForm.content&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">ref</span>=<span class="string">&quot;myQuillEditor&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">:options</span>=<span class="string">&quot;editorOption&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">class</span>=<span class="string">&quot;ql-editor&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">:class</span>=<span class="string">&quot;operationType.includes(&#x27;check&#x27;) ? &#x27;disabled&#x27; : &#x27;&#x27;&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">:disabled</span>=<span class="string">&quot;operationType.includes(&#x27;check&#x27;)&quot;</span></span></span><br><span class="line"><span class="tag">    &gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">quill-editor</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>导入<code>vue-quill-editor</code> 且设置<code>components</code>：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; quillEditor &#125; <span class="keyword">from</span> <span class="string">&#x27;vue-quill-editor&#x27;</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">    components: &#123;</span><br><span class="line">        quillEditor</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>设置<code>options</code>:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">editorOption:&#123;</span><br><span class="line">    modules: &#123;</span><br><span class="line">        toolbar: &#123;</span><br><span class="line">            container: [</span><br><span class="line">                [<span class="string">&#x27;bold&#x27;</span>, <span class="string">&#x27;italic&#x27;</span>, <span class="string">&#x27;underline&#x27;</span>, <span class="string">&#x27;strike&#x27;</span>],</span><br><span class="line">                [<span class="string">&#x27;blockquote&#x27;</span>, <span class="string">&#x27;code-block&#x27;</span>],</span><br><span class="line">                [&#123; <span class="string">&#x27;list&#x27;</span>: <span class="string">&#x27;ordered&#x27;</span> &#125;, &#123; <span class="string">&#x27;list&#x27;</span>: <span class="string">&#x27;bullet&#x27;</span> &#125;],</span><br><span class="line">                [&#123; <span class="string">&#x27;script&#x27;</span>: <span class="string">&#x27;sub&#x27;</span> &#125;, &#123; <span class="string">&#x27;script&#x27;</span>: <span class="string">&#x27;super&#x27;</span> &#125;],</span><br><span class="line">                [&#123; <span class="string">&#x27;indent&#x27;</span>: <span class="string">&#x27;-1&#x27;</span> &#125;, &#123; <span class="string">&#x27;indent&#x27;</span>: <span class="string">&#x27;+1&#x27;</span> &#125;],</span><br><span class="line">                [&#123; <span class="string">&#x27;size&#x27;</span>: [<span class="string">&#x27;small&#x27;</span>, <span class="literal">false</span>, <span class="string">&#x27;large&#x27;</span>, <span class="string">&#x27;huge&#x27;</span>] &#125;],</span><br><span class="line">                [&#123; <span class="string">&#x27;header&#x27;</span>: [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="literal">false</span>] &#125;],</span><br><span class="line">                [&#123; <span class="string">&#x27;color&#x27;</span>: [] &#125;, &#123; <span class="string">&#x27;background&#x27;</span>: [] &#125;],</span><br><span class="line">                [&#123; <span class="string">&#x27;align&#x27;</span>: [] &#125;],</span><br><span class="line">                [<span class="string">&#x27;clean&#x27;</span>],</span><br><span class="line">                [<span class="string">&#x27;link&#x27;</span>, <span class="string">&#x27;image&#x27;</span>]</span><br><span class="line">            ],</span><br><span class="line">            handlers: &#123;</span><br><span class="line">                image: <span class="function"><span class="keyword">function</span>(<span class="params">value</span>) </span>&#123;</span><br><span class="line">                    <span class="keyword">if</span> (value) &#123;</span><br><span class="line">                        <span class="comment">// 触发element-ui的文件上传</span></span><br><span class="line">                        <span class="built_in">document</span>.querySelector(<span class="string">&quot;.avatar-uploader input&quot;</span>).click();</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="built_in">this</span>.quill.format(<span class="string">&quot;image&quot;</span>, <span class="literal">false</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;,</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    placeholder: <span class="string">&#x27;请输入&#x27;</span>,</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+
+<p>引入相关<code>style</code>：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;style lang=&quot;scss&quot;&gt;</span><br><span class="line">  <span class="keyword">@import</span> <span class="string">&#x27;~quill/dist/quill.core.css&#x27;</span>;</span><br><span class="line">  <span class="keyword">@import</span> <span class="string">&#x27;~quill/dist/quill.snow.css&#x27;</span>;</span><br><span class="line">  <span class="keyword">@import</span> <span class="string">&#x27;~quill/dist/quill.bubble.css&#x27;</span>;</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置el-upload"><a href="#配置el-upload" class="headerlink" title="配置el-upload"></a>配置<code>el-upload</code></h2><p><code>template</code>：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">el-upload</span></span></span><br><span class="line"><span class="tag">    <span class="attr">ref</span>=<span class="string">&quot;quillUploader&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">class</span>=<span class="string">&quot;avatar-uploader&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">:action</span>=<span class="string">&quot;serverUrl&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">:show-file-list</span>=<span class="string">&quot;false&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">:auto-upload</span>=<span class="string">&quot;false&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">:on-change</span>=<span class="string">&quot;onChangeQuill&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">:before-upload</span>=<span class="string">&quot;beforeUpload&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">:limit</span>=<span class="string">&quot;20&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">:multiple</span>=<span class="string">&quot;true&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">:accept</span>=<span class="string">&quot;acceptFile&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">el-upload</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>onChange</code>的时候执行文件上传，这里的文件上传用的是腾讯的对象存储服务，<code>cosUtils</code>封装了一些对象存储的一些工具方法，你们可以自行替换成自己后端的上传接口。下面这段代码的大概意思是文件上传到对象存储服务器成功之后，拿到具体的图片地址，插入到编辑器光标所在的位置，这个时候图片就显示出来了。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">onChangeQuill(file, fileList) &#123; </span><br><span class="line">    <span class="keyword">let</span> fileName = file.uid + file.name</span><br><span class="line">    cosUtils.putObject(fileName, file.raw, <span class="string">&#x27;operate/&#x27;</span>, <span class="function">(<span class="params">err, data</span>) =&gt;</span> &#123;  <span class="comment">// 新闻图片存到operate/目录下</span></span><br><span class="line">        <span class="built_in">console</span>.log(err || data)</span><br><span class="line">        <span class="keyword">if</span> (!err) &#123; </span><br><span class="line">            <span class="keyword">let</span> quill = <span class="built_in">this</span>.$refs.myQuillEditor.quill</span><br><span class="line">            <span class="keyword">let</span> length = quill.getSelection().index</span><br><span class="line">            <span class="comment">// 图片上传到对象存储后的具体地址</span></span><br><span class="line">            <span class="keyword">let</span> imgSrc =  <span class="string">`https://huzhouhuanzi-xxxxxxx.cos.ap-shanghai.myqcloud.com/operate/<span class="subst">$&#123;fileName&#125;</span>`</span></span><br><span class="line">            quill.insertEmbed(length, <span class="string">&quot;image&quot;</span>, imgSrc)</span><br><span class="line">            <span class="comment">// 调整光标到最后</span></span><br><span class="line">            quill.setSelection(length + <span class="number">1</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/09/24/git-all-actions/" title="Git常用操作，一文打尽" class="prev">上一篇</a><a href="/2019/06/27/wepy-plugins-preprocess/" title="小程序根据打包命令区分不同环境的API" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="copyright"><p>© 2016 - 2020 <a href="https://weibo.com/316000381" target="_blank">typeR</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p><p> <span style="padding-right: 6px;">闽ICP备16007301号-2</span></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/jquery-1.8.2.min.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/articleCatalog.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

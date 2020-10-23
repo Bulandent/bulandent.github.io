@@ -1,0 +1,218 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> this、call和apply · 步步走</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="JavaScript进阶-this、call和apply，理解这块内容对于提升JavaScript编程能力至关重要。"><meta name="keywords" content="this、call、apply"><meta name="author" content="typeR"><link rel="short icon" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/favicon.ico"><link rel="stylesheet" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://bubuzou.com/atom.xml" title="步步走"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script><meta name="generator" content="Hexo 5.0.0"><link rel="alternate" href="/atom.xml" title="步步走" type="application/atom+xml">
+</head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/logo.png"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="/categories/live/" target="_self" data-hover="生活" class="nav-list-link">生活</a></li><li class="nav-list-item"><a href="/categories/read/" target="_self" data-hover="读书" class="nav-list-link">读书</a></li><li class="nav-list-item"><a href="/about/" target="_self" data-hover="关于" class="nav-list-link">关于</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">this、call和apply</h1><div class="post-info">2016-11-28<p class="visit"><i data-identity="2016/11/28/this-call-apply/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><h2 id="this"><a href="#this" class="headerlink" title="this"></a>this</h2><p>跟别的语言不同的是，<code>JavaScript</code> 的 <code>this</code> 总是指向一个对象，而具体指向哪个对象是在运行时基于函数的执行环境动态绑定的，而非函数被声明时的环境。</p>
+<h2 id="this的指向"><a href="#this的指向" class="headerlink" title="this的指向"></a>this的指向</h2><p>除去不常用的 <code>eval</code> 和 <code>with</code> 语句的情况，具体到实际应用中，<code>this</code> 的指向大致可分为以下4种：</p>
+<ul>
+<li><p>作为对象的方法调用</p>
+<p>  当作为对象的方法进行调用的时候，<code>this</code> 指向该对象：</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    name: <span class="string">&#x27;bubuzou&#x27;</span>,</span><br><span class="line">    getName: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log( <span class="built_in">this</span> === obj );  <span class="comment">// true</span></span><br><span class="line">        <span class="built_in">console</span>.log( <span class="built_in">this</span>.name );  <span class="comment">// &#x27;bubuzou&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">obj.getName();</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<a id="more"></a>
+
+<ul>
+<li><p>作为普通函数调用</p>
+<p>  当函数不作为对象的属性进行调用的时候，也就是我们常说的普通函数方式，此时的 <code>this</code> 总是指向全局对象。在浏览器的<code>JavaScript</code> 里，这个全局对象是 <code>window</code> 对象。</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">window</span>.name = <span class="string">&#x27;bubuzou.com&#x27;</span>;</span><br><span class="line"><span class="keyword">var</span> getName = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="built_in">this</span>.name;  </span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">console</span>.log( getName() );  <span class="comment">// &#x27;bubuzou.com&#x27;</span></span><br><span class="line"><span class="comment">// 或者</span></span><br><span class="line"><span class="built_in">window</span>.name = <span class="string">&#x27;bubuzou.com&#x27;</span>;</span><br><span class="line"><span class="keyword">var</span> myObject = &#123;</span><br><span class="line">    name: <span class="string">&#x27;bubuzou&#x27;</span>,</span><br><span class="line">    getName: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">this</span>.name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> getName = myObject.getName;</span><br><span class="line"><span class="built_in">console</span>.log( getName() );  <span class="comment">//  &#x27;bubuzou.com&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>  再来看一个实际的应用：</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">window</span>.id = <span class="string">&#x27;bubuzou&#x27;</span>;</span><br><span class="line"><span class="built_in">document</span>.getElementById( <span class="string">&#x27;div&#x27;</span> ).onclick = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> that = <span class="built_in">this</span>;</span><br><span class="line">    <span class="built_in">console</span>.log( <span class="built_in">this</span>.id );  <span class="comment">// &#x27;div&#x27;</span></span><br><span class="line">    <span class="keyword">var</span> callback = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log( <span class="built_in">this</span>.id );  <span class="comment">// &#x27;bubuzou&#x27;</span></span><br><span class="line">        <span class="built_in">console</span>.log( that.id );  <span class="comment">// &#x27;div&#x27;</span></span><br><span class="line">    &#125;;  </span><br><span class="line">    callback();</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+  <div class="tip">
+  在 `ECMAScript 5` 的 `strict` 模式下，这种情况的 `this` 已经被规定不会指向全局对象了，而是 `undefined`
+  </div>
+
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span> <span class="title">func</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line"><span class="meta">    &quot;use strict&quot;</span></span><br><span class="line">    <span class="built_in">console</span>.log( <span class="built_in">this</span> );  <span class="comment">// undefined</span></span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>构造器调用</p>
+<p>  <code>JavaScript</code> 中没有类，但是可以从构造器中创建对象，同时也提供了 <code>new</code> 运算符，使得构造器看起来更像一个类。<br>除了宿主提供的一些内置函数外，大多数的 <code>JavaScript</code> 函数都可以当做内置构造器使用。构造器的外表跟普通函数一模一样，它们的区别在于调用的方式。当用 <code>new</code> 运算符调用函数时，该函数总会返回一个对象，通常情况下，构造器里的 <code>this</code> 就是指向返回的这个对象。</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> MyClass = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">this</span>.name = <span class="string">&#x27;bubuzou.com&#x27;</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> MyClass();</span><br><span class="line"><span class="built_in">console</span>.log( obj.name );  <span class="comment">// &#x27;bubuzou.com&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>  但是使用构造器调用需要注意一个问题，如果构造器显示的返回了一个 <code>object</code> 类型的对象，那么此次运算结果最终会返回这个对象，而不是我们所期待的 <code>this</code>:</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> MyClass = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">this</span>.name = <span class="string">&#x27;bubuzou.com&#x27;</span>;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        name: <span class="string">&#x27;bubuzou&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;     </span><br><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> MyClass();</span><br><span class="line"><span class="built_in">console</span>.log( obj.name );  <span class="comment">// &#x27;bubuzou&#x27;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>Function.prototype.call</code> 或 <code>Function.prototype.apply</code> 调用</p>
+<p>  跟普通的函数调用相比，用 <code>Function.prototype.call</code> 或 <code>Function.prototype.apply</code> 调用可以动态地改变传入函数的 <code>this</code>：</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> obj1 = &#123;</span><br><span class="line">    name: <span class="string">&#x27;bubuzou.com&#x27;</span>,</span><br><span class="line">    getName: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">this</span>.name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> obj2 = &#123;</span><br><span class="line">    name: <span class="string">&#x27;bubuzou&#x27;</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">console</span>.log( obj1.getName() );  <span class="comment">// &#x27;bubuzou.com&#x27;</span></span><br><span class="line"><span class="built_in">console</span>.log( obj1.getName.call( obj2 ) );  <span class="comment">// &#x27;bubuzou&#x27;</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="丢失的this"><a href="#丢失的this" class="headerlink" title="丢失的this"></a>丢失的this</h2><p><code>document.getElementById</code> 这个方法名有点长，所以我们会尝试用一个简单点的来替代：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> getId = <span class="function"><span class="keyword">function</span>(<span class="params"> id </span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">document</span>.getElementById( id );</span><br><span class="line">&#125;;</span><br><span class="line">getId( <span class="string">&#x27;div&#x27;</span> );</span><br></pre></td></tr></table></figure>
+
+<p>我们也许思考过为什么不能用下面的这个更简单的方式：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> getId = <span class="built_in">document</span>.getElementById;</span><br><span class="line">getId( <span class="string">&#x27;div&#x27;</span> );</span><br></pre></td></tr></table></figure>
+
+<p>当我们执行上面这段代码的时候，在 <code>Chrome</code> 浏览器中会抛出异常。这是因为许多浏览器引擎的 <code>document.getElementById</code> 方法的内部实现中需要用到 <code>this</code>。而这个 <code>this</code> 本来期望指向 <code>document</code>，当<code>getElementById</code> 方法作为 <code>document</code> 的属性来调用的时候，内部的 <code>this</code> 确实是指向 <code>document</code> 的。但当用<code>getId</code> 来引用 <code>document.getElementById</code> 之后，再调用 <code>getId</code>，此时就成了普通函数调用，函数内部的 <code>this</code> 指向了 <code>window</code>，而是不是原来的 <code>document</code>，所以会抛出异常。<br>不过我们可以尝试用 <code>apply</code> 把 <code>document</code> 当做 <code>this</code> 传入 <code>getId</code> 函数：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">document</span>.getElementById = (<span class="function"><span class="keyword">function</span>(<span class="params"> func </span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> func.apply( <span class="built_in">document</span>, <span class="built_in">arguments</span> );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)( <span class="built_in">document</span>.getElementById );</span><br><span class="line"><span class="keyword">var</span> getId = <span class="built_in">document</span>.getElementById;</span><br><span class="line"><span class="built_in">console</span>.log( getId( <span class="string">&#x27;div&#x27;</span> ).id );  <span class="comment">// &#x27;div&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="call和apply的区别"><a href="#call和apply的区别" class="headerlink" title="call和apply的区别"></a>call和apply的区别</h2><p>两者的作用一模一样，区别只是传入的参数形式不一样。<br><code>apply</code>接受2个参数，第一个参数是指定了函数体内的 <code>this</code> 对象的指向，第二个参数为一个带下标的集合，这个集合可以是一个数组也可以是一个类数组。<br><code> call</code> 的参数就不固定了，但是第一个参数和 <code>apply</code> 是一样的，从第二个参数开始往后，每个参数被依次传入函数。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> func = <span class="function"><span class="keyword">function</span>(<span class="params"> a, b, c </span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log( [a, b, c] );  </span><br><span class="line">&#125;;</span><br><span class="line">func.apply( <span class="literal">null</span>, [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>] );  <span class="comment">// [1, 2, 3]</span></span><br><span class="line">func.call( <span class="literal">null</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> );  <span class="comment">// [1, 2, 3]</span></span><br></pre></td></tr></table></figure>
+
+<p>当调用一个函数的时候，<code>JavaScript</code> 的解释器并不会计较形参和实参在数量、类型和顺序上的区别，从这个意义上来说，<code>apply</code> 比 <code>call</code> 的使用率更高。但是如果我们明确指定参数的个数，也可以用 <code>call</code> 来传送参数。</p>
+<div class="tip">
+如果第一个参数是 `null`，那么函数体内的 `this` 会指向默认的宿主对象，在浏览器中是 `window`，但如果是在严格模式下，则还是为 `null`
+</div>
+
+<h2 id="call和apply的用途"><a href="#call和apply的用途" class="headerlink" title="call和apply的用途"></a>call和apply的用途</h2><ul>
+<li><p>改变 <code>this</code> 指向</p>
+<p>  <code>call</code> 和 <code>apply</code> 最常见的用途是改变函数内部的 <code>this</code> 指向：</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">window</span>.name = <span class="string">&#x27;bubuzou&#x27;</span>;</span><br><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    name: <span class="string">&#x27;bubuzou.com&#x27;</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> getName = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log( <span class="built_in">this</span>.name );</span><br><span class="line">&#125;;</span><br><span class="line">getName();  <span class="comment">// &#x27;bubuzou&#x27;</span></span><br><span class="line">getName.apply( obj );  <span class="comment">// &#x27;bubuzou.com&#x27;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>Function.prototype.bind</code></p>
+<p>  大部分高级的浏览器都实现内置的 <code>Function.prototype.bind</code> ，用来指定函数内部的 <code>this</code> 指向，即使没有原生的<code>Function.prototype.bind</code> 实现，我们来模拟实现一个也不是难事：</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Function</span>.prototype.bind = <span class="function"><span class="keyword">function</span>(<span class="params"> context </span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> self = <span class="built_in">this</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> self.apply( context, <span class="built_in">arguments</span> );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    name: <span class="string">&#x27;bubuzou.com&#x27;</span>  </span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> func = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log( <span class="built_in">this</span>.name );</span><br><span class="line">&#125;.bind( obj );</span><br><span class="line">func();  <span class="comment">// &#x27;bubuzou.com&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>  这是一个简化版的实现，我们可以实现得更复杂一点，使得可以往 <code>func</code> 函数中预先填入一些参数：</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Function</span>.prototype.bind = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> self = <span class="built_in">this</span>,</span><br><span class="line">        context = [].shift.call( <span class="built_in">arguments</span> ),</span><br><span class="line">        args = [].slice.call( <span class="built_in">arguments</span> );</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> self.apply( context, [].concat.call( args, [].slice.call( <span class="built_in">arguments</span> )));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    name: <span class="string">&#x27;bubuzou.com&#x27;</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> func = <span class="function"><span class="keyword">function</span>(<span class="params"> a, b, c, d </span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log( <span class="built_in">this</span>.name );  <span class="comment">// &#x27;bubuzou.com&#x27;</span></span><br><span class="line">    <span class="built_in">console</span>.log( [a, b, c, d] );  <span class="comment">// [1, 2, 3, 4]</span></span><br><span class="line">&#125;.bind(obj, <span class="number">1</span>, <span class="number">2</span>);</span><br><span class="line">func(<span class="number">3</span>, <span class="number">4</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>借用其他对象的方法</p>
+<p>  我们知道，杜鹃既不会筑巢，也不会孵雏，而是把自己的蛋寄托给云雀等其他鸟类，让他们代为孵化和养育。同样，在<code>JavaScript</code>中也存在类似的借用现象。<br>借用的第一种场景是“借用构造函数”，通过这种技术，可以实现一些类似继承的效果：</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> A = <span class="function"><span class="keyword">function</span>(<span class="params"> name </span>) </span>&#123;</span><br><span class="line">    <span class="built_in">this</span>.name = name;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> B = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    A.apply( <span class="built_in">this</span>, <span class="built_in">arguments</span> );</span><br><span class="line">&#125;;</span><br><span class="line">B.prototype.getName = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.name;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> b = <span class="keyword">new</span> B( <span class="string">&#x27;bubuzou.com&#x27;</span> );</span><br><span class="line"><span class="built_in">console</span>.log( b.getName() );  <span class="comment">// &#x27;bubuzou.com&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>  借用方法的第二种运用场景跟我们的关系更加密切。函数的参数列表 <code>arguments</code> 是一个类数组对象，所以不能像数组一样，进行排序操作或往集合里添加一个新的元素。在这种情况下，我们通常会借用 <code>Array.prototype</code> 对象上的方法。比如像往<code>arguments</code> 里添加一个元素：</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">Array</span>.prototype.push.call( <span class="built_in">arguments</span>, <span class="number">3</span>);</span><br><span class="line">    <span class="built_in">console</span>.log( <span class="built_in">arguments</span> );  <span class="comment">// [1, 2, 3]</span></span><br><span class="line">&#125;)(<span class="number">1</span>, <span class="number">2</span>);</span><br></pre></td></tr></table></figure>
+<p>  先来看一个例子:</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = &#123;&#125;;</span><br><span class="line"><span class="built_in">Array</span>.prototype.push.call( a, <span class="string">&#x27;first&#x27;</span> );</span><br><span class="line"><span class="built_in">console</span>.log( a.length );  <span class="comment">// 1</span></span><br><span class="line"><span class="built_in">console</span>.log( a[<span class="number">0</span>] );  <span class="comment">// &#x27;first&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>  上面这段代码在低版本IE浏览器中执行的时候，必须显式地给对象a设置length属性:</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = &#123;</span><br><span class="line">    length: <span class="number">0</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>  然而并不是所有的对象都可以传入Array.prototype.push，必须满足以下2个条件:</p>
+<ul>
+<li><p>对象本身可以存取属性</p>
+<p>  如果不是一个 <code>object</code> 类型的对象而是 <code>number</code> 类型，我们来看看会怎么样：</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="built_in">Array</span>.prototype.push.call( a, <span class="string">&#x27;first&#x27;</span> );</span><br><span class="line"><span class="built_in">console</span>.log( a.length );  <span class="comment">// undefined</span></span><br><span class="line"><span class="built_in">console</span>.log( a[<span class="number">0</span>] );  <span class="comment">// undefined</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>对象的 <code>length</code> 属性可以读写<br>  函数的 <code>length</code> 就是只有一个只读的属性，表示形参的个数，我们尝试把一个函数当做 <code>this</code> 传入<code>Array.prototype.push</code>:</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> func = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;&#125;;</span><br><span class="line"><span class="built_in">Array</span>.prototype.push.call( func, <span class="string">&#x27;first&#x27;</span> );</span><br><span class="line"><span class="built_in">console</span>.log( func.length );  <span class="comment">// 报错：Cannot assign to read only property &#x27;length&#x27; of function</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2016/11/30/closure/" title="闭包" class="prev">上一篇</a><a href="/2016/11/17/js-array/" title="数组" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="copyright"><p>© 2016 - 2020 <a href="https://weibo.com/316000381" target="_blank">typeR</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p><p> <span style="padding-right: 6px;">闽ICP备16007301号-2</span></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/jquery-1.8.2.min.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/articleCatalog.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

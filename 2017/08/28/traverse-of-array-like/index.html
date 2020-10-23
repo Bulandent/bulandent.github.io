@@ -1,0 +1,201 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> JS中类数组的遍历以及性能探究 · 步步走</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="针对JS中的类数组，提出几种遍历方式，看看谁的性能最好。"><meta name="keywords" content="数组遍历、for循环、for in循环、foreach遍历"><meta name="author" content="typeR"><link rel="short icon" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/favicon.ico"><link rel="stylesheet" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://bubuzou.com/atom.xml" title="步步走"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script><meta name="generator" content="Hexo 5.0.0"><link rel="alternate" href="/atom.xml" title="步步走" type="application/atom+xml">
+</head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/logo.png"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="/categories/live/" target="_self" data-hover="生活" class="nav-list-link">生活</a></li><li class="nav-list-item"><a href="/categories/read/" target="_self" data-hover="读书" class="nav-list-link">读书</a></li><li class="nav-list-item"><a href="/about/" target="_self" data-hover="关于" class="nav-list-link">关于</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">JS中类数组的遍历以及性能探究</h1><div class="post-info">2017-08-28<p class="visit"><i data-identity="2017/08/28/traverse-of-array-like/" class="article-timer"></i><span>次访问</span></p><a href="https://codepen.io/bulandent/full/dxpePx" target="_blank" title="" class="post-demo">去看示例</a></div><div class="post-content"><h2 id="类数组"><a href="#类数组" class="headerlink" title="类数组"></a>类数组</h2><p>在 <code>JS</code> 中我们都知道有一种数据类型叫数组，平常也用得很多，这里看到<a href="http://bubuzou.com/2016/11/js-array/">数组</a>的介绍。但什么是类数组呢？<br>在 <code>JS</code> 中存在一些对象，它们都带有 <code>length</code> 属性，却又不具备数组的那些方法，这些对象我们它叫做类数组。那么类数组有哪些呢？</p>
+<ul>
+<li><p><code>jQuery</code>对象</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> aList = $(<span class="string">&#x27;.tagcloud&#x27;</span>).find(<span class="string">&#x27;a&#x27;</span>);</span><br><span class="line"><span class="built_in">console</span>.log( aList.length );  <span class="comment">// &gt;= 0</span></span><br></pre></td></tr></table></figure>
+<p>  如上通过jQuery获取的元素集合就是一个典型的类数组。</p>
+</li>
+</ul>
+<a id="more"></a>
+
+<ul>
+<li><p><code>NodeList</code></p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> h2s = <span class="built_in">document</span>.querySelectorAll(<span class="string">&#x27;h2&#x27;</span>);</span><br><span class="line"><span class="built_in">console</span>.log( h2s.constructor );  <span class="comment">// ƒ NodeList() &#123; [native code] &#125;</span></span><br></pre></td></tr></table></figure>
+<p>  <code>NodeList</code>是节点集合，既包括了元素节点也包含了文本节点，比如<code>node.childNodes</code>也是一个 <code>NodeList</code>.</p>
+</li>
+<li><p><code>HTMLCollection</code></p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> h4s = <span class="built_in">document</span>.getElementsByTagName(<span class="string">&#x27;h4&#x27;</span>);</span><br><span class="line"><span class="built_in">console</span>.log( h4s <span class="keyword">instanceof</span> HTMLCollection );  <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+<p>  <code>HTMLCollection</code> 是元素集合，<a target="_blank" rel="noopener" href="http://www.w3school.com.cn/xmldom/dom_htmlcollection.asp">更多详细信息可以看这里</a></p>
+</li>
+</ul>
+<p>类数组虽然没有数组的那些方法，但是可以通过 <code>call</code> 方法将其转成数组：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> h2s = <span class="built_in">document</span>.querySelectorAll(<span class="string">&#x27;h2&#x27;</span>);</span><br><span class="line"><span class="built_in">console</span>.log( h2s.constructor );  <span class="comment">// ƒ NodeList() &#123; [native code] &#125;</span></span><br><span class="line"><span class="keyword">var</span> temp = <span class="built_in">Array</span>.prototype.slice.call(h2s, <span class="literal">null</span>);</span><br><span class="line"><span class="built_in">console</span>.log( temp <span class="keyword">instanceof</span> <span class="built_in">Array</span> );  <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="遍历类数组"><a href="#遍历类数组" class="headerlink" title="遍历类数组"></a>遍历类数组</h2><p>数组或者类数组的遍历方式很多，下面我们一一来介绍。</p>
+<ul>
+<li><p>普通 <code>for</code> 循环</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> ( <span class="keyword">var</span> i = <span class="number">0</span>; i &lt; arr.length; i++ ) &#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  最普通也是最经典的 <code>for</code> 循环，大多数开发都喜欢用的方式。</p>
+</li>
+<li><p>优化版 <code>for</code> 循环</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> ( <span class="keyword">var</span> i = <span class="number">0</span>, l = arr.length; i &lt; l; i++ ) &#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  优化后的<code>for</code>循环，把数组长度的取值放到了定义变量的时候，避免了每次判断都要去取数组长度，从而节约了一定时间。</p>
+</li>
+<li><p>弱化版<code>for</code>循环</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> ( <span class="keyword">var</span> i = <span class="number">0</span>; arr[i] != <span class="literal">null</span>; i++ ) &#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  这种循环方式和上面两种都差不了多少，只不过是没有使用<code>length</code>判断，而使用变量本身判断。</p>
+</li>
+<li><p><code>forEach</code>循环</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">arr.forEach(<span class="function"><span class="keyword">function</span>(<span class="params"> item </span>) </span>&#123;</span><br><span class="line">   </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>  JS数组自带的遍历方法。</p>
+</li>
+<li><p>新版<code>forEach</code></p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Array</span>.prototype.forEach.call(arr, <span class="function"><span class="keyword">function</span>(<span class="params"> ele </span>) </span>&#123;</span><br><span class="line">    </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>  借用了原型的<code>call</code>方法来遍历类数组。</p>
+</li>
+<li><p><code>for in</code>循环</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> ( <span class="keyword">var</span> temp <span class="keyword">in</span> arr ) &#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>for of循环</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> ( <span class="keyword">let</span> v <span class="keyword">of</span> arr ) &#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  <code>ES6</code>中新提出的一种循环方式。</p>
+</li>
+<li><p><code>map</code>循环</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">arr.map(<span class="function"><span class="keyword">function</span>(<span class="params">e, i</span>) </span>&#123;</span><br><span class="line">    </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>while循环</p>
+</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> flag = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">while</span> ( flag++ &lt; arr.length ) &#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="性能测试"><a href="#性能测试" class="headerlink" title="性能测试"></a>性能测试</h2><p>这里测试里主要是通过控制外循环次数、数组的长度和循环体的复杂度来达到模拟性能测试的目的。<br><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/201708/array_like_01.png" alt="array_like_01"></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 核心代码</span></span><br><span class="line"><span class="keyword">var</span> t4 = <span class="keyword">new</span> <span class="built_in">Date</span>().getTime();</span><br><span class="line"><span class="keyword">for</span> ( <span class="keyword">var</span> j = <span class="number">0</span>; j &lt; count; j++ ) &#123;  <span class="comment">// 外循环</span></span><br><span class="line">    arr.forEach(<span class="function"><span class="keyword">function</span>(<span class="params"> cha </span>) </span>&#123;  <span class="comment">// 内循环</span></span><br><span class="line">        contextFn( cha );  <span class="comment">// 循环体</span></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log( <span class="keyword">new</span> <span class="built_in">Date</span>().getTime() - t4) );</span><br></pre></td></tr></table></figure>
+
+<p>内循环里是分别替换到不同的遍历方式，通过设置循环次数和数组长度来测试了一些数据，也可以来<a href="http://bubuzou.com/demos/201708/traverse-of-array-like.html">这里看demo</a></p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/201708/array_like_02.png" alt="array_like_02"></p>
+<p>从上面的测试结果大致可以看出速度最快的遍历方式应该是优化后的 <code>for</code> 循环了。</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/201703/background_01.png" alt="younghz的Markdown库"></p>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/03/26/once-request-to-upload-multiple-files/" title="element-ui文件上传一次请求上传多个文件" class="prev">上一篇</a><a href="/2017/07/18/css-coding-standards/" title="良好的CSS编码习惯" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="copyright"><p>© 2016 - 2020 <a href="https://weibo.com/316000381" target="_blank">typeR</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p><p> <span style="padding-right: 6px;">闽ICP备16007301号-2</span></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/jquery-1.8.2.min.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/articleCatalog.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

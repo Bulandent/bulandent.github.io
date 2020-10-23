@@ -1,0 +1,229 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> 理解 Flexbox：你需要知道这些 · 步步走</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="flexbox是css3中一种全新的布局方式，相比之前布局更加灵活可配置了，代码却又变得更加精简了。"><meta name="keywords" content="css3、flexbox、弹性盒子"><meta name="author" content="typeR"><link rel="short icon" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/favicon.ico"><link rel="stylesheet" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://bubuzou.com/atom.xml" title="步步走"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script><meta name="generator" content="Hexo 5.0.0"><link rel="alternate" href="/atom.xml" title="步步走" type="application/atom+xml">
+</head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/logo.png"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="/categories/live/" target="_self" data-hover="生活" class="nav-list-link">生活</a></li><li class="nav-list-item"><a href="/categories/read/" target="_self" data-hover="读书" class="nav-list-link">读书</a></li><li class="nav-list-item"><a href="/about/" target="_self" data-hover="关于" class="nav-list-link">关于</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">理解 Flexbox：你需要知道这些</h1><div class="post-info">2017-04-18<p class="visit"><i data-identity="2017/04/18/flexbox/" class="article-timer"></i><span>次访问</span></p><a href="https://codepen.io/bulandent/full/rXMdKp" target="_blank" title="" class="post-demo">去看示例</a></div><div class="post-content"><p><code>flexbox</code> 顾名思义 <code>flexible box</code> 弹性盒子，是 <code>css3</code> 中定义的一种新的布局方式。通过在某元素上使用 <code>display: flex;</code> 即可把该元素定义为 <code>flex</code> 容器 ( <code>flex container</code> )，而容器的所有子元素就是 <code>flex</code> 项目 ( <code>flex item</code> )。再介绍 <code>flex</code> 语法之前，先来看看一个重要的东西。</p>
+<h2 id="flex轴线"><a href="#flex轴线" class="headerlink" title="flex轴线"></a>flex轴线</h2><p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/201704/flex_axis.png" alt="flex-axis"></p>
+<a id="more"></a>
+
+<p>在 <code>flex</code> 容器里，存在两条轴，<code>main axis</code> 和 <code>cross axis</code>，又分别叫做主轴和交叉轴。主轴之所以叫做主轴而不叫做 <code>x</code> 轴，是因为主轴不一定是在水平线上的，也有可能是垂直方向上，比如当 <code>flex-direction: column;</code> 的时候，主轴就是在垂直方向上。另外主轴和交叉轴都是有方向的，<code>flex</code> 项目就是沿着主轴方向进行布局。主轴默认方向是从左到右，交叉轴则是从上到下。</p>
+<p><code>css3</code> 里关于 <code>flexbox</code> 定义了2类的样式，分别是作用于 <code>flex</code> 容器上的和作用于 <code>flex</code> 项目上的。</p>
+<h2 id="flex容器"><a href="#flex容器" class="headerlink" title="flex容器"></a>flex容器</h2><p>能作用到 <code>flex</code> 容器上的样式有这么几个：<code>flex-direction</code>，<code>flex-wrap</code>，<code>flex-flow</code>，<code>justify-content</code>，<code>align-items</code> 和 <code>align-content</code>。看到这么几个东西，别被它们吓坏了，多读几遍你就能猜个八九不离十它们是干嘛用的了。下面我们一一来介绍这些样式。</p>
+<h3 id="flex-direction"><a href="#flex-direction" class="headerlink" title="flex-direction"></a>flex-direction</h3><p>相信你也大概知道了这个样式的作用了，对了就是和方向有关的。<code>flex-direction</code> 这个样式就是用来控制 <code>main axis</code> 的方向的，默认值 <code>row</code>，表示水平从左到右。</p>
+<ul>
+<li>row，默认的属性值，水平方向，从左到右</li>
+<li>column，垂直方向，从上到下</li>
+<li>row-reverse，水平方向，从右到左</li>
+<li>column-reverse，垂直方向，从下到上</li>
+</ul>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">ul</span> &#123;</span><br><span class="line">    <span class="attribute">display</span>: flex;</span><br><span class="line">    <span class="attribute">flex-direction</span>: row; <span class="comment">/* column || row-reverse || column-reverse */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>来一张图，你就更好理解了：</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/201704/flex_direction.png" alt="flex-direction"></p>
+<h3 id="flex-wrap"><a href="#flex-wrap" class="headerlink" title="flex-wrap"></a>flex-wrap</h3><p><code>flex-wrap</code> 规定了 <code>flex</code> 项目在主轴上是按照一行还是多行显示。</p>
+<ul>
+<li><code>nowrap</code>，默认属性，单行显示，会尽力的压缩每个 <code>flex</code> 项目直到刚好容下里面的内容，实在压缩不了的时候 <code>flex</code> 项目就可能会溢出容器。</li>
+<li><code>wrap</code>，允许多行显示，当一行显示不下的时候，会变成多行显示。</li>
+<li><code>wrap-reverse</code>，多行显示，且行的显示顺序是从下到上，即第一行显示在容器的底部。</li>
+</ul>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">ul</span> &#123;</span><br><span class="line">    <span class="attribute">display</span>: flex;</span><br><span class="line">    <span class="attribute">flex-wrap</span>: nowrap; <span class="comment">/* wrap || wrap-reverse */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/201704/flex_wrap.png" alt="flex-wrap"></p>
+<h3 id="flex-flow"><a href="#flex-flow" class="headerlink" title="flex-flow"></a>flex-flow</h3><p><code>flex-flow</code> 是一个复合属性，是由 <code>flex-direction</code> 和 <code>flex-wrap</code> 组成的属性。如果只定义了一个属性，那么另外一个属性取默认值。且属性书写顺序没有特别要求。</p>
+<ul>
+<li><code>row nowrap</code>，这是默认属性值</li>
+<li><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">ul</span> &#123;</span><br><span class="line">    <span class="attribute">display</span>: flex;</span><br><span class="line">    <span class="attribute">flex-flow</span>: row wrap;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/201704/flex_flow.png" alt="flex-flow"></p>
+<h3 id="justify-content"><a href="#justify-content" class="headerlink" title="justify-content"></a>justify-content</h3><p><code>justify-content</code> 规定了 <code>flex</code> 项目在主轴的对齐方式。比如当 <code>flex-direction</code> 被设置为 <code>column</code> 时，<code>justify-content</code> 定义的是垂直方向上的对齐方式。</p>
+<ul>
+<li><code>flex-start</code>, 默认属性值，<code>flex</code>项目将向着主轴起始位置对齐</li>
+<li><code>flex-end</code>, <code>flex</code> 项目将向着主轴结束位置对齐</li>
+<li><code>center</code>, <code>flex</code> 项目将在主轴上居中对齐</li>
+<li><code>space-between</code>, <code>flex</code> 项目将在主轴上以相同的间距贴着轴的两端对齐</li>
+<li><code>space-around</code>, <code>flex</code> 项目将在主轴上以相同的间距靠着两端对齐，且第一个头尾项目和轴的两端之间存在间距，间距是两个项目间距的一半</li>
+</ul>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">ul</span> &#123;</span><br><span class="line">    <span class="attribute">display</span>: flex;</span><br><span class="line">    <span class="attribute">justify-content</span>: center;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/201704/justify_content.png" alt="justify-content"></p>
+<h3 id="align-items"><a href="#align-items" class="headerlink" title="align-items"></a>align-items</h3><p>居然有主轴上的对齐方式，那么肯定也有相关的属性是用来定义交叉轴上的对齐规则的。和 <code>justify-content</code> 一样，<code>align-items</code> 也有5个属性定义，其中 <code>flex-start</code>，<code>flex-end</code> 和 <code>center</code> 是一样的，就不多介绍了。来说说两个不同的：</p>
+<ul>
+<li><code>stretch</code>，默认属性值，<code>flex</code> 项目在交叉轴上的尺寸如果没有指定或者是被设置为 <code>auto</code>，那么它将在这个方向上尽量延伸，直到靠着容器边界，但是同时延伸的程度也会受到 <code>max-height</code> 或者 <code>max-width</code> 的影响</li>
+<li><code>baseline</code>，<code>flex</code>项目在交叉轴上的对齐方式将是由每个项目内容的基线决定</li>
+</ul>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">ul</span> &#123;</span><br><span class="line">    <span class="attribute">display</span>: flex;</span><br><span class="line">    <span class="attribute">align-items</span>: flex-start;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/201704/align_items.png" alt="align-items"></p>
+<h3 id="align-content"><a href="#align-content" class="headerlink" title="align-content"></a>align-content</h3><p>理解了 <code>justify-content</code> 和 <code>align-items</code> 的对齐方式，再来看 <code>align-content</code> 就容易理解多了。它只作用于容器，且只能是存在多个行的容器。注意这里的行是相对于交叉轴来说的。属性值有6个：<code>flex-start</code>，<code>flex-end</code>，<code>center</code>，<code>stretch</code>，<code>space-between</code> 和 <code>space-around</code>，这些对齐方式上面都介绍过了，大同小异。其中默认值是<code>stretch</code>。结合下图来加深理解：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">ul</span> &#123;</span><br><span class="line">    <span class="attribute">display</span>: flex;</span><br><span class="line">    <span class="attribute">flex-wrap</span>: wrap;</span><br><span class="line">    <span class="attribute">align-content</span>: space-around</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/201704/align_content.png" alt="align-content"></p>
+<h2 id="flex项目"><a href="#flex项目" class="headerlink" title="flex项目"></a>flex项目</h2><p>上面介绍了定义在 <code>flex</code> 容器上的 <code>css</code> 属性，规范了整个容器里所有项目的全局呈现。这样不够灵活多变，不足以表现某些需要特别显示的项目，所以针对这一现状，<code>w3c</code> 社区又推出了一套作用于 <code>flex</code> 项目上的 <code>css</code> 属性。他们分别是：<code>align-self</code>，<code>order</code>，<code>flex-grow</code>，<code>flex-shrink</code>，<code>flex-basis</code> 和 <code>flex</code> 等 <code>css</code> 属性。</p>
+<ul>
+<li><code>align-self</code></li>
+</ul>
+<p><code>align-self</code> 规定了单个 <code>flex</code> 项目在交叉轴上的对齐方式，属性值可以是下面一个：<code>flex-start</code>，<code>flex-end</code>，<code>center</code>，<code>stretch</code>，<code>baseline</code>和 <code>auto</code>，其中 <code>auto</code> 为默认属性值，如果被设置为了 <code>auto</code>，那么该 <code>flex</code> 项目最终的对齐方式将是由容器的 <code>align-items</code>决定。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">ul</span> &#123;</span><br><span class="line">    <span class="attribute">display</span>: flex;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-tag">ul</span> <span class="selector-tag">li</span> &#123;</span><br><span class="line">    <span class="attribute">align-self</span>: center;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/201704/align_self.png" alt="align-self"></p>
+<h3 id="order"><a href="#order" class="headerlink" title="order"></a>order</h3><p><code>order</code> 定义了 <code>flex</code> 项目在容器里的排列顺序。取值可以是负整数、0、正整数，默认取值是0。数值越大越靠近轴向的末端，数值相同则按照 <code>html</code> 里的顺序排列。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">ul</span> &#123;</span><br><span class="line">    <span class="attribute">display</span>: flex;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-tag">ul</span> <span class="selector-tag">li</span> &#123;</span><br><span class="line">    <span class="attribute">order</span>: <span class="number">2</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/201704/order.png" alt="order"></p>
+<h3 id="flex-grow"><a href="#flex-grow" class="headerlink" title="flex-grow"></a>flex-grow</h3><p><code>flex-grow</code> 规定了 <code>flex</code> 项目的伸展性，其值只能是 0 或者正整数，默认值是 0。如果一个 <code>flex</code> 项目同时设置了<code>width</code> 和值为正整数的 <code>flex-grow</code> 属性，则 <code>width</code> 属性将失效。取值如果是0表示不进行伸展；如果是正整数，则会进行伸展，且伸展的尺寸将和数值的大小有关，值越大，伸展得越大。伸展的具体计算数值是该项目占所有可伸展项目总和的比与这些所有可伸展项目占的尺寸的乘积。</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/201704/flex_grow.png" alt="order"></p>
+<h3 id="flex-shrink"><a href="#flex-shrink" class="headerlink" title="flex-shrink"></a>flex-shrink</h3><p>与伸展相对应的属性是 <code>flex-shrink</code>，定义了项目的收缩性，值也只能是 0 或者正整数，默认值是 1。如果是 0 表示不进行收缩，如果是正整数则表示进行收缩。如果一个项目同时显示设置了尺寸和收缩值为 1，那么该项目将进行收缩，定义的尺寸将失效。<br>项目能够进行收缩的前提是必须产生溢出，即所有项目所占尺寸之和必须大于容器尺寸。这个时候容器里所有可收缩的项目就需要通过收缩来消化掉这部分溢出的尺寸。而每个项目具体的收缩量则由其设置的收缩比例决定，数值越大，收缩得越厉害。比如一个容器的尺寸是 <code>400px</code>，只有2个项目且尺寸都是 <code>300px</code>，收缩比例是 1 比 3，那么容器将溢出 <code>200px</code>，所以第一个项目需要收缩 <code>50px</code>，第二个项目需要收缩 <code>150px</code>，那么收缩完成后它们占据的尺寸分别是 <code>250px</code> 和 <code>150px</code>。</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/201704/flex_shrink.png" alt="flex-shrink"></p>
+<h3 id="flex-basis"><a href="#flex-basis" class="headerlink" title="flex-basis"></a>flex-basis</h3><p><code>flex-basis</code> 定义了项目在伸缩之前的初始尺寸，可以是长度设置（<code>px</code>、<code>rem</code> 和 <code>em</code> 等）；可以是用百分比基于父级来计算尺寸；也可以是默认的 <code>auto</code>，表示其尺寸由内容决定。除了 <code>auto</code> 外，如果尺寸溢出容器了，那么设置了 <code>flex-basis</code> 的项目间，则会根据每项设置的基准值，按比率伸缩剩余空间。</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/201704/flex_basis.png" alt="flex-basic"></p>
+<h3 id="flex"><a href="#flex" class="headerlink" title="flex"></a>flex</h3><p><code>flex</code> 是一个复合属性，是由<code>flex-grow</code>、<code>flex-shrink</code> 和 <code>flex-basis</code> 组成的。</p>
+<ul>
+<li><code>flex-grow</code> ，用来指定扩展比率，在 <code>flex</code> 属性中该值如果被省略则默认为1</li>
+<li><code>flex-shrink</code>，用来指定收缩比率，在收缩的时候收缩比率会以伸缩基准值加权，在 <code>flex</code> 属性中该值如果被省略则默认为1</li>
+<li><code>flex-basis</code>，用来指定伸缩基准值，即在根据伸缩比率计算出剩余空间的分布之前，表示尺寸的起始数值。在 <code>flex</code> 属性中该值如果被省略则默认为 <code>0%</code>。在flex属性中该值如果被指定为 <code>auto</code>，则伸缩基准值的计算值是自身的 <code>width</code> 设置，如果自身的宽度没有定义，则长度取决于内容。</li>
+</ul>
+<p>一些缩写说明：</p>
+<ul>
+<li><code>flex: 1</code>, 则其计算值为<code>1 1 0%</code></li>
+<li><code>flex: auto</code>, 则其计算值为<code>1 1 auto</code></li>
+<li><code>flex: none</code>, 则其计算值为<code>0 0 auto</code></li>
+<li><code>flex: 0 auto</code> 或者<code>flex: initial</code>, 则其计算值为<code>0 1 auto</code></li>
+</ul>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/201704/flex.png" alt="flex"></p>
+<h2 id="兼容性"><a href="#兼容性" class="headerlink" title="兼容性"></a>兼容性</h2><p><code>flex</code> 布局在现代浏览器中兼容性还是比较令人满意的。<a target="_blank" rel="noopener" href="http://caniuse.com/#feat=flexbox">可以去caniuse里看看</a>，或者直接看这个用 <code>flex</code> 布局写的案例catty-music</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/201704/caniuse.png" alt="caniuse"></p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
+<li><a target="_blank" rel="noopener" href="http://www.w3cplus.com/css3/understanding-flexbox-everything-you-need-to-know.html">理解Flexbox：你需要知道的一切</a></li>
+</ul>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2017/05/04/css-custom-property/" title="CSS自定义属性" class="prev">上一篇</a><a href="/2017/04/13/css-center-skill/" title="CSS居中完整篇" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="copyright"><p>© 2016 - 2020 <a href="https://weibo.com/316000381" target="_blank">typeR</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p><p> <span style="padding-right: 6px;">闽ICP备16007301号-2</span></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/jquery-1.8.2.min.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/articleCatalog.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>
