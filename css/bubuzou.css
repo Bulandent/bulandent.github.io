@@ -2,14 +2,15 @@
 
 /**
   * @name: bubuzou.css
-  * @description: hexo-theme-bubuzou的主题样式
+  * @description: hexo-theme-bubuzou的主题样式2
   * @author: typeR(zgrlbq@126.com)
   * @update: 2017-7-21 16:21:02
   */
 
 @font-face {
     font-family: sourcesanspro;
-    src: url(https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/sourcesanspro.woff2) format("woff2"), url(https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/sourcesanspro.woff) format("woff");
+	src: url(https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/sourcesanspro.woff2) format("woff2"), 
+		 url(https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/sourcesanspro.woff) format("woff");
     font-weight: 400;
     font-style: normal;
 }
