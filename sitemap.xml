@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://bubuzou.com/2020/11/17/es6/</loc>
+    
+    <lastmod>2020-11-17T07:57:11.998Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://bubuzou.com/2019/10/24/Vue-Test-Utils+Jest/</loc>
     
     <lastmod>2020-10-23T08:49:26.347Z</lastmod>
