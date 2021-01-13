@@ -1419,7 +1419,7 @@ footer .copyright a:hover { color: #666; }
 
     footer .copyright p { margin: 0; }
 
-    .footer-con > div { padding: 0 10px; }
+    .footer-con > div { margin-right: 10px; }
 
     .post-content ul { padding-left: 20px; }
 
