@@ -390,7 +390,10 @@ header .nav-list-item .active { opacity: 0.7; }
 
 .home.post-list .read-more { color: var(--theme-text-color); }
 
-.archive .archive-year { font-family: Georgia, serif; }
+.archive .archive-year { 
+	font-family: Georgia, serif; 
+	color: #aaa;
+}
 
 .archive .post-item { padding: 2px 0 0 50px; }
 
@@ -403,17 +406,17 @@ header .nav-list-item .active { opacity: 0.7; }
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    color: var(--theme-text-color);
+    color: #333;
 }
 
-.archive .post-title-link:hover { color: #168d58; }
+.archive .post-title-link:hover { color: var(--theme-text-color); }
 
 .archive .post-info {
     float: left;
     width: 75px;
     font-family: Georgia, serif;
     font-size: 16px;
-    color: #7f8c8d;
+    color: #aaa;
 }
 
 .post { padding-top: 1em; }
@@ -1426,7 +1429,6 @@ footer .copyright a:hover { color: #666; }
     .archive .archive-year {
         font-size: 16px;
         margin: 10px 0;
-        color: #ddd;
     }
 
     .archive .post-info {
