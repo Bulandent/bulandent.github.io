@@ -2,6 +2,62 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://bubuzou.com/2021/03/22/css_base/</loc>
+    
+    <lastmod>2021-03-22T01:25:36.407Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://bubuzou.com/2017/05/04/css-custom-property/</loc>
+    
+    <lastmod>2021-03-22T01:22:35.597Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://bubuzou.com/2017/03/10/background-property/</loc>
+    
+    <lastmod>2021-03-22T01:21:55.907Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://bubuzou.com/2017/07/18/css-coding-standards/</loc>
+    
+    <lastmod>2021-03-22T01:21:23.302Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://bubuzou.com/2017/04/13/css-center-skill/</loc>
+    
+    <lastmod>2021-03-22T01:21:09.941Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://bubuzou.com/2020/11/17/es6/</loc>
+    
+    <lastmod>2021-03-11T06:19:36.345Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://bubuzou.com/2020/12/04/web-security/</loc>
+    
+    <lastmod>2021-03-10T15:27:17.919Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://bubuzou.com/2020/07/29/js-datatype/</loc>
+    
+    <lastmod>2021-03-03T01:21:21.078Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://bubuzou.com/2021/01/05/http/</loc>
     
     <lastmod>2021-03-01T04:34:07.069Z</lastmod>
@@ -65,23 +121,9 @@
   </url>
   
   <url>
-    <loc>https://bubuzou.com/2020/12/04/web-security/</loc>
-    
-    <lastmod>2021-01-14T02:01:33.070Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://bubuzou.com/2016/11/28/this-call-apply/</loc>
     
     <lastmod>2021-01-07T00:52:53.664Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://bubuzou.com/2020/11/17/es6/</loc>
-    
-    <lastmod>2020-11-17T07:57:11.998Z</lastmod>
     
   </url>
   
@@ -142,20 +184,6 @@
   </url>
   
   <url>
-    <loc>https://bubuzou.com/2020/07/29/js-datatype/</loc>
-    
-    <lastmod>2020-07-29T08:14:17.456Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://bubuzou.com/2017/03/10/background-property/</loc>
-    
-    <lastmod>2019-12-31T01:53:13.002Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://bubuzou.com/2019/09/24/git-all-actions/</loc>
     
     <lastmod>2019-09-24T10:32:10.699Z</lastmod>
@@ -170,13 +198,6 @@
   </url>
   
   <url>
-    <loc>https://bubuzou.com/2017/05/04/css-custom-property/</loc>
-    
-    <lastmod>2019-07-26T07:57:49.748Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://bubuzou.com/2017/04/18/flexbox/</loc>
     
     <lastmod>2019-07-26T07:50:01.530Z</lastmod>
@@ -184,30 +205,9 @@
   </url>
   
   <url>
-    <loc>https://bubuzou.com/2017/04/13/css-center-skill/</loc>
-    
-    <lastmod>2019-07-26T07:43:04.463Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://bubuzou.com/2017/06/29/jpeg-gif-png-svg-on-web/</loc>
     
     <lastmod>2019-07-26T07:38:17.503Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://bubuzou.com/2017/03/13/detect-css-property/</loc>
-    
-    <lastmod>2019-07-26T07:37:58.588Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://bubuzou.com/2017/07/18/css-coding-standards/</loc>
-    
-    <lastmod>2019-07-26T07:36:11.756Z</lastmod>
     
   </url>
   
