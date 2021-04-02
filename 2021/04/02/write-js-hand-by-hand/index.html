@@ -15,6 +15,8 @@
 <p>除了读通代码之外，还可以打开 Chrome 的 Script snippet 去写测试用例跑跑代码，做到更好的理解以及使用。</p>
 <p>在看了几篇以及写了很多测试用例的前提下，尝试自己手写实现，看看自己到底掌握了多少。条条大路通罗马，你还能有别的方式实现嘛？或者你能写得比别人更好嘛？</p>
 <p>好了，还楞着干啥，开始干活。</p>
+<!-- moer -->
+
 <h2 id="数据类型判断"><a href="#数据类型判断" class="headerlink" title="数据类型判断"></a>数据类型判断</h2><p>typeof 可以正确识别：Undefined、Boolean、Number、String、Symbol、Function 等类型的数据，但是对于其他的都会认为是 object，比如 Null、Date 等，所以通过 typeof 来判断数据类型会不准确。但是可以使用 Object.prototype.toString 实现。</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">typeOf</span>(<span class="params">obj</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> res = <span class="built_in">Object</span>.prototype.toString.call(obj).split(<span class="string">&#x27; &#x27;</span>)[<span class="number">1</span>]</span><br><span class="line">    res = res.substring(<span class="number">0</span>, res.length - <span class="number">1</span>).toLowerCase()</span><br><span class="line">    <span class="keyword">return</span> res</span><br><span class="line">&#125;</span><br><span class="line">typeOf([])        <span class="comment">// &#x27;array&#x27;</span></span><br><span class="line">typeOf(&#123;&#125;)        <span class="comment">// &#x27;object&#x27;</span></span><br><span class="line">typeOf(<span class="keyword">new</span> <span class="built_in">Date</span>)  <span class="comment">// &#x27;date&#x27;</span></span><br></pre></td></tr></table></figure>
 
@@ -307,7 +309,7 @@
 <h2 id="后话"><a href="#后话" class="headerlink" title="后话"></a>后话</h2><p>能看到这里的对代码都是真爱了，毕竟代码这玩意看起来是真的很枯燥，但是如果看懂了后，就会像打游戏赢了一样开心，而且这玩意会上瘾，当你通关了越多的关卡后，你的能力就会拔高一个层次。用标题的话来说就是：搞懂后，提升真的大。加油吧💪，干饭人</p>
 <p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202104/16172447086022.jpg" alt="-w117"></p>
 <p>噢不，代码人。</p>
-</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2021/03/22/css_base/" title="1.5 万字 CSS 基础拾遗（核心知识、常用需求）" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2021/03/22/css_base/" title="1.5 万字 CSS 基础拾遗（核心知识、常用需求）" class="next">NEXT</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
     el: "#vcomments",
     appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
     appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
