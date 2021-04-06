@@ -1201,6 +1201,8 @@ footer .copyright a:hover { color: #666; }
     color: #bbb;
 }
 
+.arCatalog-body .arCatalog-tack3 { padding-left: 66px; }
+
 .article-box .tag {
     margin: 15px 0 10px;
     font-size: 12px;
