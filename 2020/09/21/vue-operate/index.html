@@ -98,7 +98,7 @@
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.$refs.list.getList()</span><br></pre></td></tr></table></figure>
 
 <p>除了 <code>$refs</code> 外，其他3个都是自 <code>Vue</code> 实例创建后就会自动包含的属性，使用和上面的类似。</p>
-<h2 id="6类可以掌握的修饰符"><a href="#6类可以掌握的修饰符" class="headerlink" title="6类可以掌握的修饰符"></a>6类可以掌握的修饰符</h2><h3 id="表单修饰符"><a href="#表单修饰符" class="headerlink" title="表单修饰符"></a>表单修饰符</h3><p>表单类的修饰符都是和 <code>v-model</code> 搭配使用的，比如：<code>v-model.lazy</code>、<code>v-model-trim</code> 以及 <code>v-model.number</code> 等。</p>
+<h2 id="6类可以掌握的修饰符"><a href="#6类可以掌握的修饰符" class="headerlink" title="6类可以掌握的修饰符"></a>6类可以掌握的修饰符</h2><h3 id="表单修饰符"><a href="#表单修饰符" class="headerlink" title="表单修饰符"></a>表单修饰符</h3><p>表单类的修饰符都是和 <code>v-model</code> 搭配使用的，比如：<code>v-model.lazy</code>、<code>v-model.trim</code> 以及 <code>v-model.number</code> 等。</p>
 <ul>
 <li><p><code>.lazy</code>：对表单输入的结果进行延迟响应，通常和 <code>v-model</code> 搭配使用。正常情况下在 <code>input</code> 里输入内容会在 <code>p</code> 标签里实时的展示出来，但是加上 <code>.lazy</code> 后则需要在输入框失去焦点的时候才触发响应。</p>
   <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">v-model.lazy</span>=<span class="string">&quot;name&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123; name &#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>

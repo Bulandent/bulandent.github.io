@@ -123,23 +123,4 @@ valineAPI._get(identities).then(results => {
 
 if(true){
 calcAndWriteTimes();
-}</script></body></html>(timerDOMCache);
-valineAPI._get(identities).then(results => {
-    for(let result of results) {
-    let {identity, times} = result.attributes;
-    timerDOMCache[identity].times = times;
-    timerDOMCache[identity].dom.map(item => item.innerText = times);
-    }
-    for(let identity of identities) {
-    if(timerDOMCache[identity].times){
-        continue;
-    }
-    timerDOMCache[identity].dom.map(item => item.innerText = 1);
-    valineAPI.create(identity);
-    }
-}).catch(error => console.log(error.message))
-}
-
-if(true){
-calcAndWriteTimes();
 }</script></body></html>
