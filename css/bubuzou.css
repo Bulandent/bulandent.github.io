@@ -1175,6 +1175,7 @@ footer .copyright a:hover { color: #666; }
 	position: absolute;
     left: -23px;
     top: 8px;
+		z-index: 99;
     width: 12px;
     height: 12px;
     background-color: #fd7013;
