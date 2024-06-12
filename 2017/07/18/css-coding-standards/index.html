@@ -1,0 +1,269 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> 良好的CSS编码习惯 · 步步走</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="良好的css编码习惯能够提高开发、维护效率，所以前端很有必要养成一个好的编码习惯。"><meta name="keywords" content="css编码规范、css书写习惯、css coding standards、css格式化"><meta name="author" content="typeR"><link rel="short icon" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/favicon.ico"><link rel="stylesheet" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://bubuzou.com/atom.xml" title="步步走"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script><meta name="generator" content="Hexo 5.0.0"><link rel="alternate" href="/atom.xml" title="步步走" type="application/atom+xml">
+</head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/logo.svg"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="/categories/live/" target="_self" data-hover="生活" class="nav-list-link">生活</a></li><li class="nav-list-item"><a href="/categories/read/" target="_self" data-hover="读书" class="nav-list-link">读书</a></li><li class="nav-list-item"><a href="/about/" target="_self" data-hover="关于" class="nav-list-link">关于</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">良好的CSS编码习惯</h1><div class="post-info">2017-07-18<p class="visit"><i data-identity="2017/07/18/css-coding-standards/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><p>一个 <code>css</code> 文件的核心内容是由许许多多的 <code>css</code> 规则组成的，而每个规则又包含了两部分：选择器和声明；声明块里可能又包含多个声明，每个声明又是由属性和值组成的。这个大概就是 <code>css</code> 的代码结构。</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/201707/css_coding_standards_01.png" alt="css_rules"></p>
+<p>这么多的规则就像一个小镇上的房子一样，如果房子建造之初，毫无规划胡乱建造，那等房子建造起来的时候，从远远望去就会非常地错杂不堪，难以入目，给人的心里埋下了非常糟糕的印象；又可能后期，由于发展的需要，要给小镇加修道路或者新建个学校，由于房子与房子之间连接得很混乱，所以这给后期重建镇子的人带来了很大的困难。</p>
+<p>同样，在 <code>css</code> 的世界里，代码的排列布局也是非常重要的。良好的代码书写习惯能够让代码看起来更加干净简洁，给阅读者一种赏心悦目的感觉；好的代码便于开发发现错误，提高工作效率。所以作为一名好前端，很有必要养成一个良好的 <code>css</code> 编码习惯。</p>
+<a id="more"></a>
+
+<h2 id="文件命名"><a href="#文件命名" class="headerlink" title="文件命名"></a>文件命名</h2><p><code>web</code> 项目中的所有资源文件名称应遵循相同的命名约定。<code>css</code> 文件也不例外，来看下面的例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;* Not recommended *&#x2F;</span><br><span class="line">MyScript.js</span><br><span class="line">myCamelCaseName.css</span><br><span class="line">i_love_underscores.html</span><br><span class="line">1001-scripts.js</span><br><span class="line">my-file-min.css</span><br><span class="line"></span><br><span class="line">&#x2F;* Recommended *&#x2F;</span><br><span class="line">my-script.js</span><br><span class="line">my-camel-case-name.css</span><br><span class="line">i-love-underscores.html</span><br><span class="line">thousand-and-one-scripts.js</span><br><span class="line">my-file.min.css</span><br></pre></td></tr></table></figure>
+
+<p>一般来说资源文件的名字习惯如下命名：</p>
+<ul>
+<li>以字母开头，避免数字开头</li>
+<li>全部用小写，这样的话不容易在引用的时候因为大小写而出错</li>
+<li>用-来分隔单词，而不是下划线</li>
+<li>对于压缩过的文件，比如 <code>css</code> 或者 <code>js</code> 文件，使用 <code>.min</code> 代替 <code>-min</code></li>
+</ul>
+<h2 id="设置编码"><a href="#设置编码" class="headerlink" title="设置编码"></a>设置编码</h2><p>在 <code>css</code> 文件的最顶部设置编码格式为 <code>utf-8</code> ，否则有可能使得 <code>css</code> 文件出现乱码。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">@charset</span> <span class="string">&quot;utf-8&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="格式化"><a href="#格式化" class="headerlink" title="格式化"></a>格式化</h2><p><code>css</code> 文件里包含了许许多多的 <code>css</code> 规则，而每条 <code>css</code> 规则又由两部分组成，分别是选择器和声明块；声明块里包含了多个声明，而声明又是属性和值组成的。格式化里将要介绍的就是它们的结构和摆放位置，包括缩进、空格、换行以及个别声明的书写习惯等。</p>
+<h3 id="缩进"><a href="#缩进" class="headerlink" title="缩进"></a>缩进</h3><p><code>css</code> 代码的缩进让代码结构更加清晰，<code>css</code> 代码缩进需要遵循以下几点：</p>
+<ul>
+<li>一个制表符( <code>Tab</code> 键)相当于 4 个空格(空格键)，<code>css</code> 的缩进占位一般是一个制表符的宽度。</li>
+<li>缩进占位里不要混杂着制表符和空格，建议设置好编辑器的一个制表符等于 4 个空格宽度。</li>
+<li>声明需要缩进；在 <code>media query</code> 里的所有 <code>css</code> 规则也需要缩进。</li>
+</ul>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">@media</span> screen <span class="keyword">and</span> (<span class="attribute">max-width:</span> <span class="number">640px</span>) &#123;</span><br><span class="line">  <span class="selector-tag">body</span> &#123;</span><br><span class="line">    <span class="attribute">background-color</span>: <span class="number">#f8f8f8</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="空格"><a href="#空格" class="headerlink" title="空格"></a>空格</h3><p>在 <code>css</code> 的世界里为了让代码看起来不那么拥挤，所以需要在适当的地方使用空格：</p>
+<ul>
+<li>选择器和声明块的左大括号{之间。</li>
+<li>声明中属性的冒号之后，属性值之前。</li>
+<li>对于只有一条声明的声明块，声明的左右两边与左右大括号之间。</li>
+<li>对于一个属性中有多个属性值，且放在同一行的时候，用来分隔各个属性值的逗号的后面。</li>
+<li>对于一些特别的属性值里存在逗号分隔的情况，比如 <code>rgba(248, 248, 248, .5)</code>，需要在每个逗号后加上空格</li>
+</ul>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.heavy</span> &#123;</span><br><span class="line">  <span class="attribute">font-weight</span>: <span class="number">700</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-tag">body</span> &#123;</span><br><span class="line">  <span class="attribute">font-family</span>: Georgia, serif;</span><br><span class="line">  <span class="attribute">background-color</span>: <span class="built_in">rgba</span>(<span class="number">248</span>, <span class="number">248</span>, <span class="number">248</span>, <span class="number">0.5</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="换行和空行"><a href="#换行和空行" class="headerlink" title="换行和空行"></a>换行和空行</h3><p>换行和空行的目的也是为了 <code>css</code> 代码的美观性和结构更加清晰：</p>
+<ul>
+<li>每个 <code>css</code> 规则之间需要一个空行。</li>
+<li>单行注释的前面需要一个空行。</li>
+<li>一个规则里存在多个选择器的时候，每个选择器的逗号后换行。</li>
+<li>一个声明块里有多个声明的时候，每条声明后都需要换行；只有一条声明的时候，声明和选择器同行。</li>
+<li>对于逗号分隔且非常长的属性值，可以考虑换行并且缩进一个制表符。</li>
+<li><code>media query</code> 声明的第一行空行，这样就不会和第一条声明杂在一起，显得拥挤。</li>
+</ul>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.modal</span> &#123;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">500px</span>;</span><br><span class="line">  <span class="attribute">margin</span>: <span class="number">0</span> auto;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.modal</span> <span class="selector-tag">a</span>,</span><br><span class="line"><span class="selector-class">.modal</span> <span class="selector-tag">span</span> &#123;</span><br><span class="line">  <span class="attribute">color</span>: <span class="number">#41b883</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* common */</span></span><br><span class="line"><span class="selector-class">.shadow</span> &#123;</span><br><span class="line">  <span class="attribute">box-shadow</span>: <span class="number">1px</span> <span class="number">1px</span> <span class="number">1px</span> <span class="number">#000</span>, <span class="number">2px</span> <span class="number">2px</span> <span class="number">1px</span> <span class="number">1px</span> <span class="number">#ccc</span> inset;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@media</span> screen <span class="keyword">and</span> (<span class="attribute">max-width:</span> <span class="number">640px</span>) &#123;</span><br><span class="line">  <span class="selector-class">.modal</span> <span class="selector-class">.modal-con</span> <span class="selector-tag">a</span> &#123;</span><br><span class="line">    <span class="attribute">font-size</span>: <span class="number">12px</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="选择器"><a href="#选择器" class="headerlink" title="选择器"></a>选择器</h2><p>选择器这块主要是介绍命名、书写习惯以及为了更高的匹配效率而建议的写法等。</p>
+<h3 id="ID-和-Class-的命名规范"><a href="#ID-和-Class-的命名规范" class="headerlink" title="ID 和 Class 的命名规范"></a>ID 和 Class 的命名规范</h3><p><code>ID</code> 和 <code>Class</code> 的主要习惯于如下命名方式：</p>
+<ul>
+<li><p>全部字母用小写，避免使用驼峰命名法。</p>
+</li>
+<li><p>使用短横线-来作为连接单词之间的字符，避免使用下划线_。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.post-title</span> &#123;</span><br><span class="line">  <span class="attribute">font-size</span>: <span class="number">20px</span>;</span><br><span class="line">  <span class="attribute">color</span>: <span class="number">#41b883</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>命名尽可能语义化，让人一目了然。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Not recommended */</span></span><br><span class="line"><span class="selector-class">.fw-800</span> &#123;</span><br><span class="line">  <span class="attribute">font-weight</span>: <span class="number">800</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.red</span> &#123;</span><br><span class="line">  <span class="attribute">color</span>: red;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Recommended */</span></span><br><span class="line"><span class="selector-class">.heavy</span> &#123;</span><br><span class="line">  <span class="attribute">font-weight</span>: <span class="number">800</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.important</span> &#123;</span><br><span class="line">  <span class="attribute">color</span>: red;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="尽可能避免使用-ID-选择器"><a href="#尽可能避免使用-ID-选择器" class="headerlink" title="尽可能避免使用 ID 选择器"></a>尽可能避免使用 ID 选择器</h3><p>在 <code>css</code> 的世界里不太欢迎 <code>ID</code> 选择器，因为 <code>ID</code> 是作为某个元素的唯一标识而设定的，但是元素的样式是可以被重复定义，层层覆盖的。所以建议不要使用 <code>ID</code> 选择器，取而代之的是多用类选择器。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Not recommended */</span></span><br><span class="line"><span class="selector-id">#article</span> <span class="selector-tag">p</span> &#123;</span><br><span class="line">  <span class="attribute">line-height</span>: <span class="number">28px</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Recommended */</span></span><br><span class="line"><span class="selector-class">.article</span> <span class="selector-tag">p</span> &#123;</span><br><span class="line">  <span class="attribute">line-height</span>: <span class="number">28px</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="避免使用标签进行双重限定"><a href="#避免使用标签进行双重限定" class="headerlink" title="避免使用标签进行双重限定"></a>避免使用标签进行双重限定</h3><p>这是什么意思呢？看了下面的例子你就知道了。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Not recommended */</span></span><br><span class="line"><span class="selector-tag">p</span><span class="selector-class">.desc</span> &#123;</span><br><span class="line">  <span class="attribute">color</span>: <span class="number">#666</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Recommended */</span></span><br><span class="line"><span class="selector-class">.desc</span> &#123;</span><br><span class="line">  <span class="attribute">color</span>: <span class="number">#666</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="尽可能的精确，但是最好不要超过-3-级"><a href="#尽可能的精确，但是最好不要超过-3-级" class="headerlink" title="尽可能的精确，但是最好不要超过 3 级"></a>尽可能的精确，但是最好不要超过 3 级</h3><p><code>css</code> 的选择判定也存在效率问题，所以书写的时候尽量要精确；选择器的嵌套层级最好不要超过 3 级，否则显得很冗长，效率上也未必更高。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Not recommended */</span></span><br><span class="line"><span class="selector-class">.content</span> <span class="selector-class">.title</span> &#123;</span><br><span class="line">  <span class="attribute">font-size</span>: <span class="number">2rem</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Recommended */</span></span><br><span class="line"><span class="selector-class">.content</span> &gt; <span class="selector-class">.content-body</span> &gt; <span class="selector-class">.title</span> &#123;</span><br><span class="line">  <span class="attribute">font-size</span>: <span class="number">2rem</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="属性选择器记得使用双引号"><a href="#属性选择器记得使用双引号" class="headerlink" title="属性选择器记得使用双引号"></a>属性选择器记得使用双引号</h3><p>属性选择器记得使用双引号，避免单引号和不用引号</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Not recommended */</span></span><br><span class="line"><span class="selector-tag">input</span><span class="selector-attr">[type=<span class="string">&#x27;text&#x27;</span>]</span> &#123;</span><br><span class="line">  <span class="attribute">line-height</span>: <span class="number">1.2</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Recommended */</span></span><br><span class="line"><span class="selector-tag">input</span><span class="selector-attr">[type=<span class="string">&#x27;text&#x27;</span>]</span> &#123;</span><br><span class="line">  <span class="attribute">line-height</span>: <span class="number">1.2</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="声明块"><a href="#声明块" class="headerlink" title="声明块"></a>声明块</h2><p>作为 <code>css</code> 规则中的第二部分，声明块中自然也有许多需要注意的地方。比如声明的顺序、属性和值的写法以及一些个例等。</p>
+<h3 id="声明的顺序"><a href="#声明的顺序" class="headerlink" title="声明的顺序"></a>声明的顺序</h3><p>在 <code>css</code> 中存在好几百个属性，如果需要一个 <code>css</code> 规则里几乎可以写满这些属性。如果这些声明毫无顺序章法可言，那么在需要修改的时候就会非常的头痛了，一大块声明杂在一个规则里，你就需要慢慢地找慢慢地看了。但是如果你的声明都是按照一定的逻辑顺序来书写，那么声明的层次就非常清晰。声明的时候一般比较重要的属性会优先书写。</p>
+<ol>
+<li>如果包含了 <code>content</code>属性，则应该最优先书写，即写到声明块的最上面。</li>
+<li>定位相关的属性，比如<code>position</code>、<code>top</code>、<code>left</code>、<code>z-index</code>、<code>display</code>、<code>float</code>、<code>visibility</code>和<code>overflow</code>、<code>flex</code>等。</li>
+<li>布局相关的属性，比如<code>display</code>、<code>float</code>、<code>visibility</code>、<code>overflow</code>、<code>flex</code>和<code>clear</code>等。</li>
+<li>盒模型相关的属性，比如<code>width</code>、<code>height</code>、<code>margin</code>、<code>padding</code>、<code>border</code>以及<code>box-sizing</code>等。</li>
+<li>文本排版印刷相关的属性，比如<code>font</code>、<code>line-height</code>、<code>vertical-align</code>、<code>text-align</code>和<code>white-space</code>、<code>text-decoration</code>等。</li>
+<li>视觉感官上相关的属性，比如<code>color</code>、<code>background</code>、<code>list-style</code>、<code>transform</code>、<code>transition</code>和<code>animation</code>等。</li>
+</ol>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.box</span> &#123;</span><br><span class="line">  <span class="comment">/* Positioning */</span></span><br><span class="line">  <span class="attribute">position</span>: absolute;</span><br><span class="line">  <span class="attribute">top</span>: <span class="number">0</span>;</span><br><span class="line">  <span class="attribute">right</span>: <span class="number">0</span>;</span><br><span class="line">  <span class="attribute">bottom</span>: <span class="number">0</span>;</span><br><span class="line">  <span class="attribute">left</span>: <span class="number">0</span>;</span><br><span class="line">  <span class="attribute">z-index</span>: <span class="number">100</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Layout */</span></span><br><span class="line">  <span class="attribute">display</span>: block;</span><br><span class="line">  <span class="attribute">float</span>: right;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Box-model */</span></span><br><span class="line">  <span class="attribute">width</span>: <span class="number">100px</span>;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">100px</span>;</span><br><span class="line">  <span class="attribute">border</span>: <span class="number">1px</span> solid <span class="number">#e5e5e5</span>;</span><br><span class="line">  <span class="attribute">border-radius</span>: <span class="number">3px</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Typography */</span></span><br><span class="line">  <span class="attribute">font</span>: normal <span class="number">13px</span> <span class="string">&#x27;Helvetica Neue&#x27;</span>, sans-serif;</span><br><span class="line">  <span class="attribute">line-height</span>: <span class="number">1.5</span>;</span><br><span class="line">  <span class="attribute">text-align</span>: center;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Visual */</span></span><br><span class="line">  <span class="attribute">color</span>: <span class="number">#333</span>;</span><br><span class="line">  <span class="attribute">background-color</span>: <span class="number">#f5f5f5</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="尽可能的使用简写属性"><a href="#尽可能的使用简写属性" class="headerlink" title="尽可能的使用简写属性"></a>尽可能的使用简写属性</h3><p>在 <code>css</code> 中存在一些属性是可以拆分成其他独立属性的，比如<code>background</code>、<code>border</code>、<code>font</code>、<code>list-style</code>、<code>margin</code> 和 <code>padding</code> 等。这些属性在 <code>css</code> 里被称为复合属性，又因为一个属性包含了多个独立属性，所以在书写的时候使得代码更加简洁，所以又喜欢称其为简写属性，这里的简写也可以理解为动词。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Not recommended */</span></span><br><span class="line"><span class="selector-class">.box</span> &#123;</span><br><span class="line">  <span class="attribute">margin</span>: <span class="number">0</span>;</span><br><span class="line">  <span class="attribute">margin-top</span>: <span class="number">10px</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Recommended */</span></span><br><span class="line"><span class="selector-class">.box</span> &#123;</span><br><span class="line">  <span class="attribute">margin</span>: <span class="number">10px</span> <span class="number">0</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="每条声明都以分号结尾"><a href="#每条声明都以分号结尾" class="headerlink" title="每条声明都以分号结尾"></a>每条声明都以分号结尾</h3><p>在 <code>css</code> 里，如果声明不以分号结尾是会出问题的，但是也有一个例外，那就是声明块的最后一个声明是可以不用分号结尾的。但是如果改变了声明的顺序或者新增了声明，那原来的那条没有带分号的声明就有可能不是最后一条声明了，肯定就出问题了，所以为了避免这种不必要的错误发生，我们要习惯给每个声明都加上分号。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Not recommended */</span></span><br><span class="line"><span class="selector-class">.post-content</span> <span class="selector-tag">h6</span> &#123;</span><br><span class="line">  <span class="attribute">position</span>: relative;</span><br><span class="line">  <span class="attribute">margin</span>: <span class="number">1em</span> <span class="number">0</span>;</span><br><span class="line">  <span class="attribute">color</span>: <span class="number">#4e4a4a</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Recommended */</span></span><br><span class="line"><span class="selector-class">.post-content</span> <span class="selector-tag">h6</span> &#123;</span><br><span class="line">  <span class="attribute">position</span>: relative;</span><br><span class="line">  <span class="attribute">margin</span>: <span class="number">1em</span> <span class="number">0</span>;</span><br><span class="line">  <span class="attribute">color</span>: <span class="number">#4e4a4a</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="双引号"><a href="#双引号" class="headerlink" title="双引号"></a>双引号</h3><p>在 <code>css</code> 的世界里很多地方是很有必要用引号的，为了避免混淆，建议需要引号的地方都使用双引号，而不用单引号。</p>
+<p>对于 <code>font-family</code> 属性，如果属性值是带空格的英文比如 <code>Helvetica Neue</code> 或者是中文，那么建议加上双引号，比如<code>content</code> 属性。<br>对于 <code>URI</code> 资源的引用，有使用到<code>url()</code>引入资源的时候，不用带引号。比如引入背景图片、字体定义的时候引入字体包等。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.tip</span><span class="selector-pseudo">:before</span> &#123;</span><br><span class="line">  <span class="attribute">content</span>: <span class="string">&#x27;!&#x27;</span>;</span><br><span class="line">  <span class="attribute">font-family</span>: Dosis, <span class="string">&#x27;Source Sans Pro&#x27;</span>, <span class="string">&#x27;Helvetica Neue&#x27;</span>, Arial, sans-serif;</span><br><span class="line">  <span class="attribute">background</span>: <span class="built_in">url</span>(../img/tip.png) no-repeat center;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="尽量不要使用-important"><a href="#尽量不要使用-important" class="headerlink" title="尽量不要使用 !important"></a>尽量不要使用 <code>!important</code></h3><p><code>css</code>规则的定义顺序很重要，同层级的声明，定义文件后面的会覆盖定义在前面的，但是如果使用了 <code>!important</code> 来限定声明，则可以将优先级提升到最高，这是非常霸道的规则。有时候因为使用了 <code>!important</code>，使得脚本程序改变不了样式渲染的结果，非常可恶。所以建议不要使用这个属性，取而代之的是，如果真的需要提高某个选择器的优先级，可以通过增加样式的层级来达到这个目的。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Not recommended */</span></span><br><span class="line"><span class="selector-class">.heavy</span> &#123;</span><br><span class="line">  <span class="attribute">font-weight</span>: <span class="number">700</span> <span class="meta">!important</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Recommended */</span></span><br><span class="line"><span class="selector-class">.heavy</span> <span class="selector-tag">p</span>,</span><br><span class="line"><span class="selector-class">.heavy</span> <span class="selector-tag">a</span> &#123;</span><br><span class="line">  <span class="attribute">font-weight</span>: <span class="number">700</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="值和单位"><a href="#值和单位" class="headerlink" title="值和单位"></a>值和单位</h3><ul>
+<li><p>所有属性和值尽量都用小写。</p>
+</li>
+<li><p>属性值为 0 的时候，不要带单位。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Not recommended */</span></span><br><span class="line"><span class="selector-class">.info-item</span> &#123;</span><br><span class="line">  <span class="attribute">padding</span>: <span class="number">0px</span> <span class="number">10px</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Recommended */</span></span><br><span class="line"><span class="selector-class">.info-item</span> &#123;</span><br><span class="line">  <span class="attribute">padding</span>: <span class="number">0</span> <span class="number">10px</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>当可能的时候尽量使用三位的十六进制计数法，比如表示颜色的时候。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Not recommended */</span></span><br><span class="line"><span class="selector-class">.pink-color</span> &#123;</span><br><span class="line">  <span class="attribute">color</span>: <span class="number">#ff33aa</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Recommended */</span></span><br><span class="line"><span class="selector-class">.pink-color</span> &#123;</span><br><span class="line">  <span class="attribute">color</span>: <span class="number">#f3a</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>font-weight</code>使用数值化表示方法，用 400 代替 <code>normal</code>、700 代替 <code>bold</code>。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Not recommended */</span></span><br><span class="line"><span class="selector-class">.heavy</span> &#123;</span><br><span class="line">  <span class="attribute">font-weight</span>: bold;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Recommended */</span></span><br><span class="line"><span class="selector-class">.heavy</span> &#123;</span><br><span class="line">  <span class="attribute">font-weight</span>: <span class="number">700</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>line-height</code>尽量不要带单位，除非必须用 px 来标定。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Not recommended */</span></span><br><span class="line"><span class="selector-class">.content</span> <span class="selector-tag">p</span> &#123;</span><br><span class="line">  <span class="attribute">line-height</span>: <span class="number">1.2em</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Recommended */</span></span><br><span class="line"><span class="selector-class">.content</span> <span class="selector-tag">p</span> &#123;</span><br><span class="line">  <span class="attribute">line-height</span>: <span class="number">1.2</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>当属性值是介于 0 到 1 之间的小数时，可以直接把 0 省略。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Not recommended */</span></span><br><span class="line"><span class="selector-class">.pannel</span> &#123;</span><br><span class="line">  <span class="attribute">opacity</span>: <span class="number">0.8</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Recommended */</span></span><br><span class="line"><span class="selector-class">.pannel</span> &#123;</span><br><span class="line">  <span class="attribute">opacity</span>: <span class="number">0.8</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h2><h3 id="文件或模块注释"><a href="#文件或模块注释" class="headerlink" title="文件或模块注释"></a>文件或模块注释</h3><p>文件顶部（<code>@charset</code>之后）最好是需要一块注释，大概介绍的是这个文件是关于什么内容的，作者是谁，最后更新时间等。当然如果一个 <code>css</code> 文件非常大，涉及到很多组件模块相关的代码，那可能每个模块都需要一个注释。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * @name: bubuzou.css</span></span><br><span class="line"><span class="comment">  * @description: hexo-theme-bubuzou的主题样式</span></span><br><span class="line"><span class="comment">  * @author: typeR(zgrlbq@126.com)</span></span><br><span class="line"><span class="comment">  * @update: 2017-7-21 16:21:02</span></span><br><span class="line"><span class="comment">  */</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="单行注释"><a href="#单行注释" class="headerlink" title="单行注释"></a>单行注释</h3><p>星号与内容之间必须保留一个空格。如果是单条声明需要注释，则写到声明的分号后分隔一个空格开始注释。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* This is a comment about this selector */</span></span><br><span class="line"><span class="selector-class">.another-selector</span> &#123;</span><br><span class="line">  <span class="attribute">position</span>: absolute;</span><br><span class="line">  <span class="attribute">top</span>: <span class="number">0</span>; <span class="comment">/* I should explain why this is so important */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="多行注释"><a href="#多行注释" class="headerlink" title="多行注释"></a>多行注释</h3><p>星号要一列对齐，星号与内容之间必须保留一个空格。多行的注释和规则之间最好加一个空格，才不会显得那么拥挤。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Description of left, whether or not it has media queries, etc.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="selector-class">.left</span> &#123;</span><br><span class="line">  <span class="attribute">float</span>: left;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/gionkunz/chartist-js/blob/develop/CODINGSTYLE.md">Web Styleguide - Style guide to harmonize HTML, Javascript and CSS / Sass coding style</a></li>
+<li><a target="_blank" rel="noopener" href="https://make.wordpress.org/core/handbook/best-practices/coding-standards/css/">CSS Coding Standards</a></li>
+<li><a target="_blank" rel="noopener" href="http://codeguide.co/#css-syntax">css-syntax</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.cnblogs.com/coco1s/p/7159192.html">CSS 样式书写规范</a></li>
+</ul>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2017/08/28/traverse-of-array-like/" title="JS中类数组的遍历以及性能探究" class="prev">上一篇</a><a href="/2017/06/29/jpeg-gif-png-svg-on-web/" title="jpg、gif、png和svg用于web上，我们该如何选择最合适的图像格式？" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="copyright"><p>© 2016 - 2024 <a href="https://weibo.com/316000381" target="_blank">typeR</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p><p> <span style="padding-right: 6px;">闽ICP备16007301号-2</span></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/jquery-1.8.2.min.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/articleCatalog.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

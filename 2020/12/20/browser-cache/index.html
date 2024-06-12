@@ -1,0 +1,230 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> 浏览器专题之缓存篇 · 步步走</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="浏览器缓存：强缓存和协商缓存"><meta name="keywords" content="Service Worker、memory cache、disk cache、Expires、Cache-Control、Last-Modified、ETag"><meta name="author" content="typeR"><link rel="short icon" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/favicon.ico"><link rel="stylesheet" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://bubuzou.com/atom.xml" title="步步走"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script><meta name="generator" content="Hexo 5.0.0"><link rel="alternate" href="/atom.xml" title="步步走" type="application/atom+xml">
+</head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/logo.svg"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="/categories/live/" target="_self" data-hover="生活" class="nav-list-link">生活</a></li><li class="nav-list-item"><a href="/categories/read/" target="_self" data-hover="读书" class="nav-list-link">读书</a></li><li class="nav-list-item"><a href="/about/" target="_self" data-hover="关于" class="nav-list-link">关于</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">浏览器专题之缓存篇</h1><div class="post-info">2020-12-20<p class="visit"><i data-identity="2020/12/20/browser-cache/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><p>浏览器缓存一直是个老生常谈的话题，也是面试官常常用来鉴别面试者的利器，作为前端来讲这块知识是属于必须掌握的，再者利用好缓存也是做性能优化的有效方法。本文将从缓存原因、缓存读写顺序，缓存位置以及缓存策略这几个角度介绍浏览器缓存，并且最后给出实践的应用举例。</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/browser_015.png"></p>
+<h2 id="为什么要缓存"><a href="#为什么要缓存" class="headerlink" title="为什么要缓存"></a>为什么要缓存</h2><p>很多同学知道缓存的位置和字段，知道怎么用，但是你有没有想过为什么我们的页面需要浏览器缓存呢？</p>
+<ul>
+<li>缓存可以减少用户等待时间，提升用户体验，直接从内存或磁盘中取缓存数据肯定是比从服务器请求更快的；</li>
+<li>减少网络带宽消耗：对于网站运营者和用户，带宽都代表着成本，过多的带宽消耗，都需要支付额外的费用。试想一下如果可以使用缓存，只会产生极小的网络流量，这将有效的降低运营成本。</li>
+<li>降低服务器压力：给网络资源设定有效期之后，用户可以重复使用本地的缓存，减少对源服务器的请求，降低服务器的压力。</li>
+</ul>
+<a id="more"></a>
+
+<h2 id="缓存读写顺序"><a href="#缓存读写顺序" class="headerlink" title="缓存读写顺序"></a>缓存读写顺序</h2><p>当浏览器对一个资源（比如一个外链的 <code>a.js</code>）进行请求的时候会发生什么？请从缓存的角度大概说下：</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/browser_012.png"></p>
+<ol>
+<li>调用 <code>Service Worker</code> 的 <code>fetch</code> 事件获取资源；</li>
+<li>查看 <code>memory cache</code>；</li>
+<li>查看 <code>disk cache</code>；这里又细分：<ul>
+<li>如果有强制缓存且未失效，则使用强制缓存，不请求服务器。这时的状态码全部是 200；</li>
+<li>如果有强制缓存但已失效，使用协商缓存，比较后确定 304 还是 200；</li>
+</ul>
+</li>
+<li>发送网络请求，等待网络响应；</li>
+<li>把响应内容存入 <code>disk cache</code> (如果请求头信息配置可以存的话)；</li>
+<li>把响应内容的引用存入 <code>memory cache</code> (无视请求头信息的配置，除了 <code>no-store</code> 之外)；</li>
+<li>把响应内容存入 <code>Service Worker</code> 的 <code>Cache Storage</code> (如果 <code>Service Worker</code> 的脚本调用了 <code>cache.put()</code>)；</li>
+</ol>
+<p>上面这一系列过程其实是浏览器查找缓存和把资源存入缓存的执行流程。这其中出现了很多专业词汇，让人看了一脸懵逼，下面将从缓存位置和缓存策略两个角度简要介绍浏览器的缓存。</p>
+<h2 id="缓存位置"><a href="#缓存位置" class="headerlink" title="缓存位置"></a>缓存位置</h2><p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/browser_013.png"></p>
+<p>从浏览器开发者工具的 <code>Network</code> 面板下某个请求的 <code>Size</code> 中可以看到当前请求资源的大小以及来源，从这些来源我们就知道该资源到底是从 <code>memory cache</code> 中读取的呢，还是从 <code>disk cache</code> 中读取的，亦或者是服务器返回的。而这些就是缓存位置：</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/browser_011.png"></p>
+<h3 id="Service-Worker"><a href="#Service-Worker" class="headerlink" title="Service Worker"></a>Service Worker</h3><p> 是一个注册在指定源和路径下的事件驱动 <code>worker</code>；特点是：</p>
+<ul>
+<li>运行在 <code>worker</code> 上下文，因此它不能访问 <code>DOM</code>；</li>
+<li>独立于主线程之外，不会造成阻塞；</li>
+<li>设计完全异步，所以同步 <code>API</code>（如 <code>XHR</code> 和 <code>localStorage</code> ）不能在 <code>Service Worker</code> 中使用；</li>
+<li>最后处于安全考虑，必须在 <code>HTTPS</code> 环境下才可以使用；</li>
+</ul>
+<p>说了这么多特点，那它和缓存有啥关系？其实它有一个功能就是离线缓存：<code>Service Worker Cache</code>；区别于浏览器内部的 <code>memory cache</code> 和 <code>disk cache</code>，它允许我们自己去操控缓存，具体操作过程可以参看 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/Service_Worker_API/Using_Service_Workers">Using_Service_Workers</a>；通过 <code>Service Worker</code> 设置的缓存会出现在浏览器开发者工具 <code>Application</code> 面板下的 <code>Cache Storage</code> 中。</p>
+<h3 id="memory-cache"><a href="#memory-cache" class="headerlink" title="memory cache"></a>memory cache</h3><p>是浏览器内存中的缓存，相比于 <code>disk cache</code> 它的特点是读取速度快，但容量小，且时效性短，一旦浏览器 <code>tab</code> 页关闭，<code>memory cache</code> 就将被清空。<code>memory cache</code> 会自动缓存所有资源嘛？答案肯定是否定的，当 <code>HTTP</code> 头设置了 <code>Cache-Control: no-store</code> 的时候或者浏览器设置了 <code>Disabled cache</code> 就无法把资源存入内存了，其实也无法存入硬盘。当从 <code>memory cache</code> 中查找缓存的时候，不仅仅会去匹配资源的 <code>URL</code>，还会看其 <code>Content-type</code> 是否相同。</p>
+<h3 id="disk-cache"><a href="#disk-cache" class="headerlink" title="disk cache"></a>disk cache</h3><p>也叫 <code>HTTP cache</code> 是存在硬盘中的缓存，根据 <code>HTTP</code> 头部的各类字段进行判定资源的缓存规则，比如是否可以缓存，什么时候过期，过期之后需要重新发起请求吗？相比于 <code>memory cache</code> 的 <code>disk cache</code> 拥有存储空间时间长等优点，网站中的绝大多数资源都是存在 <code>disk cache</code> 中的。</p>
+<blockquote>
+<p>浏览器如何判断一个资源是存入内存还是硬盘呢？关于这个问题，网上说法不一，不过比较靠谱的观点是：对于大文件大概率会存入硬盘中；当前系统内存使用率高的话，文件优先存入硬盘。</p>
+</blockquote>
+<p>缓存按照缓存位置划分，其实还有一个 <code>HTTP/2</code> 的内容 <code>push cache</code>，由于目前国内对 <code>HTTP/2</code> 应用还不广泛，且网上对 <code>push cache</code> 的知识还不齐全，所以本篇不打算介绍这块，感兴趣的可以阅读这篇文章：<a target="_blank" rel="noopener" href="https://jakearchibald.com/2017/h2-push-tougher-than-i-thought/">HTTP/2 push is tougher than I thought</a></p>
+<h2 id="缓存策略"><a href="#缓存策略" class="headerlink" title="缓存策略"></a>缓存策略</h2><p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/browser_014.png"></p>
+<p>根据 <code>HTTP header</code> 的字段又可以将缓存分成强缓存和协商缓存。强缓存可以直接从缓存中读取资源返回给浏览器而不需要向服务器发送请求，而协商缓存是当强缓存失效后（过了过期时间），浏览器需要携带缓存标识向服务器发送请求，服务器根据缓存标识决定是否使用缓存的过程。强缓存的字段有：<code>Expires</code> 和 <code>Cache-Control</code>。协商缓存的字段有：<code>Last-Modified</code> 和 <code>ETag</code>。</p>
+<h3 id="Expires"><a href="#Expires" class="headerlink" title="Expires"></a>Expires</h3><p><code>Expires</code> 是 <code>HTTP/1.0</code> 的字段，表示缓存过期时间，它是一个 <code>GMT</code> 格式的时间字符串。<code>Expires</code> 需要在服务端配置（具体配置也根据服务器而定），浏览器会根据该过期日期与客户端时间对比，如果过期时间还没到，则会去缓存中读取该资源，如果已经到期了，则浏览器判断为该资源已经不新鲜要重新从服务端获取。由于 <code>Expires</code> 是一个绝对的时间，所以会局限于客户端时间的准确性，从而可能会出现浏览器判断缓存失效的问题。如下是一个 <code>Expires</code> 示例，是一个日期/时间：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Expires: Wed, 21 Oct 2020 07:28:00 GMT</span><br></pre></td></tr></table></figure>
+
+<h3 id="Cache-Control"><a href="#Cache-Control" class="headerlink" title="Cache-Control"></a>Cache-Control</h3><p>它是 <code>HTTP/1.1</code> 的字段，其中的包含的值很多：</p>
+<ul>
+<li><code>max-age</code> 最大缓存时间，值的单位是秒，在该时间内，浏览器不需要向浏览器请求。这个设置解决了 <code>Expires</code> 中由于客户端系统时间不准确而导致缓存失效的问题；</li>
+<li><code>must-revalidate</code>：如果超过了 <code>max-age</code> 的时间，浏览器必须向服务器发送请求，验证资源是否还有效；</li>
+<li><code>public</code> 响应可以被任何对象（客户端、代理服务器等）缓存；</li>
+<li><code>private</code> 响应只能被客户端缓存；</li>
+<li><code>no-cache</code> 跳过强缓存，直接进入协商缓存阶段；</li>
+<li><code>no-store</code> 不缓存任何内容，设置了这个后资源也不会被缓存到内存和硬盘；</li>
+</ul>
+<p><code>Cache-Control</code> 的值是可以混合使用的，比如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Cache-Control: private, max-age&#x3D;0, no-cache</span><br></pre></td></tr></table></figure>
+
+<p>当混合使用的时候它们的优先级如下图所示：</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/browser_003.png"></p>
+<p><strong>当 <code>Expires</code> 和 <code>Cache-Control</code> 都被设置的时候，浏览器会优先考虑后者</strong>。当强缓存失效的时候，则会进入到协商缓存阶段。具体细节是这样：浏览器从本地查找强缓存，发现失效了，然后会拿着缓存标识请求服务器，服务器拿着这个缓存标识和对应的字段进行校验资源是否被修改，如果没有被修改则此时响应状态会是 304，且不会返回请求资源，而是直接从浏览器缓存中读取。</p>
+<p>而浏览器缓存标识可以是：<code>Last-Modified</code> 和 <code>ETag</code>：</p>
+<h3 id="Last-Modified"><a href="#Last-Modified" class="headerlink" title="Last-Modified"></a>Last-Modified</h3><p>资源的最后修改时间；第一次请求的时候，响应头会返回该字段告知浏览器资源的最后一次修改时间；浏览器会将值和资源存在缓存中；再次请求该资源的时候，如果强缓存过期，则浏览器会设置请求头的 <code>If-Modifined-Since</code> 字段值为存储在缓存中的上次响应头 <code>Last-Modified</code> 的值，并且发送请求；服务器拿着 <code>If-Modifined-Since</code> 的值和 <code>Last-Modified</code> 进行对比。如果相等，表示资源未修改，响应 304；如果不相等，表示资源被修改，响应 200，且返回请求资源。如果资源更新的速度是小于 1 秒的，那么该字段将失效，因为 <code>Last-Modified</code> 时间是精确到秒的。所以有了 <code>ETag</code>。</p>
+<h3 id="ETag"><a href="#ETag" class="headerlink" title="ETag"></a>ETag</h3><p>根据资源内容生成的唯一标识，资源是否被修改的判断过程和上面的一致，只是对应的字段替换了。<code>Last-Modified</code> 替换成 <code>ETag</code>，<code>If-Modifined-Since</code> 替换成 <code>If-None-Match</code>。</p>
+<p>当 <code>Last-Modified</code> 和 <code>ETag</code> 都被设置的时候，浏览器会优先考虑后者。</p>
+<h2 id="浏览器的行为"><a href="#浏览器的行为" class="headerlink" title="浏览器的行为"></a>浏览器的行为</h2><ul>
+<li>浏览器地址栏输入 <code>URL</code> 后回车： 查找 <code>disk cache</code> 中是否有匹配。如有则使用；如没有则发送网络请求。</li>
+<li>普通刷新 (⌘ + R)：因为 <code>TAB</code> 页并没有关闭，因此 <code>memory cache</code> 是可用的，会被优先使用(如果匹配的话)，其次才是 <code>disk cache</code>。</li>
+<li>强制刷新 (⇧ + ⌘ + R)：浏览器不使用缓存，因此发送的请求头部均带有 <code>Cache-control: no-cache</code>(为了兼容，还带了 <code>Pragma: no-cache</code>)。服务器直接返回 200 和最新内容。</li>
+<li>当在开发者工具 <code>Network</code> 面板下设置了 <code>Disabled cache</code> 禁用缓存后，浏览器将不会从 <code>memory cache</code> 或者 <code>disk cache</code> 中读取缓存，而是直接发起网络请求。</li>
+</ul>
+<h2 id="缓存应用"><a href="#缓存应用" class="headerlink" title="缓存应用"></a>缓存应用</h2><h3 id="静态资源"><a href="#静态资源" class="headerlink" title="静态资源"></a>静态资源</h3><p>比如页面引入了一个 <code>JQuery</code>，对于页面来说这个脚本就是一个工具库，基本上是不会发生变化的，对于这种资源可以将它的缓存时间设置得长一点，比如如下这个地址的脚本：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;script src=<span class="string">&quot;https://cdn.bootcss.com/jquery/2.1.4/jquery.min.js&quot;</span>&gt;&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<p>你会看到它的响应头里设置了，<code>max-age=2592000</code> 直接缓存 30 天：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cache-control: public, max-age&#x3D;2592000</span><br></pre></td></tr></table></figure>
+
+<h3 id="频繁变化的资源"><a href="#频繁变化的资源" class="headerlink" title="频繁变化的资源"></a>频繁变化的资源</h3><p>对于频繁变化的资源，比如某个页面经常需要调整，那么这个页面就需要在每次请求的时候都进行验证，可以在响应头这样设置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cache-control: no-cache</span><br></pre></td></tr></table></figure>
+
+<h3 id="不进行缓存"><a href="#不进行缓存" class="headerlink" title="不进行缓存"></a>不进行缓存</h3><p>当然并不是所有请求都能被缓存，无法被浏览器缓存的请求如下：</p>
+<ol>
+<li><code>HTTP</code> 信息头中包含 <code>Cache-Control: no-cache</code> ，<code>pragma: no-cache（HTTP1.0）</code>，或 <code>Cache-Control: max-age=0</code> 等告诉浏览器不用缓存的请求；</li>
+<li>需要根据 <code>Cookie</code>、认证信息等决定输入内容的动态请求是不能被缓存的；</li>
+<li>经过 <code>HTTPS</code> 安全加密的请求；</li>
+<li><code>POST</code> 请求无法被缓存；</li>
+<li><code>HTTP</code> 响应头中不包含 <code>Last-Modified/Etag</code>，也不包含 <code>Cache-Control/Expires</code> 的请求无法被缓存；</li>
+</ol>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/ljianshu/Blog/issues/23">深入理解浏览器的缓存机制</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903747357769742">一文读懂前端缓存</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/Service_Worker_API">Service_Worker_API</a></li>
+</ul>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2020/12/24/browser-store/" title="很多人知道 Web Storage，但是你清楚 Cookie 嘛" class="prev">上一篇</a><a href="/2020/12/16/browser-url/" title="从输入 URL 到页面显示发生了什么" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="copyright"><p>© 2016 - 2024 <a href="https://weibo.com/316000381" target="_blank">typeR</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p><p> <span style="padding-right: 6px;">闽ICP备16007301号-2</span></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/jquery-1.8.2.min.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/articleCatalog.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

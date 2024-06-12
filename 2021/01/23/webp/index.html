@@ -1,0 +1,242 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> 为你的网站加上 WebP 格式的图片吧 · 步步走</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="WebP 格式图片"><meta name="keywords" content="WebP 格式图片"><meta name="author" content="typeR"><link rel="short icon" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/favicon.ico"><link rel="stylesheet" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://bubuzou.com/atom.xml" title="步步走"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script><meta name="generator" content="Hexo 5.0.0"><link rel="alternate" href="/atom.xml" title="步步走" type="application/atom+xml">
+</head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/logo.svg"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="/categories/live/" target="_self" data-hover="生活" class="nav-list-link">生活</a></li><li class="nav-list-item"><a href="/categories/read/" target="_self" data-hover="读书" class="nav-list-link">读书</a></li><li class="nav-list-item"><a href="/about/" target="_self" data-hover="关于" class="nav-list-link">关于</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">为你的网站加上 WebP 格式的图片吧</h1><div class="post-info">2021-01-23<p class="visit"><i data-identity="2021/01/23/webp/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><p>之前写了一篇文章：<a target="_blank" rel="noopener" href="https://github.com/Bulandent/blog/issues/17">jpg、gif、png 和 svg 用于 web 上，我们该如何选择最合适的图像格式</a>，介绍了这几种图片格式的特点，以及如何为网站选择合适的图片，然后评论区有位大佬让我补充下 WebP 格式，于是乎它来了。</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202101/webp006.png"></p>
+<h2 id="什么是-WebP-格式"><a href="#什么是-WebP-格式" class="headerlink" title="什么是 WebP 格式"></a>什么是 WebP 格式</h2><p>WebP 是一种现代图像格式，可为 Web 上的图像提供出色的无损和有损压缩。 使用 WebP，网站管理员和 Web 开发人员可以创建更小，更丰富的图像，从而使 Web 更快。</p>
+<p>与 PNG 相比，WebP 无损图像的尺寸要小 26％。 在同等的 SSIM 质量指数下，WebP 有损图像比同类 JPEG 图像小 25-34％。</p>
+<p>无损 WebP 支持透明性（也称为 Alpha 通道），而仅增加了 22％ 的字节数。 对于可以接受有损 RGB 压缩的情况，有损 WebP 还支持透明性，与 PNG 相比，文件大小通常小 3 倍。</p>
+<blockquote>
+<p>上面这 3 段话来源于 <a target="_blank" rel="noopener" href="https://developers.google.com/speed/webp">https://developers.google.com/speed/webp</a></p>
+</blockquote>
+<a id="more"></a>
+
+<h2 id="为什么你需要这个格式"><a href="#为什么你需要这个格式" class="headerlink" title="为什么你需要这个格式"></a>为什么你需要这个格式</h2><p>因为 WebP 图像比 JPEG 和 PNG 图像小-通常文件大小减少 25-35％。这样可以减小页面大小并提高性能。举 2 个例子：</p>
+<ul>
+<li>YouTube 发现，切换到 WebP 缩略图可将页面加载速度提高 10％。</li>
+<li>当他们切换到使用 WebP 时，Facebook 节省了 25-35％ 的 JPEG 文件大小，节省了 80％ 的 PNG 文件大小。</li>
+</ul>
+<p>WebP 是 JPEG，PNG 和 GIF 图像的理想替代品。 另外，WebP 提供无损压缩和有损压缩。 在无损压缩中，不会丢失任何数据。 有损压缩会减小文件大小，但会以降低图像质量为代价。</p>
+<h2 id="如何将图片转成-WebP-格式"><a href="#如何将图片转成-WebP-格式" class="headerlink" title="如何将图片转成 WebP 格式"></a>如何将图片转成 WebP 格式</h2><p>通常，开发者会用如下两种方式来将图片转成 WebP 格式：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://developers.google.com/speed/webp/docs/using">cwebp</a> 命令行工具</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/imagemin/imagemin-webp">Imagemin WebP</a> 插件（npm 包）</li>
+</ul>
+<p>如果你的项目比较简单或者你仅需要将图片转化一次，那么 <code>cwebp</code> 命令行工具是一个很好的选择；而如果你使用构建工具比如 <code>Webpack</code> 或 <code>Gulp</code> 等去构建你的项目的时候，那么将图片转 <code>WebP</code> 使用 <code>Imagemin WebP</code> 插件就是你最好的选择了。</p>
+<p>当你需要把图片转成 <code>WebP</code> 格式的时候，你可以设置很多的参数，但是你最需要关心的就仅仅只是压缩质量，你可以指定一个压缩的质量等级，它的范围是从 0 ~ 100，0 表示质量最差，100 是最好。那么该把它设置成多少才最合适呢？这就需要你好好的花费一翻功夫去实践到底哪个质量等级是既兼顾了呈现质量又不会使得文件太大呢？</p>
+<h3 id="使用-cwebp-转换图片"><a href="#使用-cwebp-转换图片" class="headerlink" title="使用 cwebp 转换图片"></a>使用 cwebp 转换图片</h3><p>使用这个命令前需要先安装它的工具包 webp，按照如下几个步骤操作即可：</p>
+<ul>
+<li><p>可以<a target="_blank" rel="noopener" href="https://storage.googleapis.com/downloads.webmproject.org/releases/webp/index.html">去这下载 webp 工具包</a> ，这个网站提供了很多版本的包，选择一个和电脑匹配的包，比如我是 Mac 系统，我下载的是 <code>libwebp-1.1.0-rc2-mac-10.15</code> 版本的包，下载完成后解压，然后把解压后的文件夹放到你想要存放的目录，我是把他放到了 <code>/Applications/Utilities/</code> 下；</p>
+</li>
+<li><p>设置环境变量，使得命令可以在终端下使用。而我是直接修改当前用户下的 <code>.bash_profile</code> 文件，该文件目录：<code>/Users/ccp/.bash_profile</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export PATH&#x3D;$PATH:&#x2F;Applications&#x2F;Utilities&#x2F;libwebp-1.1.0-rc2-mac-10.15&#x2F;bin</span><br></pre></td></tr></table></figure>
+
+<p>修改完成后，需要让命令立即生效的话，需要在终端下运行：<code>source .bash_profile</code></p>
+</li>
+<li><p>然后就可以在终端下输入 <code>cwebp</code>，如果它能提示你如何使用该命令，说明这个包安装好了，可以正常使用 cwebp 命令了。</p>
+</li>
+<li><p>阅读 libwebp 包的下的 READMD，可以发现，该包除了有 cwebp 命令外，还提供了很多额外的命令，具体用法可以自行查阅相关文档。</p>
+</li>
+</ul>
+<p>除了以上这种操作稍微麻烦的安装方式外，还可以使用 OS X 的包管理工具进行安装（你怎么不早说 😭）：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://formulae.brew.sh/formula/webp">Homebrew WebP package</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.macports.org/ports.php?by=library&substr=webp">Macports WebP package</a></li>
+</ul>
+<p>安装成功后，就可以愉快的使用 cwebp 命令了。来看看以下操作：</p>
+<p>使用 cwebp 的默认压缩设置转换单张图片（默认是有损压缩，且默认的压缩的质量参数是 75）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cwebp images&#x2F;flower.jpg -o images&#x2F;flower.webp</span><br></pre></td></tr></table></figure>
+
+<p>使用 50 质量等级去转换单张图片：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cwebp -q 50 images&#x2F;flower.jpg -o images&#x2F;flower.webp</span><br></pre></td></tr></table></figure>
+
+<p>转换指定目录下的所有文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">for file in images&#x2F;*; do cwebp &quot;$file&quot; -o &quot;$&#123;file%.*&#125;.webp&quot;; done</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用-Imagemin-转换图片"><a href="#使用-Imagemin-转换图片" class="headerlink" title="使用 Imagemin 转换图片"></a>使用 Imagemin 转换图片</h3><p>Imagemin Webp 插件可以在 Node 环境中独立使用，也可以结合 Webpack 等构建工具使用。通常只需要 10 行左右代码即可配置完成。</p>
+<p>Node 环境下配置，以下代码会把 images 目录下的图片转成 WebP 图片后存到 compressed_images 目录下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> imagemin = <span class="built_in">require</span>(<span class="string">&#x27;imagemin&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> imageminWebp = <span class="built_in">require</span>(<span class="string">&#x27;imagemin-webp&#x27;</span>)</span><br><span class="line"></span><br><span class="line">imagemin([<span class="string">&#x27;images/*&#x27;</span>], &#123;</span><br><span class="line">  destination: <span class="string">&#x27;compressed_images&#x27;</span>,</span><br><span class="line">  plugins: [imageminWebp(&#123; <span class="attr">quality</span>: <span class="number">50</span> &#125;)],</span><br><span class="line">&#125;).then(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">&#x27;Done!&#x27;</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>在构建工具 Webpack 下使用，这里还配合了 <code>copy-webpack-plugin</code> 插件实现图片的复制。以下代码来源于 <a target="_blank" rel="noopener" href="https://glitch.com/edit/#!/webp-webpack">webp-webpack</a>：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Copyright 2018 Google LLC.</span></span><br><span class="line"><span class="comment">// SPDX-License-Identifier: Apache-2.0</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> ImageminWebP = <span class="built_in">require</span>(<span class="string">&#x27;imagemin-webp&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> ImageminPlugin = <span class="built_in">require</span>(<span class="string">&#x27;imagemin-webpack-plugin&#x27;</span>).default</span><br><span class="line"><span class="keyword">const</span> CopyWebpackPlugin = <span class="built_in">require</span>(<span class="string">&#x27;copy-webpack-plugin&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> path = <span class="built_in">require</span>(<span class="string">&#x27;path&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  entry: <span class="string">&#x27;./index.js&#x27;</span>,</span><br><span class="line">  output: &#123;</span><br><span class="line">    filename: <span class="string">&#x27;bundle.js&#x27;</span>,</span><br><span class="line">    path: path.resolve(__dirname, <span class="string">&#x27;dist&#x27;</span>),</span><br><span class="line">  &#125;,</span><br><span class="line">  plugins: [</span><br><span class="line">    <span class="keyword">new</span> CopyWebpackPlugin([</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="keyword">from</span>: <span class="string">&#x27;./images/**/**&#x27;</span>,</span><br><span class="line">        to: <span class="string">&#x27;./images/[name].webp&#x27;</span>,</span><br><span class="line">      &#125;,</span><br><span class="line">    ]),</span><br><span class="line">    <span class="keyword">new</span> ImageminPlugin(&#123;</span><br><span class="line">      <span class="comment">// imagemin-webp docs: https://github.com/imagemin/imagemin-webp</span></span><br><span class="line">      plugins: [ImageminWebP(&#123; <span class="attr">quality</span>: <span class="number">50</span> &#125;)],</span><br><span class="line">    &#125;),</span><br><span class="line">  ],</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>你也可以尝试使用 <a target="_blank" rel="noopener" href="https://www.npmjs.com/package/imagemin-webp-webpack-plugin">imagemin-webp-webpack-plugin</a> 这个插件，因为我看它最近 4 个月内有过更新，下载量也快 10K 了，应该可以满足需求。</p>
+<h2 id="对比-WebP-和-其他图片格式"><a href="#对比-WebP-和-其他图片格式" class="headerlink" title="对比 WebP 和 其他图片格式"></a>对比 WebP 和 其他图片格式</h2><p>下面我用 PS 做了一张图片：</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202101/webp001.png"></p>
+<p>然后用它导出了 4 张图片，它们的信息如下：</p>
+<ul>
+<li><code>jpg_60.jpg</code>：质量为 60 的 JPG 格式图片，48KB；</li>
+<li><code>jpg_100.jpg</code>：质量为 100 的 JPG 格式图片，142KB；</li>
+<li><code>png_8.png</code>：8 位的 PNG 格式图片，60KB；</li>
+<li><code>png_24.png</code>：24 位的 PNG 格式图片，200KB；</li>
+</ul>
+<p>然后我用如下命令，批量将他们转成了 WebP 格式的图片：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">for file in Downloads&#x2F;img&#x2F;*; do cwebp &quot;$file&quot; -o &quot;$&#123;file%.*&#125;.webp&quot;; done</span><br></pre></td></tr></table></figure>
+
+<p>然后可以看到 <code>Downloads/img/</code> 文件夹下所有文件的信息如下：</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202101/webp002.png"></p>
+<p>发现这 4 张图片被转成 WebP 格式的图片后文件大小居然都差不多大，大概都是 22KB，比原来真的小了太多了，尤其是 PNG 24 和 JPG 质量 100 的图片体积缩减更加明显。<strong>而最差的 JPG 质量 60 的图片再被转成 WebP 格式后，体积竟然还缩减了 54% 左右</strong>。</p>
+<p>接下来我们再把这 4 张图片通过在线工具 <a target="_blank" rel="noopener" href="https://tinypng.com/">TinyPNG</a> 压缩一下，以下是文件压缩后的信息（左右两列绿色数字分别表示：文件压缩前大小和压缩后大小）：</p>
+<p><img src="../webp_003.png"></p>
+<p>发现 TinyPNG 对 PNG 24 和 JPG 质量 100 的图片压缩效果比较明显。**另外将这压缩过的 4 张图片和 WebP 格式的图片（22KB）相比，发现 WebP 图片的文件大小还是明显小很多，小了超过 50%**，所以这就是为什么建议在 Web 应用上使用 WebP 图片的原因，真的优化太大了。</p>
+<h2 id="让-WebP-图片在-Mac-下正常预览"><a href="#让-WebP-图片在-Mac-下正常预览" class="headerlink" title="让 WebP 图片在 Mac 下正常预览"></a>让 WebP 图片在 Mac 下正常预览</h2><p>从这往上翻的第二张图，可以发现 WebP 格式的图片在 Mac 下是无法正常预览的，所以需要给 Mac 加上这种能力。另外需要说一句 WebP 图片在 Chrome 下可以很好的支持了，直接将图片拖到浏览器中即可显示。</p>
+<p>说到预览，看一下 WebP 在各浏览器下的兼容程度：</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202101/webp005.png"></p>
+<p>由上图可以看出，基本上现代浏览器已经能很好的支持 WebP 图片了，所以在生产环境上使用它是一点问题都没有。</p>
+<p>Mac 需要正常预览 WebP 图片，可以在这里 <a target="_blank" rel="noopener" href="https://github.com/Nyx0uf/qlImageSize">qlImageSize</a> 下载了 2 个插件来支持它：</p>
+<ul>
+<li><code>qlImageSize</code>：<code>QuickLook</code> 插件，用来预览 WebP 图片，且能在标题栏里显示尺寸、文件大小等信息，另外还可以让 WebP 图片在访达中以缩略图的形式显示出来。</li>
+<li><code>mdImageSize</code>：<code>Spotlight</code> 插件，用来在显示简介的时候能够支持 WebP 图片的信息；</li>
+</ul>
+<p>下载完这 2 个插件包后，解压，然后把插件复制到对应的目录下保存：</p>
+<ul>
+<li><code>qlImageSize</code> 复制到 <code>/Library/QuickLook</code> 目录下；</li>
+<li><code>mdImageSize</code> 复制到 <code>/Library/Spotlight</code> 目录下；</li>
+</ul>
+<p>这个时候 WebP 图片应该就能快速预览了，还不行的话就重启下访达进程（按住 option，同时鼠标右键点击访达，选择重新开启）。</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202101/webp004.png"></p>
+<h2 id="兼容不同浏览器"><a href="#兼容不同浏览器" class="headerlink" title="兼容不同浏览器"></a>兼容不同浏览器</h2><p>如果你的网站对于不兼容 WebP 格式的图片的浏览器（比如 IE11）也有需求的话，那这里有一套方案可以让图片不会因为浏览器兼容性而显示出错：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">picture</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">source</span> <span class="attr">type</span>=<span class="string">&quot;image/webp&quot;</span> <span class="attr">srcset</span>=<span class="string">&quot;flower.webp&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">source</span> <span class="attr">type</span>=<span class="string">&quot;image/jpeg&quot;</span> <span class="attr">srcset</span>=<span class="string">&quot;flower.jpg&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;flower.jpg&quot;</span> <span class="attr">alt</span>=<span class="string">&quot;&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">picture</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>对于上面这段代码，浏览器会首先检测是否支持 <code>&lt;source&gt;</code> 标签列表里的资源，如果兼容的话，默认会加载 <code>flower.webp</code> 图片，如果都不支持 <code>&lt;source&gt;</code> 列表里的资源的话，则会去加载 <code>&lt;img&gt;</code> 里指定的图片。</p>
+<h2 id="接下来该干什么"><a href="#接下来该干什么" class="headerlink" title="接下来该干什么"></a>接下来该干什么</h2><p>之前我做的项目里的图片基本都是 JPG\PNG 格式的，我找了一张我们网站首页的 Banner 图，就是那种 1920px 宽度的图片，它在被压缩工具压缩后文件大小还有 275 KB ，而当我用 cwebp 工具用 -q 75 的质量参数去转换成 WebP 图片后，你们知道它的文件大小变成多少了吗？它变成 50KB 😱</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202101/webp007.png"></p>
+<p>真的的不试不知道，一试吓一跳，原来 WebP 格式的图片能够带来这么大的优化效果，最关键的是 2 张图片用肉眼看起来显示效果差不多。</p>
+<p>真的很棒 👍，WebP 凭借一己之力将网站的性能优化提高了一个档次。所以接下来 KPI 就有了：可以很愉快的把项目里所有的图片都转成 WebP 图片了。这么干完之后，你就可以和领导提涨薪了，领导领导我把我们网站优化了一下，性能提升了 10% ~ 20% 左右。不过接下来发生什么，可不要来找我哈。</p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://web.dev/serve-images-webp/">https://web.dev/serve-images-webp/</a></li>
+<li><a target="_blank" rel="noopener" href="https://developers.google.com/speed/webp">https://developers.google.com/speed/webp</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Nyx0uf/qlImageSize">https://github.com/Nyx0uf/qlImageSize</a></li>
+</ul>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2021/03/22/css_base/" title="1.5 万字 CSS 基础拾遗（核心知识、常用需求）" class="prev">上一篇</a><a href="/2021/01/13/spread-operator/" title="让人爱不释手的 JS 扩展操作符 13 用" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="copyright"><p>© 2016 - 2024 <a href="https://weibo.com/316000381" target="_blank">typeR</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p><p> <span style="padding-right: 6px;">闽ICP备16007301号-2</span></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/jquery-1.8.2.min.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/articleCatalog.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

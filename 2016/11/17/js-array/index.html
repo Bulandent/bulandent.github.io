@@ -1,0 +1,216 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> 数组 · 步步走</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="简要介绍数组的语法和使用示例"><meta name="keywords" content="js数组、sort、push、slice"><meta name="author" content="typeR"><link rel="short icon" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/favicon.ico"><link rel="stylesheet" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://bubuzou.com/atom.xml" title="步步走"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script><meta name="generator" content="Hexo 5.0.0"><link rel="alternate" href="/atom.xml" title="步步走" type="application/atom+xml">
+</head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/logo.svg"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="/categories/live/" target="_self" data-hover="生活" class="nav-list-link">生活</a></li><li class="nav-list-item"><a href="/categories/read/" target="_self" data-hover="读书" class="nav-list-link">读书</a></li><li class="nav-list-item"><a href="/about/" target="_self" data-hover="关于" class="nav-list-link">关于</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">数组</h1><div class="post-info">2016-11-17<p class="visit"><i data-identity="2016/11/17/js-array/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><h2 id="数组字面量"><a href="#数组字面量" class="headerlink" title="数组字面量"></a>数组字面量</h2><p>数组字面量提供了一种非常方便的创建数组的方法。一个数组表达式是在一对方括号内包围零个或多个用逗号分隔的值的表达式。<br>数组的第一个值的属性名是 <code>0</code>。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> empty = [];</span><br><span class="line"><span class="keyword">var</span> numbers = [<span class="string">&#x27;zero&#x27;</span>, <span class="string">&#x27;one&#x27;</span>, <span class="string">&#x27;two&#x27;</span>, <span class="string">&#x27;three&#x27;</span>, <span class="string">&#x27;four&#x27;</span>, <span class="string">&#x27;five&#x27;</span>, <span class="string">&#x27;six&#x27;</span>, <span class="string">&#x27;seven&#x27;</span>];</span><br><span class="line">empty[<span class="number">1</span>];  <span class="comment">// undefined</span></span><br><span class="line">numbers[<span class="number">1</span>];  <span class="comment">// &#x27;one&#x27;</span></span><br><span class="line">empty.length;  <span class="comment">// 0</span></span><br><span class="line">numbers.length;  <span class="comment">// 8</span></span><br></pre></td></tr></table></figure>
+
+<p>在大多数语言中，一个数组的所有元素都要求是相同的类型。<code>js</code> 允许数组包含任意混合类型的值：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> misc = [<span class="string">&#x27;string&#x27;</span>, <span class="number">98.6</span>, <span class="literal">true</span>, <span class="literal">false</span>, <span class="literal">null</span>];</span><br><span class="line">misc.length;  <span class="comment">// 5</span></span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<h2 id="长度"><a href="#长度" class="headerlink" title="长度"></a>长度</h2><p>每个数组都有一个 <code>length</code> 属性。和大多数的语言不同，<code>js</code> 中数组的 <code>length</code> 是没有上限的。如果用大于或等于 <code>length</code> 的数字作为下标来存储一个元素，那么 <code>length</code> 的值会被增大以便容纳新的值，不会发生数组越界的错误。可以直接设置 <code>length</code> 的值，如果 <code>length</code> 大于当前的 <code>length</code> 值，则更大的那些下标的值都是 <code>undefined</code>；如果更小，<br>那么将会把所有下标大于等于新 <code>length</code> 的属性给删除。通过把下标指定为一个数组的当前 <code>length</code>，可以附加一个新元素到该数组的末尾。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = [<span class="string">&#x27;one&#x27;</span>, <span class="string">&#x27;two&#x27;</span>, <span class="string">&#x27;three&#x27;</span>];</span><br><span class="line">arr.length;  <span class="comment">// 3</span></span><br><span class="line">arr.length = <span class="number">6</span>;</span><br><span class="line">arr;  <span class="comment">// [&#x27;one&#x27;, &#x27;two&#x27;, &#x27;three&#x27;, undefined, undefined, undefined]</span></span><br><span class="line">arr.length = <span class="number">2</span>;</span><br><span class="line">arr;  <span class="comment">// [&#x27;one&#x27;, &#x27;two&#x27;]</span></span><br><span class="line">arr[arr.length] = <span class="string">&#x27;last&#x27;</span>;  <span class="comment">// [&#x27;one&#x27;, &#x27;two&#x27;, &#x27;last&#x27;];</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h2><p>由于 <code>js</code> 的数组其实就是对象，所以 <code>delete</code> 运算符可以删除数组的元素：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = [<span class="string">&#x27;one&#x27;</span>, <span class="string">&#x27;two&#x27;</span>, <span class="string">&#x27;three&#x27;</span>];</span><br><span class="line"><span class="keyword">delete</span> arr[<span class="number">1</span>]; </span><br><span class="line">arr;  <span class="comment">// [&#x27;one&#x27;, undefined, &#x27;three&#x27;]</span></span><br></pre></td></tr></table></figure>
+
+<p>遗憾的是删除后的数组直接留了一个空位值是 <code>undefined</code>，幸运的是可以通过数组的 <code>splice</code> 方法来进行调整。<code>splice</code> 方法接受 <code>2</code> 个参数，第一个是数组的序号，第二个是删除的元素个数，并且返回一个数组，这个数组包含了所有的删除元素。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">arr.splice(<span class="number">1</span>, <span class="number">1</span>); <span class="comment">// [undefined]</span></span><br><span class="line">arr;  <span class="comment">// [&#x27;one&#x27;, &#x27;three&#x27;]</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="枚举"><a href="#枚举" class="headerlink" title="枚举"></a>枚举</h2><p>因为 <code>js</code> 数组其实就是对象，所以 <code>for in</code> 语句可以用来遍历一个数组的所有属性。但是用 <code>for in</code>语句无法保证顺序。所以遍历还是用常规的 <code>for</code> 循环</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> numbers = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>];</span><br><span class="line"><span class="keyword">for</span> ( <span class="keyword">var</span> i = <span class="number">0</span>, l = numbers.length; i &lt; l; i++ ) &#123;</span><br><span class="line">    <span class="built_in">console</span>.log( numbers[i] );  <span class="comment">// 1, 2, 3, 4, 5</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="判断是否是数组"><a href="#判断是否是数组" class="headerlink" title="判断是否是数组"></a>判断是否是数组</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typeof</span> [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];  <span class="comment">// &#x27;object&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>js</code> 本身对于数组和对象的区别是混乱的。<code>typeof</code> 运算符报告数组的类型是 <code>object</code>，没有任何意义。<br><code>js</code> 没有一个好的机制来区别是数组还是对象，但是我们可以自己实现一个 <code>is_array</code> 函数来弥补这个缺陷：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> isArray = <span class="function"><span class="keyword">function</span>(<span class="params"> obj </span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> obj &amp;&amp; </span><br><span class="line">        <span class="keyword">typeof</span> obj === <span class="string">&#x27;object&#x27;</span> &amp;&amp;</span><br><span class="line">        obj.constructor === <span class="built_in">Array</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>上面这个判断基本在常规页面就能很好的区分出数组还是对象了。但是也有特例，比如在不同的窗口(<code>window</code>)或帧(<code>frame</code>)就会失败。这个时候可以用下面这个替换：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> isArray = <span class="function"><span class="keyword">function</span>(<span class="params"> obj </span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">Object</span>.prototype.toString.apply( obj ) === <span class="string">&#x27;[object Array]&#x27;</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>判断某个对象是否是数组，还可以用原型链的方法：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> isArray = <span class="function"><span class="keyword">function</span>(<span class="params"> obj </span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> obj.__prototype__ === <span class="built_in">Array</span>.prototype;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><ul>
+<li><p><code>array.concat(item1[, item2, item2, ...])</code></p>
+<p>  <code>concat</code> 产生一个新数组，参数 <code>item</code> 可以是一个任意类型的值，也可以是一个数组，如果是数组，那么数组的所有元素都会被添加到新数组里。</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = [<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;b&#x27;</span>];</span><br><span class="line"><span class="keyword">var</span> b = [<span class="string">&#x27;x&#x27;</span>,<span class="string">&#x27;y&#x27;</span>];</span><br><span class="line">a.concat(b, <span class="literal">true</span>);  <span class="comment">// [&quot;a&quot;, &quot;b&quot;, &quot;x&quot;, &quot;y&quot;, true]</span></span><br></pre></td></tr></table></figure></li>
+<li><p><code>array.join(separator)</code></p>
+<p>  <code>join</code> 方法把 <code>array</code> 中的每个元素构造成一个字符串，接着用一个 <code>separator</code> 分隔符把它们连接在一起。默认的<code>separator</code> 是逗号,。想要无间隔的连接，可以使用空字符串。</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = [<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>];</span><br><span class="line">a.join();  <span class="comment">// &#x27;a,b,c&#x27;</span></span><br><span class="line">a.join(<span class="string">&#x27;&#x27;</span>);  <span class="comment">// &#x27;abc&#x27;</span></span><br></pre></td></tr></table></figure>
+  <div class="tip">
+  如果想把大量的字符串片段组装成一个字符串，用 `+` 元素运算符连接这些片段会比把这些片段放到一个数组中并且用 `join` 连接起来更快。</div>
+</li>
+<li><p><code>array.pop()</code></p>
+<p>  <code>pop</code> 方法移除数组中的最后一个元素并返回该元素。如果 <code>array</code> 是空值，则会返回 <code>undefined</code></p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = [<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>];</span><br><span class="line">a.pop();  <span class="comment">// &#x27;c&#x27;</span></span><br><span class="line"><span class="comment">// pop可以这样实现：</span></span><br><span class="line"><span class="built_in">Array</span>.method(<span class="string">&#x27;pop&#x27;</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.splice( <span class="built_in">this</span>.length - <span class="number">1</span>, <span class="number">1</span> )[<span class="number">0</span>];</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>array.push(item1[, item2, ...])</code></p>
+<p>  <code>push</code> 方法把一个或多个参数附加到一个数组的尾部。参数可以是任何类型的值，也可以是数组。如果是数组，它会把参数数组作为这个元素添加到数组中。返回修改后的数组长度。</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = [<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>];</span><br><span class="line"><span class="keyword">var</span> b = [<span class="string">&#x27;x&#x27;</span>, <span class="string">&#x27;y&#x27;</span>, <span class="string">&#x27;z&#x27;</span>];</span><br><span class="line"><span class="keyword">var</span> c = a.push(b, <span class="literal">true</span>);</span><br><span class="line"><span class="comment">// a: [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, [&#x27;x&#x27;, &#x27;y&#x27;, &#x27;z&#x27;], true]</span></span><br><span class="line"><span class="comment">// c: 5</span></span><br><span class="line"><span class="comment">// push可以这样实现：</span></span><br><span class="line"><span class="built_in">Array</span>.method(<span class="string">&#x27;push&#x27;</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">this</span>.splice.apply( </span><br><span class="line">    <span class="built_in">this</span>,</span><br><span class="line">    [<span class="built_in">this</span>.length, <span class="number">0</span>].</span><br><span class="line">        concat(<span class="built_in">Array</span>.prototype.slice.apply(<span class="built_in">arguments</span>)));</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.length;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>array.reverse()</code></p>
+<p>  <code>reverse</code> 方法反转 <code>array</code> 里的元素的顺序，并返回 <code>array</code> 本身。</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = [<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>];</span><br><span class="line"><span class="keyword">var</span> b = a.reverse();  <span class="comment">// a和b都是[&#x27;c&#x27;, &#x27;b&#x27;, &#x27;a&#x27;]</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>array.shift()</code></p>
+<p>  <code>shift</code> 方法移除数组中的第一个元素，并且返回这个元素。如果数组为空，则返回 <code>undefined</code>。 <code>shift</code> 通常比 <code>pop</code> 慢得多。</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = [<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>];</span><br><span class="line"><span class="keyword">var</span> b = a.shift();  <span class="comment">// a: [&#x27;b&#x27;, &#x27;c&#x27;], b: &#x27;a&#x27;</span></span><br><span class="line"><span class="comment">// shift实现</span></span><br><span class="line"><span class="built_in">Array</span>.method(<span class="string">&#x27;shift&#x27;</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.splice(<span class="number">0</span>, <span class="number">1</span>)[<span class="number">0</span>];</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>array.slice(start, end)</code></p>
+<p>  <code>slice</code> 方法对数组进行一段浅复制。复制从下标 <code>start</code> 到 <code>end</code> 结束。<code>end</code> 下标默认是<code> array.length</code> 。如果两个参数任意一个是负数，那么 <code>end</code> 数值会是和 <code>array.length</code> 相加之后的值。如果 <code>start</code> 大于<code>array.length</code>，则返回一个空数组。</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = [<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>];</span><br><span class="line"><span class="keyword">var</span> b = a.slice(<span class="number">0</span>, <span class="number">1</span>);  <span class="comment">// [&#x27;a&#x27;]</span></span><br><span class="line"><span class="keyword">var</span> c = a.slice(<span class="number">1</span>);  <span class="comment">// [&#x27;b&#x27;, &#x27;c&#x27;]</span></span><br><span class="line"><span class="keyword">var</span> d = a.slice(<span class="number">-1</span>);  <span class="comment">// [&#x27;c&#x27;]</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>array.sort(comparefn)</code></p>
+<p>  <code>sort</code> 方法对 <code>array</code> 里的所有元素进行排序，默认的比较函数是把被排序的元素都视为字符串。所以它不能正确地给一组数字进行排序：</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> n = [<span class="number">4</span>, <span class="number">8</span>, <span class="number">15</span>, <span class="number">16</span>, <span class="number">23</span>, <span class="number">42</span>];</span><br><span class="line">n.sort();  <span class="comment">// [15, 16, 23, 4, 42, 8]</span></span><br></pre></td></tr></table></figure>
+
+<p>  幸运的是你可以使用自定义的比较函数来使得一组数字能正常排序，比较函数接受两个参数，如果他们相等，则返回0，如果第一个参数应该排序在前面，则返回负数，如果第二个参数应该排在前面，则返回一个正数。</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">n.sort(<span class="function"><span class="keyword">function</span>(<span class="params">a, b</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> a - b;</span><br><span class="line">&#125;);  <span class="comment">// [4, 8, 15, 16, 23, 42]</span></span><br></pre></td></tr></table></figure>
+
+<p>  如果想给包含任何简单值的数组进行排序，可以这样：</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> m = [<span class="string">&#x27;aa&#x27;</span>, <span class="string">&#x27;bb&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="number">5</span>, <span class="number">3</span>, <span class="number">10</span>];</span><br><span class="line">m.sort(<span class="function"><span class="keyword">function</span>(<span class="params">a, b</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (a === b) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">typeof</span> a === <span class="keyword">typeof</span> b) &#123;</span><br><span class="line">        <span class="keyword">return</span> a &lt; b ? <span class="number">-1</span> : <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">typeof</span> a &lt; <span class="keyword">typeof</span> b ? <span class="number">-1</span> : <span class="number">1</span>;</span><br><span class="line">&#125;);  <span class="comment">// [3, 5, 10, &#x27;a&#x27;, &#x27;aa&#x27;, &#x27;bb&#x27;]</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>array.splice(start, deleteCount, item...)</code></p>
+<p>  <code>splice</code> 方法从 <code>array</code> 中移除一个或多个元素，并用新的 <code>item</code> 替换它们。<code>start</code> 是移除元素的起始位置，<code>deleteCount</code> 是移除个数。如果有额外的参数，则 <code>item</code> 会插入到被移除的元素的位置上。返回一个包含被移除元素的数组。</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = [<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>];</span><br><span class="line"><span class="keyword">var</span> r = a.splice(<span class="number">1</span>, <span class="number">1</span>, <span class="string">&#x27;ache&#x27;</span>, <span class="string">&#x27;bug&#x27;</span>);  <span class="comment">// a: [&#x27;a&#x27;, &#x27;ache&#x27;, &#x27;bug&#x27;, &#x27;c&#x27;], r: [&#x27;b&#x27;]</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>array.unshift(item...)</code></p>
+<p>  <code>unshift</code> 方法是把 <code>item</code> 插入到数组的开始部分。返回新数组的 <code>length</code>。</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = [<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>];</span><br><span class="line"><span class="keyword">var</span> r = a.unshift(<span class="string">&#x27;#&#x27;</span>, <span class="string">&#x27;$&#x27;</span>);  <span class="comment">// a: [&#x27;#&#x27;, &#x27;$&#x27;, &#x27;a&#x27;, &#x27;b&#x27;, &#x27;c&#x27;], r: 5</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2016/11/28/this-call-apply/" title="this、call和apply" class="prev">上一篇</a><a href="/2016/11/04/regexp-concept/" title="正则表达式理论篇" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="copyright"><p>© 2016 - 2024 <a href="https://weibo.com/316000381" target="_blank">typeR</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p><p> <span style="padding-right: 6px;">闽ICP备16007301号-2</span></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/jquery-1.8.2.min.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/articleCatalog.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

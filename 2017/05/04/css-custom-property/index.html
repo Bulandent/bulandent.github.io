@@ -1,0 +1,190 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> CSS自定义属性 · 步步走</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="CSS自定义属性，很多人又把它称之为CSS变量，是由用户自己定义的用来指定CSS属性值的变量。通过`--*`来设置变量值，通过`var(--*)`来获取变量值。"><meta name="keywords" content="css3、css变量、css variable、css自定义属性、css var"><meta name="author" content="typeR"><link rel="short icon" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/favicon.ico"><link rel="stylesheet" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://bubuzou.com/atom.xml" title="步步走"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script><meta name="generator" content="Hexo 5.0.0"><link rel="alternate" href="/atom.xml" title="步步走" type="application/atom+xml">
+</head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/logo.svg"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="/categories/live/" target="_self" data-hover="生活" class="nav-list-link">生活</a></li><li class="nav-list-item"><a href="/categories/read/" target="_self" data-hover="读书" class="nav-list-link">读书</a></li><li class="nav-list-item"><a href="/about/" target="_self" data-hover="关于" class="nav-list-link">关于</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">CSS自定义属性</h1><div class="post-info">2017-05-04<p class="visit"><i data-identity="2017/05/04/css-custom-property/" class="article-timer"></i><span>次访问</span></p><a href="https://codepen.io/bulandent/full/GVjxLJ" target="_blank" title="" class="post-demo">去看示例</a></div><div class="post-content"><p><code>CSS</code> 自定义属性，很多人又把它称之为 <code>CSS</code> 变量，是由用户自己定义的用来指定 <code>CSS</code> 属性值的变量。来看一个简单的例子：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-pseudo">:root</span> &#123;</span><br><span class="line">  <span class="attribute">--color-red</span>: red;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.red</span> &#123;</span><br><span class="line">  <span class="attribute">color</span>: <span class="built_in">var</span>(--color-red);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面这个例子中，首先在 <code>:root</code>(文档根元素即 <code>html</code> )处定义了一个全局变量，变量名称叫 <code>color-red</code>。然后在 <code>red</code> 元素里使用了这个变量，那么该元素颜色将变成红色。</p>
+<a id="more"></a>
+
+<h2 id="变量申明与使用"><a href="#变量申明与使用" class="headerlink" title="变量申明与使用"></a>变量申明与使用</h2><p>参照上面的例子，你可能很容易看出 <code>CSS</code> 变量的声明方式：使用 <code>--*</code> 声明一个变量。这里的 <code>*</code> 表示变量名称。变量名称的组成可以是数组<code>[0-9]</code>、字母<code>[a-zA-Z]</code>、下划线_或者连字符-组合而成，更厉害的是变量名称甚至可以是中文，另外变量名称是区分大小写字母的。<code>CSS</code> 变量的取值可以是单值 <code>10px</code>、复合属性的值 <code>1px solid #ddd</code>，计算值 <code>calc( 10px * 2 )</code>，甚至属性值里又可以引用变量 <code>var(--size) 10px</code>。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 变量申明，注意观察变量名称和属性值的定义 */</span></span><br><span class="line"><span class="selector-pseudo">:root</span> &#123;</span><br><span class="line">  <span class="attribute">--10</span>: <span class="number">10px</span>;</span><br><span class="line">  <span class="attribute">--marginTop</span>: <span class="number">20px</span>;</span><br><span class="line">  <span class="attribute">--color-red</span>: red;</span><br><span class="line">  --特殊的内间距: 10px 0 20px;</span><br><span class="line">  <span class="selector-tag">--padv</span>: <span class="selector-tag">calc</span>(<span class="selector-tag">var</span>(<span class="selector-tag">--10</span>) * 2) 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>变量的使用方式：使用 <code>var(--*)</code> 使用变量，其实比较完整的使用规则是这样的：<code>var( &lt;–变量名称&gt; [, &lt;默认值&gt; ]? )</code>，比如下面这样：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">div</span> &#123;</span><br><span class="line">  <span class="attribute">padding</span>: <span class="built_in">var</span>(--size, <span class="number">10px</span> <span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个表示，当 <code>--size</code> 这个变量未定义的时候，则使用默认值 <code>10px 0</code>，注意这个地方不能加分号。</p>
+<p>还有一种情况是，假如定义了一个变量，但是变量值是不合法的，这个时候就会取属性的缺省值。比如：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">body</span> &#123;</span><br><span class="line">  <span class="attribute">--color</span>: <span class="number">20px</span>;</span><br><span class="line">  <span class="attribute">background-color</span>: <span class="number">#369</span>;</span><br><span class="line">  <span class="attribute">background-color</span>: <span class="built_in">var</span>(--color, #cd0000);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>看上面的例子，此时的 <code>body</code> 的背景颜色到底是什么呢？<code>A. transparent</code>、<code>B. 20px</code>、<code>C. #369</code>、<code>D. #cd0000</code><br>答案是 <code>A</code>，因为这个时候变量 <code>color</code> 的值用在这里是不合法的，所以会取 <code>background-color</code> 的缺省值即默认替代值<code>transparent</code>，也不会用 <code>#cd0000</code></p>
+<p>再来看个例子：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">body</span> &#123;</span><br><span class="line">  <span class="attribute">--size</span>: <span class="number">20</span>;</span><br><span class="line">  <span class="attribute">font-size</span>: <span class="built_in">var</span>(--size) px;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>乍看上面这个例子，<code>body</code> 的字号是 <code>20px</code>，其实不然。<code>var(--size)px</code> 会解析完成后会变成 <code>20 px</code>，这个值是不合法的，所以会取缺省值 <code>16px</code>。注意到这个问题，稳妥的做法还是在变量申明的时候带上单位。或者使用 <code>calc()</code> 来计算：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">body</span> &#123;</span><br><span class="line">  <span class="attribute">--size</span>: <span class="number">20</span>;</span><br><span class="line">  <span class="attribute">font-size</span>: <span class="built_in">calc</span>(var(--size) * <span class="number">1px</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="CSS-变量作用域"><a href="#CSS-变量作用域" class="headerlink" title="CSS 变量作用域"></a>CSS 变量作用域</h2><p>居然是变量，那么自然的有作用域这一说法，在 <code>CSS</code> 变量中，也是存在作用域的。全局作用域，直接将变量定义在根元素上：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-pseudo">:root</span> &#123;</span><br><span class="line">  <span class="attribute">--color-red</span>: red;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>局部作用域是会直接在某个元素上定义变量，且这个变量只在该元素及后代元素中有效：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">body</span> &#123;</span><br><span class="line">  <span class="attribute">color</span>: <span class="built_in">var</span>(--color-red);</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-tag">div</span><span class="selector-class">.red</span> &#123;</span><br><span class="line">  <span class="attribute">--color-red</span>: red;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的例子中，<code>body</code> 的颜色不会被设置成红色。另外值得一提的是，变量的申明和变量的使用与定义在文件里的先后位置无关。</p>
+<p>当存在多个变量的时候，变量的覆盖规则由 <code>CSS</code> 选择器的权重决定，但并无 <code>!important</code> 这种用法，因为没有必要，<code>!important</code>设计初衷是干掉 <code>JS</code> 的 <code>style</code> 设置，但对于变量的定义则没有这样的需求。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-pseudo">:root</span> &#123;</span><br><span class="line">  <span class="attribute">--color</span>: red;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-tag">div</span> &#123;</span><br><span class="line">  <span class="attribute">--color</span>: blue;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此时有一个 <code>div</code> 元素，那么其颜色值会是蓝色的。</p>
+<h2 id="来实践一下"><a href="#来实践一下" class="headerlink" title="来实践一下"></a>来实践一下</h2><p>先来看一个例子：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">div</span> &#123;</span><br><span class="line">  <span class="attribute">border</span>: <span class="number">1px</span> solid <span class="number">#d2d2d2</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-tag">div</span> &#123;</span><br><span class="line">  <span class="attribute">border-width</span>: <span class="number">1px</span>;</span><br><span class="line">  <span class="attribute">border-style</span>: solid;</span><br><span class="line">  <span class="attribute">border-color</span>: <span class="number">#d2d2d2</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面这两种设置的边框效果都是一样的，区别是一个用的是复合属性，一个是独立属性。在 <code>CSS</code> 里存在许许多多的属性值是由多个值组成的属性，比如 <code>border</code>、<code>animation</code> 等。如果要单独地修改这些多个属性值里的某一个，复合属性就可以直接修改它的独立属性，但是对于那种不是复合属性却有多个属性值的 <code>CSS</code> 属性就头大了，比如 <code>box-shadow</code>，特别是在 <code>OOCSS</code> 的世界里，这种情况就更尴尬了。但是现在有了 <code>CSS</code> 自定义属性，问题就可以迎刃而解了。比如，<code>box-shadow: 1px 2px 3px 4px #ddd</code>，这里可以把这 5 个值分别用 5 个全局变量表示：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-pseudo">:root</span> &#123;</span><br><span class="line">  <span class="attribute">--box-shadow-offset-x</span>: <span class="number">1px</span>;</span><br><span class="line">  <span class="attribute">--box-shadow-offset-y</span>: <span class="number">2px</span>;</span><br><span class="line">  <span class="attribute">--box-shadow-blur</span>: <span class="number">3px</span>;</span><br><span class="line">  <span class="attribute">--box-shadow-spread</span>: <span class="number">4px</span>;</span><br><span class="line">  <span class="attribute">--box-shadow-color</span>: <span class="number">#ddd</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当需要单独地修改某个值的时候，直接用 <code>js</code> 修改全局变量的值即可：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">document.documentElement.style.setProperty( &#x27;--box-shadow-offset-x&#x27;, &#x27;3px&#x27; );</span><br></pre></td></tr></table></figure>
+
+<p>是不是很方便，是不是很好玩，戳我给你看一个例子。</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/201705/custom_property_02.png" alt="custom_property"></p>
+<h2 id="CSS-变量存在的意义"><a href="#CSS-变量存在的意义" class="headerlink" title="CSS 变量存在的意义"></a>CSS 变量存在的意义</h2><p>在构建大型站点时，作者通常会面对可维护性的挑战。在这些网页中， 所使用的 <code>CSS</code> 的数量是非常庞大的，并且在许多场合大量的信息会重复使用。例如，在网页中维护一个配色方案，意味着一些颜色在 <code>CSS</code> 文件中多次出现，并被重复使用。当你修改配色方案时，不论是调整某个颜色或完全修改整个配色，都会成为一个复杂的问题，不容出错，而单纯查找替换是远远不够的。</p>
+<p>如果使用了 <code>CSS</code> 框架，这种情况会变得尤其糟糕，此时如果要修改颜色，则需要对框架本身进行修改。在这些场合使用 <code>LESS</code> 或 <code>Sass</code> 类似的预处理器是非常有帮助的，但是这种通过添加额外步骤的方式，可能会增加系统的复杂性。CSS 变量为我们带来一些预处理器的便利，并且不需要额外的编译。</p>
+<p>这些变量的第二个优势就是名称本身就包含了语义的信息。<code>CSS</code> 文件变得易读和理解。<code>main-text-color</code> 比文档中的<code>#00ff00</code> 更容易理解，特别是同样的颜色出现在不同的文件中的时候。</p>
+<h2 id="兼容性"><a href="#兼容性" class="headerlink" title="兼容性"></a>兼容性</h2><p><code>CSS</code> 自定义属性在 <code>IE</code> 上完全不支持啊，在其他浏览器上支持性还是不错的。戳我</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/201705/custom_property_01.png" alt="caniuse"></p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
+<li><a target="_blank" rel="noopener" href="http://www.zhangxinxu.com/wordpress/?p=5804">小 tips:了解 CSS/CSS3 原生变量 var</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/Using_CSS_variables">使用 CSS 变量</a></li>
+<li><a target="_blank" rel="noopener" href="https://css-tricks.com/now-css-custom-properties-thing-value-parts-can-changed-individually/">Now that CSS Custom Properties are a Thing, All Value Parts Can Be Changed Individually</a></li>
+</ul>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2017/06/29/jpeg-gif-png-svg-on-web/" title="jpg、gif、png和svg用于web上，我们该如何选择最合适的图像格式？" class="prev">上一篇</a><a href="/2017/04/18/flexbox/" title="理解 Flexbox：你需要知道这些" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="copyright"><p>© 2016 - 2024 <a href="https://weibo.com/316000381" target="_blank">typeR</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p><p> <span style="padding-right: 6px;">闽ICP备16007301号-2</span></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/jquery-1.8.2.min.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/articleCatalog.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

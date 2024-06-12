@@ -1,0 +1,168 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> element-ui文件上传一次请求上传多个文件 · 步步走</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="element-ui文件上传一次请求上传多个文件"><meta name="keywords" content="upload、vue、element-ui"><meta name="author" content="typeR"><link rel="short icon" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/favicon.ico"><link rel="stylesheet" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://bubuzou.com/atom.xml" title="步步走"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script><meta name="generator" content="Hexo 5.0.0"><link rel="alternate" href="/atom.xml" title="步步走" type="application/atom+xml">
+</head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/logo.svg"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="/categories/live/" target="_self" data-hover="生活" class="nav-list-link">生活</a></li><li class="nav-list-item"><a href="/categories/read/" target="_self" data-hover="读书" class="nav-list-link">读书</a></li><li class="nav-list-item"><a href="/about/" target="_self" data-hover="关于" class="nav-list-link">关于</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">element-ui文件上传一次请求上传多个文件</h1><div class="post-info">2019-03-26<p class="visit"><i data-identity="2019/03/26/once-request-to-upload-multiple-files/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><p>最近在做项目的时候有一个需求，需要导入 word 文档，并且需要支持多选。<code>element-ui</code> 的 <code>upload</code> 组件支持多选文件，只需要配置参数 <code>multiple</code> 为 <code>true</code> 即可。但是这个组件默认会将多选的文件分多次进行上传，于是就会存在多次的上传请求，由于后台的接口要求是一次请求能够上传多个文件，且我们也知道请求多了会对服务器造成更大的压力，因而基于多种原因，这个 <code>upload</code> 的上传行为得进行改造一番。</p>
+<a id="more"></a>
+
+<h2 id="先来看下改造前后的结果"><a href="#先来看下改造前后的结果" class="headerlink" title="先来看下改造前后的结果"></a>先来看下改造前后的结果</h2><p>改造前的结果：同时上传 2 个文件，会发出 2 次对接口的请求，每次请求里包含了一个文件。</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/2019/upload_result_before.png" alt="upload_result_after"></p>
+<p>改造后的结果：同时上传 2 个文件，会发出一次接口请求，接口入参里包含 2 个文件。</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/2019/upload_result_after.png" alt="upload_result_after"></p>
+<h2 id="方法一：通过配置-file-list（推荐使用）"><a href="#方法一：通过配置-file-list（推荐使用）" class="headerlink" title="方法一：通过配置 file-list（推荐使用）"></a>方法一：通过配置 file-list（推荐使用）</h2><p>html 部分：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">el-upload</span></span></span><br><span class="line"><span class="tag">  <span class="attr">class</span>=<span class="string">&quot;upload-demo list-uploadbtn&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">ref</span>=<span class="string">&quot;upload&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">:action</span>=<span class="string">&quot;curBastUrl&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">:auto-upload</span>=<span class="string">&quot;false&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">:on-remove</span>=<span class="string">&quot;updataRemove&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">:before-upload</span>=<span class="string">&quot;beforeUpload&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">:on-change</span>=<span class="string">&quot;updatachange&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">:file-list</span>=<span class="string">&quot;fileList&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">:multiple</span>=<span class="string">&quot;true&quot;</span></span></span><br><span class="line"><span class="tag">&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">el-button</span> <span class="attr">size</span>=<span class="string">&quot;small&quot;</span>&gt;</span>点击上传<span class="tag">&lt;/<span class="name">el-button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">el-upload</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">el-button</span> <span class="attr">type</span>=<span class="string">&quot;primary&quot;</span> @<span class="attr">click</span>=<span class="string">&quot;submitUpload&quot;</span>&gt;</span>确 定<span class="tag">&lt;/<span class="name">el-button</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>js 部分：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">submitUpload() &#123;  <span class="comment">// 导入</span></span><br><span class="line">    <span class="keyword">let</span> formData = <span class="keyword">new</span> FormData();  <span class="comment">//  用FormData存放上传文件</span></span><br><span class="line">    <span class="built_in">this</span>.fileList.forEach(<span class="function"><span class="params">file</span> =&gt;</span> &#123;</span><br><span class="line">        formData.append(<span class="string">&#x27;file&#x27;</span>, file.raw)</span><br><span class="line">    &#125;)</span><br><span class="line">    　　</span><br><span class="line">    formData.append(<span class="string">&#x27;categoryDirectory&#x27;</span>, <span class="built_in">this</span>.filedata.categoryDirectory)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// importCase是上传接口</span></span><br><span class="line">    importCase(formData).then(<span class="function">(<span class="params">res</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="comment">//手动上传无法触发成功或失败的钩子函数，因此这里手动调用</span></span><br><span class="line">    　　<span class="built_in">this</span>.updataSuccess(res.data)</span><br><span class="line">    &#125;, <span class="function">(<span class="params">err</span>) =&gt;</span> &#123;</span><br><span class="line">    　　</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>关键代码说明：</p>
+<ul>
+<li><code>auto-upload</code> 设置为 <code>false</code> 用于关闭组件的自动上传；</li>
+<li><code>file-list</code> 配置一个数组用于接收上传的文件列表；</li>
+<li><code>multiple</code> 设置为 <code>true</code> 表示支持多选文件；</li>
+<li><code>action</code> 配置为完整的上传接口 url，不配置会报错</li>
+<li>不用配置 <code>data</code>、<code>on-success</code>、<code>on-error</code>等参数，因为手动上传不会用到这些配置信息；</li>
+<li>最后通过点击按钮手动调用上传函数 <code>submitUpload</code> ，创建一个 <code>FormData</code> 把 <code>fileList </code> 的文件存进去。</li>
+</ul>
+<h2 id="方法二：通过配置-http-request"><a href="#方法二：通过配置-http-request" class="headerlink" title="方法二：通过配置 http-request"></a>方法二：通过配置 http-request</h2><p>html 部分：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">el-upload</span></span></span><br><span class="line"><span class="tag">  <span class="attr">class</span>=<span class="string">&quot;upload-demo list-uploadbtn&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">ref</span>=<span class="string">&quot;upload&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">:action</span>=<span class="string">&quot;curBastUrl&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">:auto-upload</span>=<span class="string">&quot;false&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">:http-request</span>=<span class="string">&quot;uploadFile&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">:on-remove</span>=<span class="string">&quot;updataRemove&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">:before-upload</span>=<span class="string">&quot;beforeUpload&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">:on-change</span>=<span class="string">&quot;updatachange&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">:multiple</span>=<span class="string">&quot;true&quot;</span></span></span><br><span class="line"><span class="tag">&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">el-button</span> <span class="attr">size</span>=<span class="string">&quot;small&quot;</span>&gt;</span>点击上传<span class="tag">&lt;/<span class="name">el-button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">el-upload</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">el-button</span> <span class="attr">type</span>=<span class="string">&quot;primary&quot;</span> @<span class="attr">click</span>=<span class="string">&quot;submitUpload&quot;</span>&gt;</span>确 定<span class="tag">&lt;/<span class="name">el-button</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>js 部分：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">submitUpload() &#123;  <span class="comment">// 导入</span></span><br><span class="line">    <span class="keyword">let</span> tempData =  <span class="built_in">this</span>.filedata</span><br><span class="line">    <span class="built_in">this</span>.filedata = <span class="keyword">new</span> FormData()  <span class="comment">//  用FormData存放上传文件</span></span><br><span class="line">    <span class="built_in">this</span>.$refs.upload.submit()  <span class="comment">// 会循环调用uploadFile方法，多个文件调用多次</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">this</span>.filedata.append(<span class="string">&#x27;categoryDirectory&#x27;</span>, tempData.categoryDirectory)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// importCase是上传接口</span></span><br><span class="line">    importCase(<span class="built_in">this</span>.filedata).then(<span class="function">(<span class="params">res</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">//手动上传无法触发成功或失败的钩子函数，因此这里手动调用</span></span><br><span class="line">    　　<span class="built_in">this</span>.updataSuccess(res.data)</span><br><span class="line">    &#125;, <span class="function">(<span class="params">err</span>) =&gt;</span> &#123;</span><br><span class="line">    　　</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line">uploadFile(file) &#123;</span><br><span class="line">    <span class="built_in">this</span>.filedata.append(<span class="string">&#x27;file&#x27;</span>, file.file)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>关键代码说明：</p>
+<ul>
+<li><code>http-request</code> 自定义上传方法；</li>
+<li>最后通过点击按钮手动调用上传函数 <code>submitUpload</code> ，创建一个 <code>FormData</code>, 调用 <code>upload</code> 组件的 <code>submit</code> 方法的时候会循环调用 <code>http-request</code> 配置的方法，从而往 <code>FormData </code> 里存放文件。</li>
+</ul>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/06/27/wepy-plugins-preprocess/" title="小程序根据打包命令区分不同环境的API" class="prev">上一篇</a><a href="/2017/08/28/traverse-of-array-like/" title="JS中类数组的遍历以及性能探究" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="copyright"><p>© 2016 - 2024 <a href="https://weibo.com/316000381" target="_blank">typeR</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p><p> <span style="padding-right: 6px;">闽ICP备16007301号-2</span></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/jquery-1.8.2.min.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/articleCatalog.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

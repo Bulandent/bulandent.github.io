@@ -1,0 +1,245 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> 探究网页资源究竟是如何阻塞浏览器加载的 · 步步走</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="探究网页资源究竟是如何阻塞浏览器加载的"><meta name="keywords" content="CSS阻塞、JS阻塞"><meta name="author" content="typeR"><link rel="short icon" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/favicon.ico"><link rel="stylesheet" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://bubuzou.com/atom.xml" title="步步走"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script><meta name="generator" content="Hexo 5.0.0"><link rel="alternate" href="/atom.xml" title="步步走" type="application/atom+xml">
+</head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/logo.svg"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="/categories/live/" target="_self" data-hover="生活" class="nav-list-link">生活</a></li><li class="nav-list-item"><a href="/categories/read/" target="_self" data-hover="读书" class="nav-list-link">读书</a></li><li class="nav-list-item"><a href="/about/" target="_self" data-hover="关于" class="nav-list-link">关于</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">探究网页资源究竟是如何阻塞浏览器加载的</h1><div class="post-info">2020-12-26<p class="visit"><i data-identity="2020/12/26/browser-block/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><p>一个页面允许加载的外部资源有很多，常见的有脚本、样式、字体、图片和视频等，对于这些外部资源究竟是如何影响整个页面的加载和渲染的呢？今天我们来一探究竟。</p>
+<p>阅读完这篇文章你将解开如下谜团：</p>
+<ul>
+<li>如何用 Chrome 定制网络加载速度？</li>
+<li>图片/视频/字体会阻塞页面加载嘛？</li>
+<li>CSS 是如何阻塞页面加载的？</li>
+<li>JS 又是如何阻塞页面加载的？</li>
+<li>JS 一定会阻塞 DOM 加载嘛？</li>
+<li>defer 和 async 是什么？又有何特点？</li>
+<li>动态脚本会造成阻塞嘛？</li>
+<li>阻塞是怎么和 DOMContentLoaded 与 onload 扯上关系的？</li>
+</ul>
+<a id="more"></a>
+
+<h2 id="测试前环境准备"><a href="#测试前环境准备" class="headerlink" title="测试前环境准备"></a>测试前环境准备</h2><p>测试之前我们需要对浏览器下载资源的速度进行控制，将它重新设置为 50kb/s，操作方式：</p>
+<ol>
+<li>打开 <code>Chrome</code> 开发者工具；</li>
+<li>在 <code>Network</code> 面板下找到 <code>Disable cache</code> 右侧的下拉列表，然后选择 Add 添加自定义节流配置；</li>
+<li>添加一个下载速度为 50kb/s 的配置；</li>
+<li>最后在第二步骤中的下拉列表选择刚刚配置的选项即可；</li>
+<li>注意：如果当前选择的自定义选项被修改了，则需要切换到别的选项再切回来才可生效。</li>
+</ol>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/browser_005.png"></p>
+<p>为什么是这个速度？因为如下的一些资源，比如图片、样式或者脚本体积都是 50kb 的好几倍，方便测试。</p>
+<h2 id="图片会造成阻塞嘛"><a href="#图片会造成阻塞嘛" class="headerlink" title="图片会造成阻塞嘛"></a>图片会造成阻塞嘛</h2><p>直接写个示例来看下结果：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">&quot;en&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;UTF-8&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">        <span class="built_in">document</span>.addEventListener(<span class="string">&#x27;DOMContentLoaded&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span></span><br><span class="line"><span class="javascript">            <span class="built_in">console</span>.log(<span class="string">&#x27;DOMContentLoaded&#x27;</span>)</span></span><br><span class="line">        &#125;)</span><br><span class="line"><span class="javascript">        <span class="built_in">window</span>.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">            <span class="built_in">console</span>.log(<span class="string">&#x27;onload&#x27;</span>)</span></span><br><span class="line">        &#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h1</span>&gt;</span>我是 h1 标签<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;https://xxx.oss-cn-shenzhen.aliyuncs.com/images/flow.png&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h2</span>&gt;</span>我是 h2 标签<span class="tag">&lt;/<span class="name">h2</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>上面这张图片的大小大概是 200kb，当把网络下载速度限制成 50kb/s，打开该页面，可以看到如下结果：当 <code>h1</code> 和 <code>h2</code> 标签渲染出来且打印了 <code>DOMContentLoaded</code> 的时候，此时图片还在加载中，这就说明了图片并不会阻塞 <code>DOM</code> 的加载，更加不会阻塞页面渲染；当图片加载完成的时候，会打印 <code>onload</code>，说明图片延迟了 <code>onload</code> 事件的触发。</p>
+<p>视频、字体和图片其实是一样的，也不会阻塞 <code>DOM</code> 的加载和渲染。</p>
+<h2 id="CSS-加载阻塞"><a href="#CSS-加载阻塞" class="headerlink" title="CSS 加载阻塞"></a>CSS 加载阻塞</h2><p>同样的，我们还是直接用代码来测试 <code>CSS</code> 加载对页面阻塞的情况，因为下面代码加载的 <code>bootstrap.css</code> 是 192kb 的，所以理论上下载它应该需要花费 3 到 4 秒左右。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">&quot;en&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;UTF-8&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">href</span>=<span class="string">&quot;https://cdn.bootcss.com/bootstrap/4.0.0-alpha.6/css/bootstrap.css&quot;</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h1</span>&gt;</span>我是 h1 标签<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>测试过程如下：</p>
+<ol>
+<li>在 <code>Elements</code> 面板下，选中 <code>h1</code> 这个标签，然后按 <code>delete</code> 键将它从 <code>DOM</code> 中删掉，从而模拟首次加载；</li>
+<li>刷新浏览器，马上 <code>Elements</code> 面板下就加载出 <code>h1</code> 标签，继续加载 3 到 4 秒后（此时正在加载 <code>bootstrap.css</code>），页面出现 <code>我是 h1 标签</code> 字样，此时页面已经渲染完成。</li>
+</ol>
+<p>从而得出结论：</p>
+<ul>
+<li><code>bootstrap.css</code> 还没加载完成，而 <code>DOM</code> 中就已经出现 <code>h1</code> 标签，<strong>说明 <code>CSS</code> 不会阻塞 <code>DOM</code> 的解析</strong>；</li>
+<li>页面直到 <code>bootstrap.css</code> 加载完成才出现 <code>h1</code> 里的文案，<strong>说明 <code>CSS</code> 会阻塞 <code>DOM</code> 的渲染</strong>。</li>
+</ul>
+<p>为什么是这个结论呢？试想一下页面渲染的流程就知道了。浏览器首先解析 <code>HTML</code> 生成 <code>DOM</code> 树，解析 <code>CSS</code> 生成 <code>CSSOM</code> 树，然后 <code>DOM</code> 树和 <code>CSSOM</code> 树进行合成生成渲染树，通过渲染树进行布局并且计算每个节点信息，绘制页面。</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/browser_006.png"></p>
+<p>可以说解析 <code>DOM</code> 和 解析 <code>CSS</code> 其实是并列进行的，既然是并列进行的，那 <code>CSS</code> 和 <code>DOM</code> 就不会互相影响了，这和结论一相符；另外渲染页面一定是在得到 <code>CSSOM</code> 树之后进行的，这和结论二相符。</p>
+<p><code>CSS</code> 一定会阻塞 <code>DOM</code> 的渲染嘛？答案是否定的，当把外链样式放到 <code>&lt;body&gt;</code> 最尾部去加载：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h1</span>&gt;</span>我是 h1 标签<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">href</span>=<span class="string">&quot;https://cdn.bootcss.com/bootstrap/4.0.0-alpha.6/css/bootstrap.css&quot;</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>此时刷新浏览器，页面上会马上显示出 <code>我是 h1 标签</code> 字样，当 3 到 4 秒过后样式加载完成的时会造成二次渲染，页面重新渲染出该字样，这就**说明 <code>CSS</code> 阻塞 <code>DOM</code> 的渲染只阻塞定义在 <code>CSS</code> 后面的 <code>DOM</code>**。二次渲染会对用户造成不好的体验且加重了浏览器的负担，所以这也就是为什么需要把外链样式提前到 <code>&lt;head&gt;</code> 里加载的原因。</p>
+<h2 id="CSS-会阻塞后面-JS-的执行嘛"><a href="#CSS-会阻塞后面-JS-的执行嘛" class="headerlink" title="CSS 会阻塞后面 JS 的执行嘛"></a>CSS 会阻塞后面 JS 的执行嘛</h2><p><code>CSS</code> 阻塞了后面 <code>DOM</code> 的渲染，那它会阻塞 <code>JS</code> 的执行嘛？</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">&quot;en&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;UTF-8&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">href</span>=<span class="string">&quot;https://cdn.bootcss.com/bootstrap/4.0.0-alpha.6/css/bootstrap.css&quot;</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h1</span>&gt;</span>我是 h1 标签<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">        <span class="built_in">console</span>.log(<span class="string">&#x27;888&#x27;</span>)</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>刷新浏览器的时候可以看到，浏览器 <code>Console</code> 面板下没有打印内容，而当样式加载完成的时候打印了 888，这就<strong>说明 <code>CSS</code> 会阻塞定义在其之后 <code>JS</code> 的执行</strong>。</p>
+<p>为什么会这样呢？试想一下，如果 <code>JS</code> 里执行的操作需要获取当前 <code>h1</code> 标签的样式，而由于样式没加载完成，所以就无法得到想要的结果，从而证明了 <code>CSS</code> 需要阻塞定义在其之后 <code>JS</code> 的执行。</p>
+<h2 id="JS-加载阻塞"><a href="#JS-加载阻塞" class="headerlink" title="JS 加载阻塞"></a>JS 加载阻塞</h2><p><code>CSS</code> 会阻塞 <code>DOM</code> 的渲染和阻塞定义在其之后的 <code>JS</code> 的执行，那 <code>JS</code> 加载会对渲染过程造成什么影响呢？</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">&quot;en&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;UTF-8&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://cdn.bootcss.com/jquery/2.1.4/jquery.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h1</span>&gt;</span>我是 h1 标签<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>首先删除页面中已经存在的 <code>h1</code> 标签（如果存在的话），仔细观察 <code>Elements</code> 面板，当刷新浏览器的时候，一直未加载出 <code>h1</code> 标签（期间页面一直白屏），直到 <code>JS</code> 加载完成后，<code>DOM</code> 中才出现，这足以<strong>说明了 <code>JS</code> 会阻塞定义在其之后的 <code>DOM</code> 的加载</strong>，所以应该将外部 <code>JS</code> 放到 <code>&lt;body&gt;</code> 的最尾部去加载，减少页面加载白屏时间。</p>
+<h2 id="defer-和-async"><a href="#defer-和-async" class="headerlink" title="defer 和 async"></a>defer 和 async</h2><p><code>JS</code> 一定会阻塞定义在其之后的 <code>DOM</code> 的加载嘛？来测试一下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">&quot;en&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;UTF-8&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">async</span> <span class="attr">src</span>=<span class="string">&quot;https://cdn.bootcss.com/jquery/2.1.4/jquery.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h1</span>&gt;</span>我是 h1 标签<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>上面这段代码的测试结果是当页面中显示出 h1 标签的时候，脚本还没有加载完成，这就说明了 <code>async</code> 脚本不会阻塞 <code>DOM</code> 的加载；同理我们可以用同样的方式测试 <code>defer</code>，也会得到这个结论。</p>
+<p>现在我们知道了通过 <code>defer</code> 或者 <code>async</code> 方式加载 <code>JS</code> 的时候，它是不会阻塞 <code>DOM</code> 加载的。那么你知道 <code>defer</code> 和 <code>async</code> 是什么嘛？它们两者有什么区别呢？</p>
+<p>回答这些疑问之前，我们先来看下当浏览器解析 <code>HTML</code> 遇到 <code>script</code> 标签的时候会发生什么？</p>
+<ul>
+<li>暂停解析 <code>DOM</code>；</li>
+<li>执行 <code>script</code> 里的脚本，如果该 <code>script</code> 是外链，则会先下载它，下载完成后立刻执行；</li>
+<li>执行完成后继续解析剩余 <code>DOM</code>。</li>
+</ul>
+<p>上面这是解析时遇到一个正常的外链的情况，正常外链的下载和执行都会阻塞页面解析；而如果外链是通过 <code>defer</code> 或者 <code>async</code> 加载的时候又会是如何呢？</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/browser_009.png"></p>
+<p><strong><code>defer</code> 特点</strong></p>
+<ul>
+<li>对于 <code>defer</code> 的 <code>script</code>，浏览器会继续解析 <code>html</code>，且同时并行下载脚本，等 <code>DOM</code> 构建完成后，才会开始执行脚本，所以它不会造成阻塞；</li>
+<li><code>defer</code> 脚本下载完成后，执行时间一定是 <code>DOMContentLoaded</code> 事件触发之前执行；</li>
+<li>多个 <code>defer</code> 的脚本执行顺序严格按照定义顺序进行，而不是先下载好的先执行；</li>
+</ul>
+<p><strong><code>async</code> 特点</strong></p>
+<ul>
+<li>对于 <code>async</code> 的 <code>script</code>，浏览器会继续解析 <code>html</code>，且同时并行下载脚本，一旦脚本下载完成会立刻执行；和 <code>defer</code> 一样，它在下载的时候也不会造成阻塞，但是如果它下载完成后 <code>DOM</code> 还没解析完成，则执行脚本的时候是会阻塞解析的；</li>
+<li><code>async</code> 脚本的执行 和 <code>DOMContentLoaded</code> 的触发顺序无法明确谁先谁后，因为脚本可能在 <code>DOM</code> 构建完成时还没下载完，也可能早就下载好了；</li>
+<li>多个 <code>async</code>，按照谁先下载完成谁先执行的原则进行，所以当它们之间有顺序依赖的时候特别容易出错。</li>
+</ul>
+<blockquote>
+<p>defer 和 async 都只能用于外部脚本，如果 script 没有 src 属性，则会忽略它们。</p>
+</blockquote>
+<h2 id="动态脚本会造成阻塞嘛"><a href="#动态脚本会造成阻塞嘛" class="headerlink" title="动态脚本会造成阻塞嘛"></a>动态脚本会造成阻塞嘛</h2><p>对于如下这段代码，当刷新浏览器的时候会发现页面上马上显示出 <code>我是 h1 标签</code>，而过几秒后才加载完动态插入的脚本，所以可以得出结论：<strong>动态插入的脚本不会阻塞页面解析</strong>。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 省略了部分内容 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">    <span class="function"><span class="keyword">function</span> <span class="title">loadScript</span>(<span class="params">src</span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">        <span class="keyword">let</span> script = <span class="built_in">document</span>.createElement(<span class="string">&#x27;script&#x27;</span>)</span></span><br><span class="line">        script.src = src</span><br><span class="line"><span class="javascript">        <span class="built_in">document</span>.body.append(script)</span></span><br><span class="line">    &#125;</span><br><span class="line"><span class="javascript">    loadScript(<span class="string">&#x27;https://cdn.bootcss.com/jquery/2.1.4/jquery.min.js&#x27;</span>)</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>我是 h1 标签<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>动态插入的脚本在加载完成后会立即执行，这和 <code>async</code> 一致，所以如果需要保证多个插入的动态脚本的执行顺序，则可以设置 <code>script.async = false</code>，此时动态脚本的执行顺序将按照插入顺序执行和 <code>defer</code> 一样。</p>
+<h2 id="DOMContentLoaded-和-onload"><a href="#DOMContentLoaded-和-onload" class="headerlink" title="DOMContentLoaded 和 onload"></a>DOMContentLoaded 和 onload</h2><p>在浏览器中加载资源涉及到 2 个事件，分别是 <code>DOMContentLoaded</code> 和 <code>onload</code>，那么它们之间有什么区别呢？</p>
+<ul>
+<li><code>onload</code>：当页面所有资源（包括 <code>CSS</code>、<code>JS</code>、图片、字体、视频等）都加载完成才触发，而且它是绑定到 <code>window</code> 对象上；</li>
+<li><code>DOMContentLoaded</code>：当 HTML 已经完成解析，并且构建出了 <code>DOM</code>，但此时外部资源比如样式和脚本可能还没加载完成，并且该事件需要绑定到 <code>document</code> 对象上；</li>
+</ul>
+<p>细心的你一定看到了上面的可能二字，为什么当 <code>DOMContentLoaded</code> 触发的时候样式和脚本是可能还没加载完成呢？</p>
+<h3 id="DOMContentLoaded-遇到脚本"><a href="#DOMContentLoaded-遇到脚本" class="headerlink" title="DOMContentLoaded 遇到脚本"></a>DOMContentLoaded 遇到脚本</h3><p>当浏览器处理一个 <code>HTML</code> 文档，并在文档中遇到 <code>&lt;script&gt;</code> 标签时，就会在继续构建 <code>DOM</code> 之前运行它。这是一种防范措施，因为脚本可能想要修改 <code>DOM</code>，甚至对其执行 <code>document.write</code> 操作，所以 <strong><code>DOMContentLoaded</code> 必须等待脚本执行结束后才触发</strong>。以下这段代码验证了这个结论：当脚本加载完成的时候，<code>Console</code> 面板下才会打印出 <code>DOMContentLoaded</code>。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">    <span class="built_in">document</span>.addEventListener(<span class="string">&#x27;DOMContentLoaded&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span></span><br><span class="line"><span class="javascript">        <span class="built_in">console</span>.log(<span class="string">&#x27;DOMContentLoaded&#x27;</span>)</span></span><br><span class="line">    &#125;)</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>我是 h1 标签<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://cdn.bootcss.com/jquery/2.1.4/jquery.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>那么一定是脚本执行完成后才会触发 <code>DOMContentLoaded</code> 嘛？答案也是否定的，有两个例外，对于 <code>async</code> 脚本和动态脚本是不会阻塞 <code>DOMContentLoaded</code> 触发的。</p>
+<h3 id="DOMContentLoaded-遇到样式"><a href="#DOMContentLoaded-遇到样式" class="headerlink" title="DOMContentLoaded 遇到样式"></a>DOMContentLoaded 遇到样式</h3><p>前面我们已经介绍到 <code>CSS</code> 是不会阻塞 <code>DOM</code> 的解析的，所以理论上 <code>DOMContentLoaded</code> 应该不会等到外部样式的加载完成后才触发，这么分析是对的，让我们用下面代码进行测试一翻就知道了：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">&quot;en&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;UTF-8&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">        <span class="built_in">document</span>.addEventListener(<span class="string">&#x27;DOMContentLoaded&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span></span><br><span class="line"><span class="javascript">        <span class="built_in">console</span>.log(<span class="string">&#x27;DOMContentLoaded&#x27;</span>)</span></span><br><span class="line">    &#125;)</span><br><span class="line">    <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">href</span>=<span class="string">&quot;https://cdn.bootcss.com/bootstrap/4.0.0-alpha.6/css/bootstrap.css&quot;</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h1</span>&gt;</span>我是 h1 标签<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>测试结果：当样式还没加载完成的时候，就已经打印出 <code>DOMContentLoaded</code>，这和我们分析的结果是一致的。但是一定是这样嘛？显然不一定，这里有个小坑，（基于上面代码）在样式后面再加上 <code>&lt;script&gt;</code> 标签的时候，会发现只有等样式加载完成了才会打印出 <code>DOMContentLoaded</code>，为什么会这样呢？正是因为 <code>&lt;script&gt;</code> 会阻塞 <code>DOMContentLoaded</code> 的触发，所以<strong>当外部样式后面有脚本（<code>async</code> 脚本和动态脚本除外）的时候，外部样式就会阻塞 <code>DOMContentLoaded</code> 的触发</strong>。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 只显示了部分内容 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">href</span>=<span class="string">&quot;https://cdn.bootcss.com/bootstrap/4.0.0-alpha.6/css/bootstrap.css&quot;</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://zh.javascript.info/onload-ondomcontentloaded">DOMContentLoaded</a></li>
+<li><a target="_blank" rel="noopener" href="https://html.spec.whatwg.org/multipage/scripting.html">https://html.spec.whatwg.org/multipage/scripting.html</a></li>
+</ul>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2020/12/28/resource-hints/" title="Resourse Hints 知多少" class="prev">上一篇</a><a href="/2020/12/24/browser-store/" title="很多人知道 Web Storage，但是你清楚 Cookie 嘛" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="copyright"><p>© 2016 - 2024 <a href="https://weibo.com/316000381" target="_blank">typeR</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p><p> <span style="padding-right: 6px;">闽ICP备16007301号-2</span></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/jquery-1.8.2.min.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/articleCatalog.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

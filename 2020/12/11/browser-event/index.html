@@ -1,0 +1,199 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> 浏览器专题之事件机制 · 步步走</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="event"><meta name="keywords" content="浏览器事件机制"><meta name="author" content="typeR"><link rel="short icon" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/favicon.ico"><link rel="stylesheet" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://bubuzou.com/atom.xml" title="步步走"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script><meta name="generator" content="Hexo 5.0.0"><link rel="alternate" href="/atom.xml" title="步步走" type="application/atom+xml">
+</head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/logo.svg"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="/categories/live/" target="_self" data-hover="生活" class="nav-list-link">生活</a></li><li class="nav-list-item"><a href="/categories/read/" target="_self" data-hover="读书" class="nav-list-link">读书</a></li><li class="nav-list-item"><a href="/about/" target="_self" data-hover="关于" class="nav-list-link">关于</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">浏览器专题之事件机制</h1><div class="post-info">2020-12-11<p class="visit"><i data-identity="2020/12/11/browser-event/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><h2 id="事件流"><a href="#事件流" class="headerlink" title="事件流"></a>事件流</h2><p>在早期 <code>IE</code> 和 <code>Netscape</code> 团队在开发第四代浏览器的时候，遇到一个问题：当点击一个按钮的时候，是应该先处理父级的事件呢？还是应该先处理按钮的事件呢？<code>IE</code> 和 <code>Netscape</code> 给出了 2 种完全相反的答案，<code>IE</code> 提出事件冒泡的概念，而 <code>Netscape</code> 则支持事件捕获。</p>
+<h3 id="事件冒泡"><a href="#事件冒泡" class="headerlink" title="事件冒泡"></a>事件冒泡</h3><p>事件冒泡认为事件应该由最具体的元素开始触发，然后层层往父级传播：</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/eventFlow1.png"></p>
+<a id="more"></a>
+
+<h3 id="事件捕获"><a href="#事件捕获" class="headerlink" title="事件捕获"></a>事件捕获</h3><p>而事件捕获则相反，认为最外层的元素应该最先收到事件，然后层层往下级传递：</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/eventFlow2.png"></p>
+<h3 id="DOM-事件流"><a href="#DOM-事件流" class="headerlink" title="DOM 事件流"></a>DOM 事件流</h3><p>为了在浏览器中兼容这 2 种事件流，在 <code>DOM2 Events</code> 规范中将事件流分为 3 个阶段：事件捕获阶段、到底目标阶段、事件冒泡阶段。</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/eventFlow3.png"></p>
+<p>可以通过指定 <code>addEventListener</code> 的第三个参数为 <code>true</code> 来设置事件是在捕获阶段调用事件处理程序，默认是 <code>false</code> 指在冒泡阶段调用事件处理程序。</p>
+<blockquote>
+<p>所有现代浏览器都支持 <code>DOM</code> 事件流，只有 IE8 及更早版本不支持。</p>
+</blockquote>
+<h2 id="事件处理程序"><a href="#事件处理程序" class="headerlink" title="事件处理程序"></a>事件处理程序</h2><h3 id="HTML-事件处理程序"><a href="#HTML-事件处理程序" class="headerlink" title="HTML 事件处理程序"></a>HTML 事件处理程序</h3><p>就是将事件处理程序直接绑定到 <code>HTML</code> 的属性中：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 方式一</span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">onclick</span>=<span class="string">&quot;console.log(&#x27;hello world&#x27;)&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">方式二</span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">onclick</span>=<span class="string">&quot;print(event)&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">    <span class="function"><span class="keyword">function</span> <span class="title">print</span>(<span class="params">e</span>) </span>&#123; &#125;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>HTML</code> 事件处理程序修改事件相对麻烦，可能需要同时修改 <code>HTML</code> 和 <code>JS</code>，所以大家都不爱使用这种方式绑定事件。</p>
+<h3 id="DOM0-事件处理程序"><a href="#DOM0-事件处理程序" class="headerlink" title="DOM0 事件处理程序"></a>DOM0 事件处理程序</h3><p>将一个函数赋值给 <code>DOM</code> 元素的一个事件处理程序属性，比如 <code>onclick</code>：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> btn = <span class="built_in">document</span>.getElementById(<span class="string">&#x27;div&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 添加事件</span></span><br><span class="line">btn.onclick = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123; &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 移除事件</span></span><br><span class="line">btn.onclick = <span class="literal">null</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="DOM2-事件处理程序"><a href="#DOM2-事件处理程序" class="headerlink" title="DOM2 事件处理程序"></a>DOM2 事件处理程序</h3><p>通过 <code>addEventListener</code> 可以添加 <code>DOM2</code> 级别的事件处理程序，它接收 3 个参数：事件名、事件处理程序和 <code>useCapture</code> （它是一个可选参数，是个布尔值，默认为 <code>false</code> 表示在冒泡阶段调用事件处理程序）</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> btn = <span class="built_in">document</span>.getElementById(<span class="string">&#x27;div&#x27;</span>)</span><br><span class="line">btn.addEventListener(<span class="string">&#x27;click&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    </span><br><span class="line">&#125;, <span class="literal">false</span>)</span><br></pre></td></tr></table></figure>
+
+<p>和 <code>DOM0</code> 事件处理程序的区别：</p>
+<ul>
+<li><code>addEventListener</code> 可以改变事件流，即可以在捕获阶段触发事件，而 <code>DOM0</code> 是不行的；</li>
+<li><code>addEventListener</code> 可以为同一个元素多次添加同一类型的事件处理程序，先添加的事件处理程序会先触发，而 <code>DOM0</code> 如果给同一个元素绑定多个相同类型的事件处理程序的话，则后面添加的会覆盖前面定义的；</li>
+</ul>
+<p>它有几个注意事项：</p>
+<ul>
+<li>如果不需要在捕获阶段进行拦截操作，则 <code>useCapture</code> 即第三个参可以不传；</li>
+<li>通过 <code>addEventListener</code> 添加的事件处理程序只能通过 <code>removeEventListener</code> 移除，而且绑定的事件处理程序必须是同一个。</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> btn = <span class="built_in">document</span>.getElementById(<span class="string">&#x27;div&#x27;</span>)</span><br><span class="line"><span class="keyword">let</span> handler = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123; &#125;</span><br><span class="line">btn.addEventListener(<span class="string">&quot;click&quot;</span>, handler)</span><br><span class="line">btn.removeEventListener(<span class="string">&quot;click&quot;</span>, handler)</span><br></pre></td></tr></table></figure>
+
+<h3 id="IE-事件处理函数"><a href="#IE-事件处理函数" class="headerlink" title="IE 事件处理函数"></a>IE 事件处理函数</h3><p>由于 <code>addEventListener</code> 无法兼容 IE8 及更早版本，所以此时就可以使用 <code>attachEvent</code> 添加事件处理程序和用 <code>detachEvent</code> 移除事件处理程序。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> btn = <span class="built_in">document</span>.getElementById(<span class="string">&#x27;div&#x27;</span>)</span><br><span class="line">btn.attachEvent(<span class="string">&quot;onclick&quot;</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123; &#125;)</span><br></pre></td></tr></table></figure>
+
+<p>它有这么几个注意事项：</p>
+<ul>
+<li>注册的事件名和 <code>DOM0</code> 一样，需要带上 <code>on</code>，比如 <code>onclick</code>；</li>
+<li>在通过 <code>attachEvent</code> 添加的事件处理程序内部 <code>this</code> 会指向 <code>window</code>，而 <code>DOM0</code> 和 <code>DOM2</code> 的 <code>this</code> 会指向元素本身；</li>
+<li>和 <code>addEventListener</code> 一样， <code>attachEvent</code> 也可以针对同一元素多次添加同一个事件类型的处理程序，但是触发顺序是后定义的先触发；</li>
+<li>通过 <code>detachEvent</code> 移除事件处理程序的时候，处理函数必须是和注册的同一个，这点和 <code>addEventListener</code> 保持一致；</li>
+</ul>
+<p><code>attachEvent</code> 和 <code>detachEvent</code> 是 <code>IE</code> 专属的 <code>API</code>，所以如果有兼容性要求，我们可以写出跨浏览器的事件处理程序：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> EventUtil = &#123;</span><br><span class="line">    addHandler: <span class="function"><span class="keyword">function</span>(<span class="params">element, type, handler</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (element.addEventListener) &#123;</span><br><span class="line">            element.addEventListener(type, handler, <span class="literal">false</span>)</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (element.attachEvent) &#123;</span><br><span class="line">            element.attachEvent(<span class="string">&quot;on&quot;</span> + type, handler)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            element[<span class="string">&quot;on&quot;</span> + type] = handler;</span><br><span class="line">        &#125; </span><br><span class="line">    &#125;,</span><br><span class="line">    removeHandler: <span class="function"><span class="keyword">function</span>(<span class="params">element, type, handler</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (element.removeEventListener) &#123;</span><br><span class="line">            element.removeEventListener(type, handler, <span class="literal">false</span>)</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (element.detachEvent) &#123;</span><br><span class="line">            element.detachEvent(<span class="string">&quot;on&quot;</span> + type, handler)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            element[<span class="string">&quot;on&quot;</span> + type] = <span class="literal">null</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="事件对象"><a href="#事件对象" class="headerlink" title="事件对象"></a>事件对象</h2><p>通过不同的事件处理程序添加的事件，<code>event</code> 对象的属性略有不同，我们不需要记住他们的差异，只需要在平时写代码的时候养成一个写兼容代码的习惯即可，如下是一个兼容各种 <code>event</code> 对象的事件处理程序：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> handler = <span class="function"><span class="keyword">function</span>(<span class="params">event</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 事件对象</span></span><br><span class="line">    <span class="keyword">let</span> event = event || <span class="built_in">window</span>.event</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 目标元素</span></span><br><span class="line">    <span class="keyword">let</span> target = event.target || event.srcElement</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 阻止默认事件触发</span></span><br><span class="line">    <span class="keyword">if</span> (event.preventDefault) &#123;</span><br><span class="line">        event.preventDefault()</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        event.returnValue = <span class="literal">false</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 阻止事件冒泡</span></span><br><span class="line">    <span class="keyword">if</span> (event.stopPropagation) &#123;</span><br><span class="line">        event.stopPropagation()</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        event.cancelBubble = <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="事件类型"><a href="#事件类型" class="headerlink" title="事件类型"></a>事件类型</h2><p><code>DOM3 Events</code> 定义了如下事件类型：</p>
+<ul>
+<li>用户界面事件(<code>UIEvent</code>)：涉及与 <code>BOM</code> 交互的通用浏览器事件，比如 <code>onload</code>、<code>resize</code>、<code>scroll</code>、<code>input</code>、<code>select</code> 等；</li>
+<li>焦点事件(<code>FocusEvent</code>)：在元素获得和失去焦点时触发，比如 <code>focus</code>、<code>blur</code>；</li>
+<li>鼠标事件(<code>MouseEvent</code>)：使用鼠标在页面上执行某些操作时触发，比如 <code>click</code>、<code>mousedown</code>、<code>mouseover</code> 等；</li>
+<li>滚轮事件(<code>WheelEvent</code>)：使用鼠标滚轮(或类似设备)时触发，比如 <code>mousewheel</code>；</li>
+<li>输入事件(<code>InputEvent</code>)：向文档中输入文本时触发，比如 <code>textInput</code>；</li>
+<li>键盘事件(<code>KeyboardEvent</code>)：使用键盘在页面上执行某些操作时触发，比如 <code>keydown</code>、<code>keypress</code>；</li>
+<li>合成事件(<code>CompositionEvent</code>)：在使用某种 <code>IME</code>(<code>Input Method Editor</code>，输入法编辑器)输入字符时触发，比如 <code>compositionstart</code>。</li>
+</ul>
+<h2 id="事件委托"><a href="#事件委托" class="headerlink" title="事件委托"></a>事件委托</h2><p>事件委托是指将多个元素上绑定的事件通过利用事件冒泡的原理从而转移到他们共同的父级上去绑定，从而在一定程度上起到优化的作用，有的人也喜欢叫它事件代理。比如在 <code>Vue</code> 中经常会将事件绑定到每个列表项中：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span> <span class="attr">v-for</span>=<span class="string">&quot;item in list&quot;</span> <span class="attr">:key</span>=<span class="string">&quot;item&quot;</span> @<span class="attr">click</span>=<span class="string">&quot;handleClick(item)&quot;</span>&gt;</span>&#123;&#123;item&#125;&#125;<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line">``` </span><br><span class="line"></span><br><span class="line">其实更好的做法是利用事件委托，将事件绑定到 `ul` 上：</span><br><span class="line"></span><br><span class="line">```html</span><br><span class="line"><span class="tag">&lt;<span class="name">ul</span> @<span class="attr">click</span>=<span class="string">&quot;handleClick&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span> <span class="attr">v-for</span>=<span class="string">&quot;item in list&quot;</span> <span class="attr">:key</span>=<span class="string">&quot;item&quot;</span> <span class="attr">:data-item</span>=<span class="string">&quot;item&quot;</span>&gt;</span>&#123;&#123;item&#125;&#125;<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">handleClick(event) &#123;</span><br><span class="line">    <span class="keyword">let</span> target = event.target</span><br><span class="line">    <span class="keyword">if</span> (target === <span class="string">&#x27;li&#x27;</span>) &#123;</span><br><span class="line">        <span class="keyword">let</span> data = target.dataset.item</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2020/12/16/browser-url/" title="从输入 URL 到页面显示发生了什么" class="prev">上一篇</a><a href="/2020/12/04/web-security/" title="浏览器专题之安全篇" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="copyright"><p>© 2016 - 2024 <a href="https://weibo.com/316000381" target="_blank">typeR</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p><p> <span style="padding-right: 6px;">闽ICP备16007301号-2</span></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/jquery-1.8.2.min.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/articleCatalog.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

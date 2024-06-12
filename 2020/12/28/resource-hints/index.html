@@ -1,0 +1,250 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Resourse Hints 知多少 · 步步走</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="探究网页资源究竟是如何阻塞浏览器加载的"><meta name="keywords" content="preload、prefetch、preconnect、dns-prefetch"><meta name="author" content="typeR"><link rel="short icon" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/favicon.ico"><link rel="stylesheet" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://bubuzou.com/atom.xml" title="步步走"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script><meta name="generator" content="Hexo 5.0.0"><link rel="alternate" href="/atom.xml" title="步步走" type="application/atom+xml">
+</head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/logo.svg"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="/categories/live/" target="_self" data-hover="生活" class="nav-list-link">生活</a></li><li class="nav-list-item"><a href="/categories/read/" target="_self" data-hover="读书" class="nav-list-link">读书</a></li><li class="nav-list-item"><a href="/about/" target="_self" data-hover="关于" class="nav-list-link">关于</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Resourse Hints 知多少</h1><div class="post-info">2020-12-28<p class="visit"><i data-identity="2020/12/28/resource-hints/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><p>在上篇文章 <a target="_blank" rel="noopener" href="https://juejin.cn/post/6914479519394955271">探究网页资源究竟是如何阻塞浏览器加载的</a> 中介绍到 JS 会阻塞 DOM 的加载，样式会阻塞页面的渲染，外链样式里的自定义字体还会对文字造成闪动给用户带来不好的体验，诸如此类问题还有挺多，那到底该如何解决它们呢？</p>
+<p>今天我们就来学习通过在 <code>link</code> 标签里加上特定的属性，比如 <code>preload</code>、<code>prefetch</code> 等来解决此类问题，那么你对这些属性又了解多少呢？把它们用在了你们的项目优化中了嘛？</p>
+<a id="more"></a>
+
+<h2 id="preload"><a href="#preload" class="headerlink" title="preload"></a>preload</h2><p><code>preload</code> 提升了资源加载的优先级，使得它提前开始加载（预加载），在需要用的时候能够更快的使用上。另外 <code>onload</code> 事件必须等页面所有资源都加载完成才触发，而当给某个资源加上 <code>preload</code> 后，该资源将不会阻塞 <code>onload</code>。</p>
+<h3 id="preload-怎么用"><a href="#preload-怎么用" class="headerlink" title="preload 怎么用"></a>preload 怎么用</h3><p>当某个页面加载了 2 个脚本 <code>jquery.min.js</code> 和 <code>main.js</code>：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://cdn.bootcss.com/jquery/2.1.4/jquery.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;./main.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>此时该页面的资源加载 <code>Waterfall</code> 长这样：</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/browser_019.png"></p>
+<p>当在 <code>&lt;head&gt;</code> 里通过 <code>&lt;link&gt;</code> 标签给 <code>main.js</code> 配置 <code>preload</code> 预加载后：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;preload&quot;</span> <span class="attr">as</span>=<span class="string">&quot;script&quot;</span> <span class="attr">href</span>=<span class="string">&quot;./main.js&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>此时的 <code>main.js</code> 加载顺序出现在了 <code>jquery.min.js</code> 的前面，这就是 <code>preload</code> 提升资源加载优先级的效果。</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/browser_020.png" alt="preload main.js"></p>
+<blockquote>
+<p>当一直刷新浏览器的时候，偶然出现 Waterfall 并不能准确的显示资源加载的顺序，所以这个时候就需要比较每个资源被加入到下载队列的时间，比如如下的 main.js 由于用了 preload 预加载，所以 queue time 比较早。</p>
+</blockquote>
+<p> <img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/browser_021.png" alt="preload main.js"><br> <img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/browser_022.png" alt="preload main.js"></p>
+<p>通过 <code>&lt;link rel=&quot;preload&quot;&gt;</code> 只是预加载了资源，但是资源加载完成后并不会执行，所以需要在想要执行的地方通过 <code>&lt;script&gt;</code> 来引入它：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;./main.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>但是也有一个例外，因为 <code>CSS</code> 的加载也是通过 <code>&lt;link&gt;</code> 标签引入的，所以我们可以巧妙的利用这点，当 <code>onload</code> 事件触发的时候修改 <code>rel</code> 属性的值，使得它由原来的预加载样式变成引入样式：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;preload&quot;</span> <span class="attr">as</span>=<span class="string">&quot;style&quot;</span> <span class="attr">onload</span>=<span class="string">&quot;this.rel=&#x27;stylesheet&#x27;&quot;</span> <span class="attr">href</span>=<span class="string">&quot;https://cdn.bootcss.com/bootstrap/4.0.0-alpha.6/css/bootstrap.css&quot;</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>如果通过 <code>preload</code> 加载了资源，但是又没有使用它，则浏览器会报一个警告：</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/browser_023.png" alt="preload main.js"></p>
+<p><code>preload</code> 除了能够预加载脚本之外，还可以通过 <code>as</code> 指定别的资源类型，比如：</p>
+<ul>
+<li><code>style</code> 样式表；</li>
+<li><code>font</code>：字体文件；</li>
+<li><code>image</code>：图片文件；</li>
+<li><code>audio</code>：音频文件；</li>
+<li><code>video</code>：视频文件；</li>
+<li><code>document</code>：文档。</li>
+</ul>
+<h3 id="preload-应用案例"><a href="#preload-应用案例" class="headerlink" title="preload 应用案例"></a>preload 应用案例</h3><p><code>preload</code> 主要用于提升当前页面某些阻塞资源的下载优先级，使得页面能够尽快渲染显示出来。</p>
+<p><strong>案例一：预加载定义在 CSS 中资源的下载，比如自定义字体</strong></p>
+<p>当页面中使用了自定义字体的时候，就必须在 <code>CSS</code> 中引入该字体，而由于字体必须要等到浏览器下载完且解析该 <code>CSS</code> 文件的时候才开始下载，所以对应页面上该字体处可能会出现闪动的现象，为了避免这种现象的出现，就可以使用 <code>preload</code> 来提前加载字体，<code>type</code> 可以用来指定具体的字体类型，<strong>加载字体必须指定 <code>crossorigin</code> 属性，否则会导致字体被加载两次</strong>。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;preload&quot;</span> <span class="attr">as</span>=<span class="string">&quot;font&quot;</span> <span class="attr">crossorigin</span> <span class="attr">type</span>=<span class="string">&quot;font/woff2&quot;</span> <span class="attr">href</span>=<span class="string">&quot;myfont.woff2&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>以上这种写法和指定 <code>crossorigin=&quot;anonymous&quot;</code> 是等同的效果。</p>
+<p><strong>案例二：预加载 CSS 文件</strong></p>
+<p>在首屏加载优化中一直存在一种技术，叫做抽取关键 <code>CSS</code>，意思就是把页面中在视口中出现的样式抽出一个独立的 <code>CSS</code> 文件出来 <code>critical.css</code>，然后剩余的样式在放到另外一个文件上 <code>non-critical.css</code>：</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/browser_030.png"></p>
+<p>由于 <code>CSS</code> 会阻塞页面的渲染，当同时去加载这 2 部分样式的时候，只要 <code>non-critical.css</code> 还没加载完成，那么页面就显示不了，而实际上只需要显示出视口下的界面即可，所以期待的结果是：当加载完成 <code>critical.css</code> 的时候马上显示出视口下的界面，不让 <code>non-critical.css</code> 阻塞渲染，则需要给 <code>non-critical.css</code> 加上预加载：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;preload&quot;</span> <span class="attr">as</span>=<span class="string">&quot;style&quot;</span> <span class="attr">href</span>=<span class="string">&quot;https://bubuzou.com/non-critical.css&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> <span class="attr">href</span>=<span class="string">&quot;https://bubuzou.com/critical.css&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> <span class="attr">href</span>=<span class="string">&quot;https://bubuzou.com/non-critical.css&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>案例三：创建动态的预加载资源</strong></p>
+<p>当需要预先加载的时候调用 <code>downloadScript</code>，而希望执行的时候则调用 <code>runScript</code> 函数。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">downloadScript</span>(<span class="params">src</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> el = <span class="built_in">document</span>.createElement(<span class="string">&quot;link&quot;</span>)</span><br><span class="line">    el.as = <span class="string">&quot;script&quot;</span></span><br><span class="line">    el.rel = <span class="string">&quot;preload&quot;</span></span><br><span class="line">    el.href = src</span><br><span class="line">    <span class="built_in">document</span>.body.appendChild(el)</span><br><span class="line">&#125;</span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">runScript</span>(<span class="params">src</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> el = <span class="built_in">document</span>.createElement(<span class="string">&quot;script&quot;</span>)</span><br><span class="line">    el.src = src</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>案例四：结合媒体查询预加载响应式图片</strong></p>
+<p><code>preload</code> 甚至还可以结合媒体查询加载对应尺寸下的资源，对于以下代码当可视区域尺寸小于 <code>600px</code> 的时候会提前加载这张图片。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;preload&quot;</span> <span class="attr">as</span>=<span class="string">&quot;image&quot;</span> <span class="attr">href</span>=<span class="string">&quot;someimage.jpg&quot;</span> <span class="attr">media</span>=<span class="string">&quot;(max-width: 600px)&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>案例五：结合 <code>Webpack</code> 预加载 <code>JS</code> 模块</strong></p>
+<p><code>Webpack</code> 从 <code>4.6.0</code> 版本开始支持在魔术注释中配置预加载模块：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span>(_<span class="comment">/* webpackPreload: true */</span>_ <span class="string">&quot;CriticalChunk&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>如果是版本比较老的，则可以使用 <code>preload-webpack-plugin</code> 进行处理。</p>
+<h2 id="prefetch"><a href="#prefetch" class="headerlink" title="prefetch"></a>prefetch</h2><p><code>preload</code> 用于提前加载用于当前页面的资源，而 <code>prefetch</code> 则是用于加载未来（比如下一个页面）会用到的资源，并且告诉浏览器在空闲的时候去下载，它会将下载资源的优先级降到最低。</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/browser_018.png"></p>
+<p>比如在首页配置如下代码：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;prefetch&quot;</span> <span class="attr">as</span>=<span class="string">&quot;script&quot;</span> <span class="attr">href</span>=<span class="string">&quot;https://cdn.bootcss.com/jquery/2.1.4/jquery.min.js&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>我们会在页面中看到该脚本的下载优先级已经被降低为 <code>Lowest</code>：</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/browser_016.png"></p>
+<p>当资源被下载完成后，会被存到浏览器缓存中，当从首页跳转到页面 A 的时候，假如页面 A 中引入了该脚本，那么浏览器会直接从 <code>prefetch cache</code> 中读取该资源，从而实现资源加载优化。</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/browser_017.png"></p>
+<h2 id="preconnect"><a href="#preconnect" class="headerlink" title="preconnect"></a>preconnect</h2><p>当浏览器向服务器请求一个资源的时候，需要建立连接，而建立一个安全的连接需要经历以下 3 个步骤：</p>
+<ul>
+<li>查询域名并将其解析成 IP 地址（DNS Lookup）；</li>
+<li>建立和服务器的连接（Initial connection）；</li>
+<li>加密连接以确保安全（SSL）；</li>
+</ul>
+<p>以上 3 个步骤浏览器都需要和服务器进行通信，而这一来一往的请求和响应势必会耗费不少时间。</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/browser_029.png"></p>
+<p>而就基于这点上，可以使用 <code>preconnect</code> 或者 <code>dns-prefetch</code> 进行优化，而它两又是什么呢？怎么使用呢？</p>
+<h3 id="preconnect-是什么，怎么用"><a href="#preconnect-是什么，怎么用" class="headerlink" title="preconnect 是什么，怎么用"></a>preconnect 是什么，怎么用</h3><p>当我们的站点需要对别的域下的资源进行请求的时候，就需要和那个域建立连接，然后才能开始下载资源，如果我都已经知道了是和哪个域进行通信，那不就可以先建立连接，然后等需要进行资源请求的时候就可以直接进行下载了。</p>
+<p>假设当前站点是 <code>https://a.com</code>，这个站点的主页需要请求 <code>https://b.com/b.js</code> 这个资源。对比正常请求和配置了 <code>preconnect</code> 时候的请求，它们在请求时间轴上看到的表现是不一样的：</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/browser_024.png"></p>
+<p>通过如下配置可以提前建立和 <code>https://b.com</code> 这个域的连接：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;preconnect&quot;</span> <span class="attr">href</span>=<span class="string">&quot;https://b.com&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>通过 <code>preconnect</code> 提早建立和第三方源的连接，可以将资源的加载时间缩短 100ms ~ 500ms，这个时间虽然看起来微不足道，但是它是实实在在的优化了页面的性能，提升了用户的体验。</p>
+<blockquote>
+<p>通过 preconnect 和别的域建立连接后，应该尽快的使用它，因为浏览器会关闭所有在 10 秒内未使用的连接。不必要的预连接会延迟其他重要资源，因此要限制 preconnect 连接域的数量。</p>
+</blockquote>
+<h3 id="preconnect-应用场景"><a href="#preconnect-应用场景" class="headerlink" title="preconnect 应用场景"></a>preconnect 应用场景</h3><p><strong>场景一：</strong></p>
+<p>当知道资源是来源于哪个源下，但是对于加载哪个资源不是很明确的时候，比如对于如下这些资源：</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/browser_025.png"><br><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/browser_026.png"></p>
+<p>它们要嘛是动态的，要嘛是根据不同环境携带不同参数，所以它们很适合用 <code>preconnect</code> 进行加载。</p>
+<p><strong>场景二：</strong></p>
+<p>如果页面上有流媒体，但是没那么快播放，又希望当按下播放按钮的时候可以越快开始越好，此时就可以使用 <code>preconnect</code> 预建立连接，节省一段时间。</p>
+<p>如果用 <code>preconnect</code> 预建立连接的资源是一个字体文件，那么也是需要加上 <code>crossorigin</code> 属性。</p>
+<h2 id="dns-prefetch"><a href="#dns-prefetch" class="headerlink" title="dns-prefetch"></a>dns-prefetch</h2><p>通常我们记住一个网站都是通过它的域名，但是对于服务器来说，它是通过 IP 来记住它们的。浏览器使用 <code>DNS</code> 来将站点转成 IP 地址，这个是建立连接的第一步，而这一步骤通常需要花费的时间大概是 20ms ~ 120ms。因此，可以通过 <code>dns-prefetch</code> 来节省这一步骤的时间。</p>
+<p>居然能通过 <code>preconnect</code> 来减少整个建立连接的时间，那为什么还需要 <code>dns-prefetch</code> 来减少建立连接中第一步 DNS 查找解析的时间呢？</p>
+<p>假如页面引入了许多第三方域下的资源，而如果它们都通过 <code>preconnect</code> 来预建立连接，其实这样的优化效果反而不好，甚至可能变差，所以这个时候就有另外一个方案，那就是对于最关键的连接使用 <code>preconnect</code>，而其他的则可以用 <code>dns-prefetch</code>。</p>
+<p>可以按照如下方式配置 <code>dns-prefetch</code>：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;dns-prefetch&quot;</span> <span class="attr">href</span>=<span class="string">&quot;https://cdn.bootcss.com&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>另外由于 <code>preconnect</code> 的浏览器兼容稍微比 <code>dns-prefetch</code> 低，看下图：</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/browser_027.png" alt="preconnect"><br><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/browser_028.png" alt="dns-prefetch"></p>
+<p>因此 <code>dns-prefetch</code> 可以作为不支持预连接的浏览器的后备选择，同时配置它们两即可：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;preconnect&quot;</span> <span class="attr">href</span>=<span class="string">&quot;https://cdn.bootcss.com&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;dns-prefetch&quot;</span> <span class="attr">href</span>=<span class="string">&quot;https://cdn.bootcss.com&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/fi3ework/blog/issues/16">前端性能优化之关键路径渲染优化</a></li>
+<li><a target="_blank" rel="noopener" href="https://web.dev/link-prefetch/">https://web.dev/link-prefetch/</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.w3.org/TR/resource-hints/">https://www.w3.org/TR/resource-hints/</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903473163534343">译文Preload，Prefetch 和它们在 Chrome 之中的优先级</a></li>
+<li><a target="_blank" rel="noopener" href="https://shubo.io/preload-prefetch-preconnect">preload-prefetch-preconnect</a></li>
+<li><a target="_blank" rel="noopener" href="https://web.dev/extract-critical-css/">https://web.dev/extract-critical-css/</a></li>
+</ul>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2021/01/05/http/" title="6 分钟了解 HTTP 发展史" class="prev">上一篇</a><a href="/2020/12/26/browser-block/" title="探究网页资源究竟是如何阻塞浏览器加载的" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="copyright"><p>© 2016 - 2024 <a href="https://weibo.com/316000381" target="_blank">typeR</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p><p> <span style="padding-right: 6px;">闽ICP备16007301号-2</span></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/jquery-1.8.2.min.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/articleCatalog.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

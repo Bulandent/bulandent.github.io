@@ -1,0 +1,178 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> background属性 · 步步走</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="CSS 的复合属性background，以及background-repeat,background-position,background-origin等子属性的介绍。"><meta name="keywords" content="css background、background-repeat、background-position、background-origin"><meta name="author" content="typeR"><link rel="short icon" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/favicon.ico"><link rel="stylesheet" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://bubuzou.com/atom.xml" title="步步走"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script><meta name="generator" content="Hexo 5.0.0"><link rel="alternate" href="/atom.xml" title="步步走" type="application/atom+xml">
+</head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/logo.svg"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="/categories/live/" target="_self" data-hover="生活" class="nav-list-link">生活</a></li><li class="nav-list-item"><a href="/categories/read/" target="_self" data-hover="读书" class="nav-list-link">读书</a></li><li class="nav-list-item"><a href="/about/" target="_self" data-hover="关于" class="nav-list-link">关于</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">background属性</h1><div class="post-info">2017-03-10<p class="visit"><i data-identity="2017/03/10/background-property/" class="article-timer"></i><span>次访问</span></p><a href="https://bitsofco.de/the-background-properties/" target="_blank" title="https://bitsofco.de/the-background-properties/" class="post-from">原文地址</a><a href="https://codepen.io/bulandent/details/jgMYGz" target="_blank" title="" class="post-demo">去看示例</a></div><div class="post-content"><p>一个元素可以使用 <code>background</code> 来设置他的背景特性，<code>background</code> 是一个复合的属性，包括了 <code>8</code> 个子属性。</p>
+<h2 id="background-color"><a href="#background-color" class="headerlink" title="background-color"></a>background-color</h2><p><code>background-color</code> 用于定义元素的背景颜色，值可以是具体的十六进制颜色值 <code>#dedd6f</code>，可以是 <code>rgb</code> 颜色值<code>rgb(222, 221, 111)</code> ，或者直接用颜色对应的英文表示 <code>gray</code> ，甚至是用关键字 <code>transparent</code> 来表示透明的颜色。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.yellow</span> &#123;</span><br><span class="line">  <span class="attribute">background-color</span>: <span class="number">#dedd6f</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.gray</span> &#123;</span><br><span class="line">  <span class="attribute">background-color</span>: gray;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.tran</span> &#123;</span><br><span class="line">  <span class="attribute">background-color</span>: transparent;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/201703/background_01.png" alt="younghz的Markdown库"></p>
+<h2 id="background-image"><a href="#background-image" class="headerlink" title="background-image"></a>background-image</h2><p><code>background-image</code> 用来定义元素的背景图像，可以通过 <code>url(...)</code> 来引入图片，也可以设置为 <code>none</code> 表示背景为空，还可以设置多张背景且中间用逗号隔开，写到前面的图片将会覆盖写到后面的。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.url</span> &#123;</span><br><span class="line">  <span class="attribute">background-image</span>: <span class="built_in">url</span>(../images/cow.png);</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.none</span> &#123;</span><br><span class="line">  <span class="attribute">background-image</span>: none;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.muliple</span> &#123;</span><br><span class="line">  <span class="attribute">background-image</span>: <span class="built_in">url</span>(../images/penguin.jpg), <span class="built_in">url</span>(../images/cow.png);</span><br><span class="line">  <span class="attribute">background-repeat</span>: no-repeat;</span><br><span class="line">  <span class="attribute">background-size</span>: <span class="number">81%</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/201703/background_02.png" alt="younghz的Markdown库"></p>
+<h2 id="background-repeat"><a href="#background-repeat" class="headerlink" title="background-repeat"></a>background-repeat</h2><p><code>background-repeat</code> 定义了背景图像将以何种方式进行平铺。必须先指定 <code>background-image</code> 属性。如果设置 2 个属性，那么第一个用于横向，第二个作用于纵向。如果提供一个参数，则用于横向和纵向。其中，<code>repeat-x</code> 和 <code>repeat-y</code> 只能单独使用。</p>
+<ul>
+<li>repeat-x：横向平铺</li>
+<li>repeat-y：纵向平铺</li>
+<li>repeat：横向和纵向都平铺</li>
+<li>no-repeat：不平铺</li>
+<li>round：背景图像自动缩放直至适应填充满整个容器</li>
+<li>space: 背景图像按照相同的间距平铺直至适应填充满整个容器或某个方向</li>
+</ul>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.repeat-x</span> &#123;</span><br><span class="line">  <span class="attribute">background-repeat</span>: repeat-x;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.repeat-y</span> &#123;</span><br><span class="line">  <span class="attribute">background-repeat</span>: repeat-y;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.repeat</span> &#123;</span><br><span class="line">  <span class="attribute">background-repeat</span>: repeat;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.no-repeat</span> &#123;</span><br><span class="line">  <span class="attribute">background-repeat</span>: no-repeat;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.round</span> &#123;</span><br><span class="line">  <span class="attribute">background-repeat</span>: round;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.space</span> &#123;</span><br><span class="line">  <span class="attribute">background-repeat</span>: space;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.round-space</span> &#123;</span><br><span class="line">  <span class="attribute">background-repeat</span>: round space;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.space-round</span> &#123;</span><br><span class="line">  <span class="attribute">background-repeat</span>: space round;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/201703/background_03.png" alt="younghz的Markdown库"></p>
+<h2 id="background-size"><a href="#background-size" class="headerlink" title="background-size"></a>background-size</h2><p><code>background-size</code> 定义了背景图像的尺寸，可以用关键字来定义。<code>contain</code> 按照图片比例将背景图像等比缩放到完全适应容器，而 <code>cover</code> 是图像缩放到完全覆盖区域为止。也可以用长度值或者百分比值来设置。如果设置了 2 个参数，则分别表示横向和纵向。如果只设置了一个值，那表示横向宽度，纵向为 <code>auto</code>.</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.contain</span> &#123;</span><br><span class="line">  <span class="attribute">background-size</span>: contain;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.cover</span> &#123;</span><br><span class="line">  <span class="attribute">background-size</span>: cover;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.size-demo</span> <span class="selector-class">.w100</span> &#123;</span><br><span class="line">  <span class="attribute">background-size</span>: <span class="number">100px</span>;</span><br><span class="line">  <span class="attribute">background-image</span>: <span class="built_in">url</span>(../images/cow.png);</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.rate5080</span> &#123;</span><br><span class="line">  <span class="attribute">background-size</span>: <span class="number">50%</span> <span class="number">80%</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/201703/background_04.png" alt="younghz的Markdown库"></p>
+<h2 id="background-position"><a href="#background-position" class="headerlink" title="background-position"></a>background-position</h2><p><code>background-positioin</code> 定义了背景图像在容器里的显示位置，可以用关键字 <code>top</code>、<code>left</code>、<code>right</code>、<code>bottom</code>、<code>center</code> 等来表示，当用 1 个参数的时候设置的时候，另一个方向默认是 <code>center</code>。当用 2 个关键字来设置的时候，和书写顺序无关。另外还可以用具体数值和百分比来设置，用这些方式来设置的时候第一个参数表示横向，第二个是纵向。如果只有一个参数，则表示横向，纵向默认是居中。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.position-demo</span> <span class="selector-class">.top</span> &#123;</span><br><span class="line">  <span class="attribute">background-position</span>: top;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.position-demo</span> <span class="selector-class">.bottom-right</span> &#123;</span><br><span class="line">  <span class="attribute">background-position</span>: bottom right;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.position-demo</span> <span class="selector-class">.w20h40</span> &#123;</span><br><span class="line">  <span class="attribute">background-position</span>: <span class="number">20px</span> <span class="number">40px</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.position-demo</span> <span class="selector-class">.p20</span> &#123;</span><br><span class="line">  <span class="attribute">background-position</span>: <span class="number">20%</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/201703/background_05.png" alt="younghz的Markdown库"></p>
+<h2 id="background-attachment"><a href="#background-attachment" class="headerlink" title="background-attachment"></a>background-attachment</h2><p><code>background-attachment</code> 控制背景图像在可视区或元素内如何滚动。<code>fixed</code> 是相对可视区域进行定位，背景图像相对于可视区域进行定位，不随元素滚动而滚动。<code>scroll</code> 背景图像将在元素区域内固定，不会随着元素内容的滚动而滚动。<code>local</code> 背景图像相对于元素内容占据的区域进行定位，当元素内容滚动的时候，背景图像随之滚动。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.attachment-demo</span> <span class="selector-class">.fixed</span> &#123;</span><br><span class="line">  <span class="attribute">background-attachment</span>: fixed;</span><br><span class="line">  <span class="attribute">background-position</span>: bottom;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.attachment-demo</span> <span class="selector-class">.scroll</span> &#123;</span><br><span class="line">  <span class="attribute">background-attachment</span>: scroll;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.attachment-demo</span> <span class="selector-class">.local</span> &#123;</span><br><span class="line">  <span class="attribute">background-attachment</span>: local;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/201703/background_06.png" alt="younghz的Markdown库"></p>
+<h2 id="background-origin"><a href="#background-origin" class="headerlink" title="background-origin"></a>background-origin</h2><p><code>background-origin</code> 规定了背景图像相对于盒模型的哪个区域来定位，对背景颜色无效。<code>content-box</code> 相对于内容区域定义，<code>padding-box</code> 相对于内边距区域定位，<code>border-box</code> 相对边框区域定位</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.origin-demo</span> <span class="selector-class">.content</span> &#123;</span><br><span class="line">  <span class="attribute">background-origin</span>: content-box;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.origin-demo</span> <span class="selector-class">.padding</span> &#123;</span><br><span class="line">  <span class="attribute">background-origin</span>: padding-box;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.origin-demo</span> <span class="selector-class">.border</span> &#123;</span><br><span class="line">  <span class="attribute">background-origin</span>: border-box;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/201703/background_07.png" alt="younghz的Markdown库"></p>
+<h2 id="background-clip"><a href="#background-clip" class="headerlink" title="background-clip"></a>background-clip</h2><p><code>background-clip</code> 指定背景向外裁剪的区域。<code>padding-box</code> 从 <code>padding</code> 区域（不含 <code>padding</code> ）开始向外裁剪背景。<code>border-box</code> 从 <code>border</code> 区域（不含 <code>border</code> ）开始向外裁剪背景。<br><code>content-box</code> 从 <code>content</code> 区域开始向外裁剪背景。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.clip-demo</span> <span class="selector-class">.content</span> &#123;</span><br><span class="line">  <span class="attribute">background-clip</span>: content-box;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.clip-demo</span> <span class="selector-class">.padding</span> &#123;</span><br><span class="line">  <span class="attribute">background-clip</span>: padding-box;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.clip-demo</span> <span class="selector-class">.border</span> &#123;</span><br><span class="line">  <span class="attribute">background-clip</span>: border-box;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/201703/background_08.png" alt="younghz的Markdown库"></p>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2017/03/30/chrome-devtools/" title="chrome开发者工具实用小技巧" class="prev">上一篇</a><a href="/2016/12/06/higher-order-functions/" title="高阶函数" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="copyright"><p>© 2016 - 2024 <a href="https://weibo.com/316000381" target="_blank">typeR</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p><p> <span style="padding-right: 6px;">闽ICP备16007301号-2</span></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/jquery-1.8.2.min.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/articleCatalog.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>
