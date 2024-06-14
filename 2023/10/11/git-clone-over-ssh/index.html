@@ -1,0 +1,193 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> git clone 的时候如何通过 SSH 链接来下载远程项目 · 步步走</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="git clone 的时候如何通过 SSH 链接来下载远程项目"><meta name="keywords" content="git clone、ssh"><meta name="author" content="typeR"><link rel="short icon" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/favicon.ico"><link rel="stylesheet" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://bubuzou.com/atom.xml" title="步步走"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script><meta name="generator" content="Hexo 5.0.0"><link rel="alternate" href="/atom.xml" title="步步走" type="application/atom+xml">
+</head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/logo.svg"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="/categories/live/" target="_self" data-hover="生活" class="nav-list-link">生活</a></li><li class="nav-list-item"><a href="/categories/read/" target="_self" data-hover="读书" class="nav-list-link">读书</a></li><li class="nav-list-item"><a href="/about/" target="_self" data-hover="关于" class="nav-list-link">关于</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">git clone 的时候如何通过 SSH 链接来下载远程项目</h1><div class="post-info">2023-10-11<p class="visit"><i data-identity="2023/10/11/git-clone-over-ssh/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><p>当我们需要从 github 下载项目的时候，它提供了 2 种下载链接：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">https://github.com/ant-design/ant-design.git</span><br><span class="line">git@github.com:ant-design/ant-design.git</span><br></pre></td></tr></table></figure>
+
+<p>上面 2 种下载链接分别使用了 HTTPS 和 SSH 协议。那么这两种协议有什么区别呢？</p>
+<ul>
+<li><strong>访问控制</strong>：SSH 协议使用公钥和私钥来进行身份验证，因此你需要在远程主机上安装你的公钥。只有拥有私钥的用户才能进行身份验证和访问。相反，HTTPS 协议使用用户名和密码进行身份验证。git clone 或 git fetch 的时候，如果使用 HTTPS 链接则不需要进行身份验证，而 SSH 链接需要。</li>
+<li><strong>传输速度</strong>：SSH 协议在传输数据时进行压缩，因此它可以在传输大量数据时比 HTTPS 更快。此外，SSH 协议通常可以在传输数据时使用更少的带宽，这对于连接速度较慢的网络非常有用。</li>
+<li><strong>防火墙限制</strong>： 某些公司或组织可能会在防火墙中阻止对 SSH 端口的访问，这可能会使 SSH 协议无法使用。另一方面，HTTPS 协议通常可以通过防火墙，因为它使用标准的 Web 端口 80 和 443。</li>
+</ul>
+<p>想要通过 SSH 链接来下载项目，需要在客户端和服务器之间配置 SSH key，那么如何做呢？下面以 github 为例来说明具体步骤。</p>
+<h2 id="1-在本地生成-SSH-key"><a href="#1-在本地生成-SSH-key" class="headerlink" title="1. 在本地生成 SSH key"></a>1. 在本地生成 SSH key</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t ed25519 -C &quot;user@example.com&quot;</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<p>这里我把 <a href="mailto:&#117;&#x73;&#101;&#x72;&#64;&#x65;&#x78;&#x61;&#109;&#x70;&#x6c;&#101;&#46;&#x63;&#x6f;&#x6d;">&#117;&#x73;&#101;&#x72;&#64;&#x65;&#x78;&#x61;&#109;&#x70;&#x6c;&#101;&#46;&#x63;&#x6f;&#x6d;</a> 替换成了我的 github.com 的邮箱。执行完后可能会有如下提示，不用管直接按回车即可。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Generating public/private ed25519 key pair.</span><br><span class="line">Enter file in which to save the key (/home/johndoe/.ssh/id_ed25519):</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Enter passphrase (empty for no passphrase):</span><br><span class="line">Enter same passphrase again:</span><br></pre></td></tr></table></figure>
+
+<p>最后你会发现会打印这么一串信息：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">SHA256:ToTEp33dDV8Sokslnx568DC5ABPQTmvlBjGx+r/W0k8 user@example.com</span><br><span class="line"> The key&#x27;s randomart image is:</span><br><span class="line"> +--[ED25519 256]--+</span><br><span class="line"> |o.+o ..          |</span><br><span class="line"> |. +o....+        |</span><br><span class="line"> | +.=  .o.        |</span><br><span class="line"> |o.+ o . .  .      |</span><br><span class="line"> |o+ . . .So .     |</span><br><span class="line"> |*.    oo+ o .    |</span><br><span class="line"> |o*.  o =E= o     |</span><br><span class="line"> |ooo.o =..o o      |</span><br><span class="line"> |.o+o++ ..        |</span><br><span class="line"> +----[SHA256]-----+</span><br></pre></td></tr></table></figure>
+
+<p>然后你就会发现在 .ssh 目录下多了 2 个文件：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ls ~/.ssh</span></span><br><span class="line">id_ed25519  id_ed25519.pub</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-为你的-github-账户添加一个公共的-key"><a href="#2-为你的-github-账户添加一个公共的-key" class="headerlink" title="2. 为你的 github 账户添加一个公共的 key"></a>2. 为你的 github 账户添加一个公共的 key</h2><p>上面已经在本地生成好了 SSH key，现在就要把这个 key 的内容贴到 github 账户里。</p>
+<p>执行如下命令后，会在终端打印 key 的内容，可以选中它们然后复制。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat ~/.ssh/id_ed25519.pub</span><br></pre></td></tr></table></figure>
+
+<p>然后按照如下顺序把 key 的内容贴到 github 的账户里。</p>
+<ul>
+<li><ol>
+<li>Log in to your GitHub account.</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>Navigate to “Settings”.</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>Click on “SSH and GPG keys” in the left menu.</li>
+</ol>
+</li>
+<li><ol start="4">
+<li>Click on the “New SSH key” button.</li>
+</ol>
+</li>
+</ul>
+<h2 id="3-测试是否可用"><a href="#3-测试是否可用" class="headerlink" title="3. 测试是否可用"></a>3. 测试是否可用</h2><p>接下来就可以找个 github 仓库，复制 SSH 的地址进行 clone 了：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone git@github.com:ant-design/ant-design.git --depth=1</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-为-SSH-代理指定-SSH-key"><a href="#4-为-SSH-代理指定-SSH-key" class="headerlink" title="4. 为 SSH 代理指定 SSH key"></a>4. 为 SSH 代理指定 SSH key</h2><p>如果您不想每次 git 使用 SSH 键时输入密码，则可以将键添加到 SSH 代理管理的键列表中。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">eval &quot;$(ssh-agent -s)&quot;</span><br></pre></td></tr></table></figure>
+
+<p>然后：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-add ~/.ssh/id_ed25519</span><br></pre></td></tr></table></figure>
+
+<p><em>但是每次电脑重启后，如上设置就会失效，需要重新设置。</em></p>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2024/02/02/micro-desc/" title="微前端的几种架构介绍" class="prev">PREV</a><a href="/2021/06/16/eslint/" title="从 ESLint 开始，说透我如何在团队项目中基于 Vue 做代码校验" class="next">NEXT</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="copyright"><p>© 2016 - 2024 <a href="https://weibo.com/316000381" target="_blank">typeR</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p><p> <span style="padding-right: 6px;">闽ICP备16007301号-2</span></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/jquery-1.8.2.min.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/articleCatalog.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

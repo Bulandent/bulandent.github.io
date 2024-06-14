@@ -1,0 +1,256 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> 微前端的几种架构介绍 · 步步走</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="微前端的几种架构介绍"><meta name="keywords" content="微前端、qiankun、microApp、web components"><meta name="author" content="typeR"><link rel="short icon" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/favicon.ico"><link rel="stylesheet" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://bubuzou.com/atom.xml" title="步步走"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script><meta name="generator" content="Hexo 5.0.0"><link rel="alternate" href="/atom.xml" title="步步走" type="application/atom+xml">
+</head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/logo.svg"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="/categories/live/" target="_self" data-hover="生活" class="nav-list-link">生活</a></li><li class="nav-list-item"><a href="/categories/read/" target="_self" data-hover="读书" class="nav-list-link">读书</a></li><li class="nav-list-item"><a href="/about/" target="_self" data-hover="关于" class="nav-list-link">关于</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">微前端的几种架构介绍</h1><div class="post-info">2024-02-02<p class="visit"><i data-identity="2024/02/02/micro-desc/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><h2 id="什么是微前端"><a href="#什么是微前端" class="headerlink" title="什么是微前端"></a>什么是微前端</h2><p>而提到微前端就离不开微服务，大家对微服务都比较熟悉了，微服务允许后端体系结构通过松散耦合的代码库进行扩展，每个代码库负责自己的业务逻辑，并公开一个 API，每个 API 均可独立部署，并且各自由不同的团队拥有和维护。</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202207/16568565844214.jpg" alt="-w610"></p>
+<p>前端架构经历了从单体，到前后端分离，再到微服务，最终发展到现在的微前端的过程如下图所示：</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202207/16568581684949.jpg" alt="-w697"></p>
+<p>微前端的思路是把微服务的架构引入到前端，其核心都是要能够以业务为单元构建端到端的垂直架构，使得单个的团队能够独立自主的进行相关的开发，同时又具备相当的灵活性，按需求来组成交付应用。</p>
+<p>“微前端”一词最早于 2016 年底在 ThoughtWorks 技术雷达中提出的。它将微服务的概念扩展到了前端世界。微前端的核心思路其实是远程应用程序，包含组件／模块／包的运行时加载。</p>
+<a id="more"></a>
+
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202207/16568585249329.jpg" alt="-w478"></p>
+<p>如上图，对于用户而言，访问的是一个微前端的容器（container），容器加载运行在远程服务上的应用，把这些远程应用作为组件／模块／包在本地浏览器中加载。</p>
+<ul>
+<li>组件是底层 UI 库的构建单元；</li>
+<li>模块是相应运行时的构建单元；</li>
+<li>包是依赖性解析器的构建单元；</li>
+<li>微前端是所提出的应用程序的构建块。</li>
+</ul>
+<p>上面说了很多，总结一下就是：微前端（Micro-Frontends）是一种类似于微服务的架构，他将微服务的理念应用于浏览器端，即将 Web 应用由单一的单体应用转变为多个小型前端应用聚合为一的应用。各个前端应用还可以<strong>独立开发</strong>、<strong>独立部署</strong>、<strong>独立运行</strong>。微前端不是单纯的前端框架或者工具，而是一套架构体系。</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202207/16568208609680.jpg" alt="-w665"></p>
+<h2 id="为什么需要微前端"><a href="#为什么需要微前端" class="headerlink" title="为什么需要微前端"></a>为什么需要微前端</h2><p>在前面我们看到的微前端之前的架构，所有的前端还是一个单体，前端团队会依赖所有的服务或者后台的 API，前端开发会成为整个系统的瓶颈。使用微前端，就是要让前端业务从水平分层变为垂直应用的一部分，进入业务团队，剥离耦合。</p>
+<p>那么微前端有什么好处，为什么要采用微前端架构呢？</p>
+<ul>
+<li>各个团队独立开发，相互不影响，独立开发、独立部署，微应用仓库独立，前后端可独立开发，部署完成后主框架自动完成同步更新；</li>
+<li>增量升级，在面对各种复杂场景时，通常很难对一个已经存在的系统做全量的技术栈升级或重构，而微前端是一种非常好的实施渐进式重构的手段和策略。因为是运行时加载，可以在没有重建的情况下添加，删除或替换前端的各个部分；</li>
+<li>不受技术影响，每个团队都应该能够选择和升级其技术栈，而无需与其他团队进行协调。也就是说 A 应用可以用 React，而 B 应用使用 Vue，大家可以通过同一个基座应用来加载；</li>
+<li>独立运行时，每个微应用之间状态隔离，运行时状态不共享。隔离团队代码，即使所有团队都使用相同的框架，也不要共享运行时。构建自包含的独立应用程序。不要依赖共享状态或全局变量；</li>
+<li>建立团队命名空间，对于 CSS，事件，本地存储和 Cookies，可以避免冲突并阐明所有权。</li>
+</ul>
+<p>因此，微前端和微服务的本质都是关于去耦合。而只有当应用程序达到一定规模时，这才开始变得更有意义。</p>
+<h2 id="如何实现微前端架构"><a href="#如何实现微前端架构" class="headerlink" title="如何实现微前端架构"></a>如何实现微前端架构</h2><p>微前端不是一个库，是一种前端架构的设计思路，要实现微前端，本质上就是在运行时远程加载应用。如下列了一些实现方案，但不仅仅只是这样：</p>
+<ul>
+<li>纯 nginx 路由转发；</li>
+<li>使用 iframe 创建容器；</li>
+<li>组合式应用路由分发；</li>
+<li>使用 Web Components 技术构建；</li>
+<li>Module Federation；</li>
+</ul>
+<h3 id="纯-nginx-路由转发"><a href="#纯-nginx-路由转发" class="headerlink" title="纯 nginx 路由转发"></a>纯 nginx 路由转发</h3><p>即通过路由将不同的业务分发到不同的、独立前端应用上。其通常可以通过 HTTP 服务器的反向代理来实现。这种方案，不涉及前端的改造，完全是依靠运维层面的配置。</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202207/16568205299916.jpg" alt="-w498"></p>
+<p>当在浏览器里访问 <a target="_blank" rel="noopener" href="http://www.nrp.com/app1">www.nrp.com/app1</a> 的时候，其实访问的是 app1 这个应用；当访问 <a target="_blank" rel="noopener" href="http://www.nrp.com/app2">www.nrp.com/app2</a> 的时候，其实访问的是 app2 这个应用。要实现这个功能，就可以用 nginx 的反向代理来实现路由分发：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">  server &#123;</span><br><span class="line">    listen       80;</span><br><span class="line">    server_name  www.nrp.com;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">      root   &#x2F;www&#x2F;wwwroot&#x2F;www.nrp.com&#x2F;;</span><br><span class="line">      index  index.html index.htm;</span><br><span class="line">    &#125;</span><br><span class="line">    location &#x2F;app1 &#123;</span><br><span class="line">      proxy_pass http:&#x2F;&#x2F;www.app1.com&#x2F;;</span><br><span class="line">    &#125;</span><br><span class="line">    location &#x2F;app2 &#123;</span><br><span class="line">      proxy_pass http:&#x2F;&#x2F;www.app2.com&#x2F;;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过 http 服务分发不同的路由到不同的独立应用上，虽然实现上很简单，但是缺点也相当明显：</p>
+<ul>
+<li>每一次切换应用的时候都会重新请求资源，没办法做到局部更新当前页面，就相当于是刷新了浏览器，完全丢失了单页应用的体验；</li>
+<li>需要配置一个通用可扩展的路由规则，否则当引入新的应用的时候，还需要修改 nginx 的路由配置；</li>
+</ul>
+<h3 id="使用-iframe-创建容器"><a href="#使用-iframe-创建容器" class="headerlink" title="使用 iframe 创建容器"></a>使用 iframe 创建容器</h3><p>HTML 内联框架元素 <code>&lt;iframe&gt;</code> 表示嵌套的正在浏览的上下文，能有效地将另一个 HTML 页面嵌入到当前页面中。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">src</span>=<span class="string">&quot;http://www.baidu.com/&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>iframe 可以创建一个全新的独立的宿主环境，这意味着我们的前端应用之间可以相互独立运行。通过给 iframe 的 src 指定不同的地址，来实现加载不同的子应用。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">template</span> <span class="attr">v-for</span>=<span class="string">&quot;app in appList&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">iframe</span></span></span><br><span class="line"><span class="tag">    <span class="attr">v-show</span>=<span class="string">&quot;currAppCode == app.code&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">:key</span>=<span class="string">&quot;app.code&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">:src</span>=<span class="string">&quot;app.src&quot;</span></span></span><br><span class="line"><span class="tag">  &gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>使用 iframe 来加载不同的微应用，接入非常简单，且由于 iframe 天然的沙箱环境使得 js 和样式隔离都非常完美。但他存在以下一些问题：</p>
+<ul>
+<li>页面加载问题：iframe 和主页面共享连接池，而浏览器对相同域的连接有限制，所以会影响页面的并行加载，阻塞 onload 事件。相比于 SPA 加载会更慢；</li>
+<li>布局问题：iframe 必须给一个指定的高度，否则会塌陷。另外有些时候会出现多个滚动条，用户体验不佳；</li>
+<li>弹窗及遮罩层问题：弹窗只能在 iframe 区域进行展示，没办法在浏览器视口里显示，导致的问题是，弹窗遮罩无法覆盖浏览器视口且弹窗位置可能没有垂直水平居中；</li>
+<li>浏览器记录和前进后退问题：iframe 和主页面共用浏览器记录，导致前进后退的时候不能切换不同的应用；刷新页面无法保存当前状态，比如访问一个微应用的列表页，当从列表页点击进入详情，此时刷新浏览器，会加载列表页</li>
+</ul>
+<h3 id="组合式应用路由分发"><a href="#组合式应用路由分发" class="headerlink" title="组合式应用路由分发"></a>组合式应用路由分发</h3><p>这个方案和第一种方案很像，都是需要通过 nginx 来将路由分发到不同的应用上，可以认为是它的升级版，区别是这种方式的系统在运行时将由主应用来进行路由管理，子应用的加载、启动、卸载以及通信都需要依靠主应用来完成。</p>
+<p>这种方式的代表开源框架就是 <a target="_blank" rel="noopener" href="https://github.com/umijs/qiankun">qiankun</a>。</p>
+<p>作为微前端的基座应用，是整个应用的入口，负责承载当前微应用的展示和对其他路由微应用的转发，对于当前微应用的展示，一般是由以下几步构成：</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202207/16568630083671.jpg" alt="-w767"></p>
+<ul>
+<li>作为一个 SPA 的基座应用，本身是一套纯前端项目，要想展示微应用的页面除了采用 iframe 之外，要能先拉取到微应用的页面内容，这就需要远程拉取机制。</li>
+<li>远程拉取实施的前提是需要知道拉取的地址是什么？所以就需要先在主应用里集成一套微应用的管理机制，比如说当浏览器地址匹配 /app1 的时候就去加载 app1 应用的内容，而 app1 的地址其实是动态配置到本地的映射，最终将指向一个可以独立访问的域名。</li>
+<li>有了拉取地址之后，通常会采用 fetch API 来首先获取到微应用的 HTML 内容。然后通过解析将微应用的 JavaScript 和 CSS 进行抽离，采用 eval 方法来运行 JavaScript，并将 CSS 和 HTML 内容 append 到基座应用中留给微应用的展示区域，当微应用切换走时，可以在主应用里同步卸载这些内容，这就构成的当前应用的展示流程。</li>
+</ul>
+<p>对于路由分发而言，以采用 vue-router 开发的基座 SPA 应用来举例，主要是下面这个流程：</p>
+<p>当浏览器的路径变化后，vue-router 会监听 hashchange 或者 popstate 事件，从而获取到路由切换的时机。<br>最先接收到这个变化的是基座的 router，通过查询注册信息可以获取到转发到那个微应用，经过一些逻辑处理后，采用修改 hash 方法或者 pushState 方法来路由信息推送给微应用的路由，微应用可以是手动监听 hashchange 或者 popstate 事件接收，或者采用 React-router，vue-router 接管路由，后面的逻辑就由微应用自己控制。</p>
+<h3 id="使用-Web-Components-技术构建"><a href="#使用-Web-Components-技术构建" class="headerlink" title="使用 Web Components 技术构建"></a>使用 Web Components 技术构建</h3><p>Web Components 是一套不同的技术，允许您创建可重用的定制元素（它们的功能封装在您的代码之外）并且在您的 Web 应用中使用它们。</p>
+<p>它主要有三项技术组件：</p>
+<ul>
+<li>Custom elements（自定义元素）：一组 JavaScript API，允许您定义 custom elements 及其行为，然后可以在您的用户界面中按照需要使用它们。</li>
+<li>Shadow DOM（影子 DOM）：一组 JavaScript API，用于将封装的“影子”DOM 树附加到元素（与主文档 DOM 分开呈现）并控制其关联的功能。通过这种方式，您可以保持元素的功能私有，这样它们就可以被脚本化和样式化，而不用担心与文档的其他部分发生冲突。</li>
+<li>HTML templates（HTML 模板）： <code>&lt;template&gt;</code> 和 <code>&lt;slot&gt;</code> 元素使您可以编写不在呈现页面中显示的标记模板。然后它们可以作为自定义元素结构的基础被多次重用。</li>
+</ul>
+<p>这里有一个<a target="_blank" rel="noopener" href="https://jsbin.com/yobopor/1/edit?html,js,output">在线的 Web Components 示例</a></p>
+<p>随后，在各自的 HTML 文件里，创建相应的组件元素，编写相应的组件逻辑。一个典型的 Web Components 应用架构如下图所示：</p>
+<p><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202207/16568230270366.jpg" alt="-w810"></p>
+<p>可以看到这边方式与我们上面使用 iframe 的方式很相似，组件拥有自己独立的 Scripts 和 Styles，以及对应的用于单独部署组件的域名。然而它并没有想象中的那么美好，要直接使用纯 Web Components 来构建前端应用的难度有：</p>
+<ul>
+<li>重写现有的前端应用。是的，现在我们需要完成使用 Web Components 来完成整个系统的功能。</li>
+<li>上下游生态系统不完善。缺乏相应的一些第三方控件支持，这也是为什么 jQuery 相当流行的原因。</li>
+<li>系统架构复杂。当应用被拆分为一个又一个的组件时，组件间的通讯就成了一个特别大的麻烦。</li>
+<li>Web Components 中的 ShadowDOM 更像是新一代的前端 DOM 容器。而遗憾的是并不是所有的浏览器，都可以完全支持 Web Components。</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://github.com/micro-zoe/micro-app">MicroApp</a> 借鉴了 Web Component 的思想，通过 CustomElement 结合自定义的 ShadowDom，将微前端封装成一个类 Web Component 组件，从而实现微前端的组件化渲染。</p>
+<h3 id="Module-Federation"><a href="#Module-Federation" class="headerlink" title="Module Federation"></a>Module Federation</h3><p>Module Federation 是 webpack 5 中的一个新特性，能轻易实现在两个使用 webpack 构建的项目之间共享代码，通俗点讲，Module Federation 提供了能在当前应用加载其他应用的能力。这就为实现微前端提供了另一种可能。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/efoxTeam/emp">EMP</a> 就是基于这个特性研发出来的微前端解决方案。</p>
+<p>对于 Module Federation，它有几个概念：</p>
+<ul>
+<li>local module（本地模块）：就是普通模块，对于某个项目而言，每次构建就都是产生本地模块的过程；</li>
+<li>remote module（远程模块）：远程模块不属于当前构建，并在运行时从所谓的容器加载；加载远程模块被认为是异步操作，通常可以通过调用 import() 实现；</li>
+<li>container（容器）：每个构建都充当一个容器，也可将其他构建作为容器。通过这种方式，每个构建都能够通过从对应容器中加载模块来访问其他容器暴露出来的模块。</li>
+<li>shared module（共享模块）：共享模块是指既可重写的又可作为向嵌套容器提供重写的模块。它们通常指向每个构建中的相同模块，例如相同的库。</li>
+</ul>
+<p>所以，当前模块想要加载其他模块，就要有一个引入动作，同样，如果想让其他模块使用，就需要有一个导出动作。通过以下 2 个 webpack 插件配置参数可以实现模块的导入和导出。</p>
+<ul>
+<li>expose：导出应用，被其他应用导入；</li>
+<li>remote：引入其他应用；</li>
+</ul>
+<p>这与基座模式完全不同，像 iframe 和 qiankun 都是需要一个基座（中心容器）去加载其他子应用。而 Module Federation 任意一个模块都可以引用其他应用，同时也可以导出被其他应用使用，这就没有了容器中心的概念。</p>
+<p>想要使用 Module Federation 功能需要引入 webpack 5 中内置的插件 ModuleFederationPlugin，通过配置该插件来完成。比如 base 应用需要引入 expose 应用里导出的 HelloWorld 模块，可以这样配置：</p>
+<p>expose 的 vue.config.js：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> webpack.container.ModuleFederationPlugin(&#123;</span><br><span class="line">    name: <span class="string">&quot;app_expose&quot;</span>,</span><br><span class="line">    filename: <span class="string">&quot;remoteEntry.js&quot;</span></span><br><span class="line">    exposes: &#123;</span><br><span class="line">      <span class="string">&quot;./HelloWorld.vue&quot;</span>: <span class="string">&quot;./src/components/HelloWorld.vue&quot;</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">    shared: &#123;</span><br><span class="line">      vue: &#123;</span><br><span class="line">        singleton: <span class="literal">true</span>,</span><br><span class="line">      &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;),</span><br></pre></td></tr></table></figure>
+
+<p>base 应用的 vue.config.js：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> webpack.container.ModuleFederationPlugin(&#123;</span><br><span class="line">    name: <span class="string">&quot;app_base&quot;</span>,</span><br><span class="line">    filename: <span class="string">&quot;remoteEntry.js&quot;</span>,</span><br><span class="line">    remotes: &#123;</span><br><span class="line">      app_expose: <span class="string">&quot;app_expose@http://localhost:8082/remoteEntry.js&quot;</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">    shared: &#123;</span><br><span class="line">      vue: &#123;</span><br><span class="line">        singleton: <span class="literal">true</span>,</span><br><span class="line">      &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;),</span><br></pre></td></tr></table></figure>
+
+<p>使用 expose 应用的 HelloWorld 模块：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">template</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;home&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">img</span> <span class="attr">alt</span>=<span class="string">&quot;Vue logo&quot;</span> <span class="attr">src</span>=<span class="string">&quot;../assets/logo.png&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">HelloWorld</span> <span class="attr">msg</span>=<span class="string">&quot;Welcome to Your Vue.js&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">lang</span>=<span class="string">&quot;js&quot;</span>&gt;</span></span><br><span class="line"><span class="javascript">  <span class="keyword">import</span> &#123;  defineComponent &#125; <span class="keyword">from</span> <span class="string">&quot;vue&quot;</span>;</span></span><br><span class="line"><span class="javascript">  <span class="keyword">import</span> HelloWorld <span class="keyword">from</span> <span class="string">&quot;app_expose/HelloWorld.vue&quot;</span>;</span></span><br><span class="line"><span class="javascript">  <span class="keyword">export</span> <span class="keyword">default</span> defineComponent(&#123;</span></span><br><span class="line"><span class="javascript">    name: <span class="string">&#x27;HomeView&#x27;</span>,</span></span><br><span class="line">    components: &#123;</span><br><span class="line">      HelloWorld</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;)</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>webpack 5 与之前版本的模块管理对比图：<br><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202207/16568539763219.jpg" alt="-w859"></p>
+<h2 id="微前端的问题和缺点"><a href="#微前端的问题和缺点" class="headerlink" title="微前端的问题和缺点"></a>微前端的问题和缺点</h2><p>讲了这么多的优点和实现，那么微前端是不是解决前端开发问题的银弹呢？当然不是。所有的架构都是取舍和权衡，这个世界上并不存在银弹，微前端架构和微服务一样也存在他的弊端，单体架构未必就差。</p>
+<ul>
+<li>微前端的构建通常比较复杂，从工具，打包，到部署，微前端都是更为复杂的存在，天下没有免费的午餐，对于小型项目，它的成本太高；</li>
+<li>每个团队可以使用不同的框架，这个听上去很美，但是实际操作起来，除了要支持历史遗留的应用，它的意义不大。同时也为带来体验上的问题。可以远程加载不同的框架代码是一回事，把它们都用好是另一回事；</li>
+<li>性能上来看，如果优化得不好微前端的性能可能会存在问题，至少微前端框架是额外的一层加载。如果不同的微前端使用了不同的框架，那么每一个框架都需要额外的加载；</li>
+</ul>
+<p>微前端架构还在不断发展之中，本文提到的 nginx / iframe／ qiankun／Web Components / Module Federation 只是诸多解决方案中的一小部分，前端的发展变化和生态系统实在是丰富，相信未来会有更多以及更好用的微前端架构的出现。</p>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2024/02/18/typescript-deep/" title="深入学习 TypeScript 类型体操" class="prev">PREV</a><a href="/2023/10/11/git-clone-over-ssh/" title="git clone 的时候如何通过 SSH 链接来下载远程项目" class="next">NEXT</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="copyright"><p>© 2016 - 2024 <a href="https://weibo.com/316000381" target="_blank">typeR</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p><p> <span style="padding-right: 6px;">闽ICP备16007301号-2</span></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/jquery-1.8.2.min.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/articleCatalog.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>
