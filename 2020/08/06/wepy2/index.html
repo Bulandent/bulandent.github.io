@@ -1,6 +1,7 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> 小程序升级WePY2踩坑记 · 步步走</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="小程序升级wepy2记录。"><meta name="keywords" content="wepy小程序框架、use-intercept、use-promisify"><meta name="author" content="typeR"><link rel="short icon" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/favicon.ico"><link rel="stylesheet" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://bubuzou.com/atom.xml" title="步步走"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> 小程序升级WePY2踩坑记 · 步步走</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="小程序升级wepy2记录。"><meta name="keywords" content="wepy小程序框架、use-intercept、use-promisify"><meta name="author" content="typeR"><link rel="short icon" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/favicon.ico"><link rel="stylesheet" href="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://bubuzou.com/atom.xml" title="步步走"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
 <script src='//unpkg.com/valine/dist/Valine.min.js'></script><meta name="generator" content="Hexo 5.0.0"><link rel="alternate" href="/atom.xml" title="步步走" type="application/atom+xml">
-</head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/logo.svg"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="/categories/live/" target="_self" data-hover="生活" class="nav-list-link">生活</a></li><li class="nav-list-item"><a href="/categories/read/" target="_self" data-hover="读书" class="nav-list-link">读书</a></li><li class="nav-list-item"><a href="/about/" target="_self" data-hover="关于" class="nav-list-link">关于</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">小程序升级WePY2踩坑记</h1><div class="post-info">2020-08-06<p class="visit"><i data-identity="2020/08/06/wepy2/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><p>最近有个小程序项目需要迭代，但是迭代任务不多，时间比较充裕。而这个小程序最早是在 18 年的时候开发的，用的开发框架是 <code>WePY</code> 的 <code>1.7.2</code> 版本，去年也就是 <code>19</code> 年的时候 <code>WePY</code> 框架进行了升级，到了 <code>2.0</code> 版本。升级之后的 <code>WePY</code>，用 <a target="_blank" rel="noopener" href="https://wepyjs.github.io/wepy-docs/2.x/#/"><code>WePY</code></a> 官方文档的话来说：通过优化细节，引入 <code>Promise</code>、<code>Async Functions</code> 等让开发小程序项目变得更加简单，高效。基于这些背景，我和小伙伴一拍即合，决定对我们的项目进行框架升级，体验下到底 <code>WePY2</code> 能给我们带来什么。</p>
+</head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/logo.svg"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">小程序升级WePY2踩坑记</h1><div class="post-info">2020-08-06<p id="busuanzi_container_page_pv" class="visit"><span id="busuanzi_value_page_pv"> </span><span>次访问</span></p></div><div class="post-content"><p>最近有个小程序项目需要迭代，但是迭代任务不多，时间比较充裕。而这个小程序最早是在 18 年的时候开发的，用的开发框架是 <code>WePY</code> 的 <code>1.7.2</code> 版本，去年也就是 <code>19</code> 年的时候 <code>WePY</code> 框架进行了升级，到了 <code>2.0</code> 版本。升级之后的 <code>WePY</code>，用 <a target="_blank" rel="noopener" href="https://wepyjs.github.io/wepy-docs/2.x/#/"><code>WePY</code></a> 官方文档的话来说：通过优化细节，引入 <code>Promise</code>、<code>Async Functions</code> 等让开发小程序项目变得更加简单，高效。基于这些背景，我和小伙伴一拍即合，决定对我们的项目进行框架升级，体验下到底 <code>WePY2</code> 能给我们带来什么。</p>
 <p>本文将以项目改动为出发点，基于当前这个项目的结构和编码方式来考虑到底升级 <code>WePY2</code> 后，哪里需要改，怎么改以及有哪些需要注意的地方，通过对比 <code>2</code> 个版本的写法差异这个思路来写，不会去太较真 <code>WePY2</code> 相对于 <code>WePY1</code> 实现或原理上的区别。下面我将一条一条的列出来需要改动的点。</p>
 <blockquote>
 <p>本篇文章记录的是我和小伙伴这次升级框架遇到的需要改动的地方和坑，所使用的是 <code>wepy</code> 的 <code>2.1.0</code> 版本，后续如果版本升级后，本篇记录到的坑如果已经被修复了，请自行忽略本文所述的问题。另外下文中所说到的 <code>2.x</code> 版本都是指 <code>wepy_v2.1.0</code>。</p>
@@ -202,7 +203,7 @@
 
 <h2 id="数据绑定机制调整"><a href="#数据绑定机制调整" class="headerlink" title="数据绑定机制调整"></a>数据绑定机制调整</h2><p><code>1.7.2</code> 中用脏检查进行数据绑定，通过 <code>$apply()</code> 方法使得数据能够及时更新，页面重新渲染。在 <code>2.x</code> 中使用了 <code>Vue Observer</code> 实现数据绑定，告别 <code>$apply()</code>，但是遇到一个问题，某个数组项的某个属性更新后，数组虽然是更新了，但是不能够触发页面进行重新渲染，即使使用 <code>splice</code> 也不行。不过可以通过浅拷贝一个引用类型，重新赋值，从而触发页面重新渲染。</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">wepy.page(&#123;</span><br><span class="line">  data: &#123;</span><br><span class="line">    list: [</span><br><span class="line">      &#123;</span><br><span class="line">        name: <span class="string">&#x27;aaa&#x27;</span>,</span><br><span class="line">        hasBorder: <span class="literal">true</span>,</span><br><span class="line">      &#125;,</span><br><span class="line">      &#123;</span><br><span class="line">        name: <span class="string">&#x27;bbb&#x27;</span>,</span><br><span class="line">        hasBorder: <span class="literal">false</span>,</span><br><span class="line">      &#125;,</span><br><span class="line">    ],</span><br><span class="line">  &#125;,</span><br><span class="line">  methods: &#123;</span><br><span class="line">    handleClick() &#123;</span><br><span class="line">      <span class="built_in">this</span>.list[<span class="number">1</span>].hasBorder = <span class="literal">true</span> <span class="comment">// 不会重新渲染页面</span></span><br><span class="line">      <span class="built_in">this</span>.list.splice(<span class="number">1</span>, <span class="number">1</span>, &#123;</span><br><span class="line">        <span class="comment">// 也不会重新渲染页面</span></span><br><span class="line">        name: <span class="string">&#x27;bbb&#x27;</span>,</span><br><span class="line">        hasBorder: <span class="literal">true</span>,</span><br><span class="line">      &#125;)</span><br><span class="line">      <span class="built_in">this</span>.list = [...this.list] <span class="comment">// 浅拷贝，使得this.list的引用地址变化了，使得页面重新渲染</span></span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2020/09/21/vue-operate/" title="34条我能告诉你的Vue之实操篇" class="prev">PREV</a><a href="/2020/07/29/js-datatype/" title="JavaScript中的数据类型" class="next">NEXT</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2020/09/21/vue-operate/" title="34条我能告诉你的Vue之实操篇" class="prev">上一篇</a><a href="/2020/07/29/js-datatype/" title="JavaScript中的数据类型" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
     el: "#vcomments",
     appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
     appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
@@ -211,127 +212,4 @@
     avatar: "robohash",
     visitor: true,
     placeholder: "随便说点什么～.～",
-});</script><div class="copyright"><p>© 2016 - 2024 <a href="https://weibo.com/316000381" target="_blank">typeR</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p><p> <span style="padding-right: 6px;">闽ICP备16007301号-2</span></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/jquery-1.8.2.min.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/articleCatalog.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
-try {
-    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
-} catch(error) {}
-const isExist = (identity) => {
-    identity = identity || getRealPath();
-    let query = new AV.Query('Timer');
-    return new Promise((resolve, reject) => {
-    query.equalTo("identity", identity);
-    query.find().then(results => {
-        resolve(results.length > 0);
-    }, error => reject(error));
-    })
-}
-
-const _get = (identity) => {
-    let query = null;
-    if(identity && identity instanceof Array){
-    let querys = [];
-    for(let i = 0; i < identity.length; ++i) {
-        querys[i] = new AV.Query('Timer');
-        querys[i].equalTo('identity', identity[i]);
-    }
-    query = AV.Query.or.apply(null ,querys);
-    } else {
-    identity = identity || getRealPath();
-    query = new AV.Query("Timer");
-    query.equalTo("identity", identity);
-    }
-
-    return new Promise((resolve, reject) => {
-    query.find()
-    .then(results => resolve(results))
-    .catch(error => reject(error))
-    })
-}
-
-const create = (identity) => {
-    identity = identity || getRealPath();
-    return new Promise((resolve, reject) => {
-    let Todo = AV.Object.extend('Timer');
-    let todo = new Todo();
-    todo.set("times", 1);
-    todo.set("identity", identity);
-    todo.save().then(res => resolve(true), error => reject(error));
-    })
-}
-
-const update = (identity) => {
-    identity = identity || getRealPath();
-    return new Promise((resolve, reject) => {
-    let query = new AV.Query('Timer');
-    query.equalTo("identity", identity);
-    query.find().then(todos => {
-        todos.forEach(todo => {
-        todo.set("times", todo.attributes.times + 1);
-        });
-        return AV.Object.saveAll(todos);
-    }).then(todos => resolve(true), error => reject(error));
-    })
-}
-
-return {
-    isExist,
-    _get,
-    update,
-    create
-}
-})()
-
-const calcAndWriteTimes = () => {
-let isPost = true;
-
-let timerAllDOM = document.querySelectorAll(".article-timer");
-
-if(isPost) {
-    let identity = timerAllDOM[0].getAttribute("data-identity");
-    valineAPI.isExist(identity)
-    .then(exist => {
-    if(exist) {
-        return valineAPI.update(identity);
-    }
-    return new Promise(resolve => resolve(true));
-    })
-    .then( succuess => valineAPI._get(identity))
-    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
-    .catch(error => console.log(error.message))
-    return ;
-}
-
-let timerDOMCache = {};
-
-for(let timerDOM of timerAllDOM) {
-    let identity = timerDOM.getAttribute("data-identity");
-    if(timerDOMCache.hasOwnProperty(identity)){
-    timerDOMCache[identity].dom.push(timerDOM);
-    }else{
-    timerDOMCache[identity] = {
-        dom: [timerDOM],
-        times: undefined
-    };
-    }
-}
-
-let identities = Object.keys(timerDOMCache);
-valineAPI._get(identities).then(results => {
-    for(let result of results) {
-    let {identity, times} = result.attributes;
-    timerDOMCache[identity].times = times;
-    timerDOMCache[identity].dom.map(item => item.innerText = times);
-    }
-    for(let identity of identities) {
-    if(timerDOMCache[identity].times){
-        continue;
-    }
-    timerDOMCache[identity].dom.map(item => item.innerText = 1);
-    valineAPI.create(identity);
-    }
-}).catch(error => console.log(error.message))
-}
-
-if(true){
-calcAndWriteTimes();
-}</script></body></html>
+});</script><div class="copyright"><p>© 2016 - 2024 <a href="https://weibo.com/316000381" target="_blank">typeR</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p><p><span id="busuanzi_container_site_pv">本站总访问数：<span id="busuanzi_value_site_pv"></span></span><span id="busuanzi_container_site_uv" style="padding-left: 6px;">访客数：<span id="busuanzi_value_site_uv"></span></span></p><p> <span style="padding-right: 6px;">闽ICP备16007301号-2</span></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/jquery-1.8.2.min.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/articleCatalog.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>
